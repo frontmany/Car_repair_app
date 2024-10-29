@@ -1,26 +1,34 @@
 #include"mainwindow.h"
+#include"cardsTableWidget.h"
+#include<iostream>
+#include"leftMenu.h"
 
 
 MainWindow::MainWindow() 
 	: QMainWindow(){
-
-	setMainWidget();
-	
-}
-
-
-void MainWindow::setMainWidget() {
-	main_widget = new QWidget();
-	main_hlayout = new QHBoxLayout;
-
-
-	cards_table_widget->setMinimumSize(10, 200);
-
-	main_hlayout->addWidget(leftMenu_widget);
-	main_hlayout->addWidget(cards_table_widget->asScrolled());
+	setLeftMenu();
+	setCardsTableWidget();
 
 	main_widget->setLayout(main_hlayout);
 	setCentralWidget(main_widget);
+}
+
+
+void MainWindow::setLeftMenu() {
+	leftMenu_widget = new LeftMenu;
+	main_hlayout->addWidget(leftMenu_widget);
+}
+
+
+void MainWindow::setCardsTableWidget(){
+	cards_table_widget = new CardsTableWidget(nullptr, this);
+	main_hlayout->addWidget(cards_table_widget->asScrolled());
+
+
+}
+
+void MainWindow::setCardWidget() {
+	std::cout << "hi";
 }
 
 MainWindow::~MainWindow() {

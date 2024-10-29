@@ -11,12 +11,27 @@
 
 class TableButton;
 class Styles;
+class MainWindow;
+
+
 struct CardLine : public QWidget {
-	CardLine(QWidget* parent, int cardId, std::string date, std::string ownerName);
+	Q_OBJECT
+
+signals:
+	void sendLine();
+
+private slots:
+	void sendSignal() {
+		emit sendLine();
+	}
+
+public:
+	CardLine(QWidget* parent, MainWindow* mainWindow, int cardId, std::string date, std::string ownerName);
 	void highlightLine();
 	void unhighlightLine();
 
 private:
+	MainWindow* main_window = nullptr;
 	Styles* styles = nullptr;
 	QFont* font;
 	QHBoxLayout* lineHlayout = nullptr;
@@ -64,11 +79,12 @@ protected:
 
 class CardsTableWidget : public QWidget {
 public:
-	CardsTableWidget(QWidget* parent = nullptr);
+	CardsTableWidget(QWidget* parent = nullptr, MainWindow* mainWindow = nullptr);
 	void tableButtonClicked(const QString& buttonName) {}
 	QScrollArea* asScrolled();
 
 private:
+	MainWindow* main_window = nullptr;
 	Styles* styles = nullptr;
 	QFont* font;
 	std::vector<CardLine*> lines;

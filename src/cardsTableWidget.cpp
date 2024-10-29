@@ -1,11 +1,13 @@
 #include"cardsTableWidget.h"
 #include"styles.h"
+#include"mainwindow.h"
 
 
 
 
-CardLine::CardLine(QWidget* parent, int cardId, std::string date, std::string ownerName)
-	: QWidget(parent){
+CardLine::CardLine(QWidget* parent, MainWindow* mainWindow, int cardId, std::string date, std::string ownerName)
+	: QWidget(parent),
+	main_window(mainWindow){
 	styles = new Styles;
 
 	font = new QFont;
@@ -22,11 +24,13 @@ CardLine::CardLine(QWidget* parent, int cardId, std::string date, std::string ow
 
 	for (auto btn : vector_buttons) {
 		btn->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-		btn->setMinimumSize(1, 56);
+		btn->setMinimumSize(10, 56);
 		btn->setFont(*font);
 		btn->setStyleSheet(styles->tableBtnUnactive);
 		btn->installEventFilter(this);
 		btn->setBackgroundRole(QPalette::Midlight);
+		connect(btn, &TableButton::clicked, this, &CardLine::sendSignal);
+		connect(this, &CardLine::sendSignal, main_window, &MainWindow::setCardWidget);
 		lineHlayout->addWidget(btn);
 	}
 
@@ -47,7 +51,10 @@ void CardLine::unhighlightLine() {
 }
 
 
-CardsTableWidget::CardsTableWidget(QWidget* parent) : QWidget(parent) {
+CardsTableWidget::CardsTableWidget(QWidget* parent, MainWindow* mainWindow)
+	: QWidget(parent),
+	main_window(mainWindow){
+
 	styles = new Styles;
 
 	tableVLayout = new QVBoxLayout;
@@ -101,7 +108,7 @@ void CardsTableWidget::addTableLines() {
 
 
 
-		CardLine* line = new CardLine(nullptr, card_id, date, owner_name);
+		CardLine* line = new CardLine(nullptr, main_window, card_id, date, owner_name);
 		lines.emplace_back(line);
 		
 	}
