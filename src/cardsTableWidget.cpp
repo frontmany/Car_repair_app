@@ -2,6 +2,7 @@
 #include <QStyleOption>
 #include"cardsTableWidget.h"
 #include"styles.h"
+#include"searchWidget.h"
 #include"mainwindow.h"
 
 
@@ -68,16 +69,11 @@ CardsTableWidget::CardsTableWidget(QWidget* parent, MainWindow* mainWindow)
 	styles = new Styles;
 	main_VLayout = new QVBoxLayout;
 	tableVLayout = new QVBoxLayout;
-
-	tableVLayout->setAlignment(Qt::AlignTop);
 	scrollArea = new QScrollArea;
 	
-	QPushButton* spacer = new QPushButton();
-	spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-	spacer->setMinimumSize(1, 52);
-	spacer->setStyleSheet(styles->tableSpacerBtn);
-	tableVLayout->addWidget(spacer);
 
+	addTopMenu();
+	addSpacer();
 	addTableHeaders();
 	addTableLines();
 
@@ -92,13 +88,25 @@ CardsTableWidget::CardsTableWidget(QWidget* parent, MainWindow* mainWindow)
 
 	
 	main_VLayout->addWidget(scrollArea);
-
 	this->setLayout(main_VLayout);
 }
 
 
-QScrollArea* CardsTableWidget::asScrolled() {
-	return scrollArea;
+void CardsTableWidget::addSpacer() {
+	QLabel* spacer = new QLabel;
+	spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	spacer->setMinimumSize(10, 30);
+	spacer->setMaximumSize(20, 100);
+	main_VLayout->addWidget(spacer);
+}
+
+
+void CardsTableWidget::addTopMenu() {
+	search_widget = new SearchWidget;
+	MenuHlayout->addSpacing(30);
+	MenuHlayout->addWidget(search_widget);
+	MenuHlayout->setAlignment(Qt::AlignLeft);
+	main_VLayout->addLayout(MenuHlayout);
 }
 
 

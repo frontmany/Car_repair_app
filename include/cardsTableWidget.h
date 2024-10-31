@@ -92,7 +92,6 @@ class CardsTableWidget : public QWidget {
 public:
 	CardsTableWidget(QWidget* parent = nullptr, MainWindow* mainWindow = nullptr);
 	void tableButtonClicked(const QString& buttonName) {}
-	QScrollArea* asScrolled();
 
 private:
 	MainWindow* main_window = nullptr;
@@ -113,11 +112,18 @@ private:
 	//хедера таблицы
 	QHBoxLayout* headersHlayout = new QHBoxLayout;
 	std::vector<QLabel*> headers;
+
 	QLabel* card_id_header = nullptr;
 	QLabel* date_header = nullptr;
 	QLabel* owner_name_header = nullptr;
 
+
+
+	QHBoxLayout* MenuHlayout = new QHBoxLayout;
+
 private:
+	void addTopMenu();
+	void addSpacer();
 	void addTableHeaders();
 	void addTableLines();
 	void paintEvent(QPaintEvent* event) override;

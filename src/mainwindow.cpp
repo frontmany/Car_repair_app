@@ -21,7 +21,6 @@ void MainWindow::updateWindow() {
 
 
 void MainWindow::setLeftMenu(){
-	
 	main_hlayout->addWidget(leftMenu_widget);
 }
 
@@ -39,10 +38,8 @@ void MainWindow::setCardsTableWidget(){
 
 void MainWindow::setSearchWidget() {
 	this->takeCentralWidget();
-	search_widget = new SearchWidget();
 	updateWindow();
-	
-	main_hlayout->addWidget(search_widget);
+
 	main_widget->setLayout(main_hlayout);
 	setCentralWidget(main_widget);	
 }

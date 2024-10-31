@@ -1,6 +1,8 @@
 #include <QWidget>
 #include <QPainter>
 #include <QLineEdit>
+#include <QMenu>
+#include <QPushButton>
 #include <QVBoxLayout>
 
 class Styles;
@@ -11,13 +13,7 @@ class SearchWidget : public QWidget {
 public:
     Styles* styles = nullptr;
     explicit SearchWidget(QWidget* parent = nullptr);
-    int getWidgetId() { return Widget_Id; }
-    int isFirstSetup() { return first_setup; }
-    void setFirstSetup(bool fl) { first_setup = fl; }
     ~SearchWidget();
-
-protected:
-    void paintEvent(QPaintEvent* event) override;
 
 private:
     bool first_setup = true;
@@ -27,4 +23,10 @@ private:
     QHBoxLayout* searchHlayout = nullptr;
     QLineEdit* search_line_edit;
 
+    QMenu* menu = nullptr;
+    QPushButton* sort_btn = nullptr;
+
+private:
+    void addSortWidget();
+    void paintEvent(QPaintEvent* event) override;
 };

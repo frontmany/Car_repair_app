@@ -107,9 +107,33 @@ public:
 
 	QString searchLineEdit = "QLineEdit {"
 		"border: 2px solid rgb(30, 144, 255);"
-		"border-radius: 31px;"
+		"border-radius: 16px;"
 		"background-color: rgb(227,227,227);"
 		"color: black;"
 		"padding: 5px;"
 		"}";
+
+	QString filterMenu ="QMenu {"
+        "background-color: white;"
+        "border: 1px solid #ccc;"
+        "}"
+        "QMenu::item {"
+        "padding: 10px;"
+        "color: black;"
+        "}"
+        "QMenu::item:selected {"
+        "background-color: rgb(30, 144, 255);"
+		"}";
+
+	QString filterButton = "QPushButton {"
+		"background-color: transparent;"
+		"color: black;"
+		"border: 1px solid #ccc;"
+		"padding: 10px;"
+		"border-radius: 5px;"
+		"}"
+		"QPushButton:hover {"
+		"background-color: #f0f0f0;"
+		"}";
+
 };

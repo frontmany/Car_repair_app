@@ -11,28 +11,42 @@ SearchWidget::SearchWidget(QWidget* parent)
     search_line_edit = new QLineEdit(this);
     search_line_edit->setStyleSheet(styles->searchLineEdit);
     search_line_edit->setPlaceholderText("search...");
-    search_line_edit->setFixedSize(568, 66);
-
+    search_line_edit->setFixedSize(168, 36);
 
     searchHlayout = new QHBoxLayout;
-    searchHlayout->addWidget(search_line_edit, 0, Qt::AlignTop);
+    searchHlayout->setAlignment(Qt::AlignLeft);
+    searchHlayout->addWidget(search_line_edit);
 
+    addSortWidget();
 
     searchVlayout = new QVBoxLayout(this);
-    searchVlayout->addSpacing(160);
     searchVlayout->addLayout(searchHlayout);
+
    
 
-    this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     this->setLayout(searchVlayout);
 }
 
-SearchWidget::~SearchWidget() {
 
+void SearchWidget::addSortWidget() {
+    sort_btn = new QPushButton("sort");
+    sort_btn->setFixedSize(96, 36);
+    sort_btn->setStyleSheet(styles->filterButton);
+
+    menu = new QMenu(this);
+    menu->setStyleSheet(styles->filterMenu);
+    menu->addAction("by id");
+    menu->addAction("by date");
+    menu->addAction("by name");
+
+    sort_btn->setMenu(menu);
+
+    searchHlayout->addWidget(sort_btn);
 }
 
 void SearchWidget::paintEvent(QPaintEvent* event) {
-    QColor color1(227, 227, 227);
+    QColor color1(232, 233, 235);
 
     QStyleOption opt;
     opt.initFrom(this);
@@ -45,4 +59,10 @@ void SearchWidget::paintEvent(QPaintEvent* event) {
     painter.setBrush(color1);
 
     painter.drawRoundedRect(opt.rect, 15, 15);
+}
+
+
+
+SearchWidget::~SearchWidget() {
+
 }
