@@ -40,7 +40,7 @@ void LeftMenu::setButtons() {
 	font->setWeight(QFont::Bold);
 
 	search_btn = new QPushButton("Search");
-	search_btn->setStyleSheet(styles->leftMenuBtnStyleInactive);
+	search_btn->setStyleSheet(styles->leftMenuBtnStyleActive);
 	search_btn->setFixedSize(168, 56);
 	search_btn->setFont(*font);
 	connect(search_btn, &QPushButton::clicked, this, &LeftMenu::markActiveButton);
@@ -48,11 +48,11 @@ void LeftMenu::setButtons() {
 
 
 	cards_btn = new QPushButton("Cards");
-	cards_btn->setStyleSheet(styles->leftMenuBtnStyleActive);
+	cards_btn->setStyleSheet(styles->leftMenuBtnStyleInactive);
 	cards_btn->setFixedSize(168, 56);
 	cards_btn->setFont(*font);
 	connect(cards_btn, &QPushButton::clicked, this, &LeftMenu::markActiveButton);
-	
+	connect(cards_btn, &QPushButton::clicked, main_window, &MainWindow::setCardsTableWidget);
 
 
 

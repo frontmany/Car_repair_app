@@ -12,6 +12,7 @@
 class TableButton;
 class Styles;
 class MainWindow;
+class SearchWidget;
 
 
 struct CardLine : public QWidget {
@@ -95,11 +96,17 @@ public:
 
 private:
 	MainWindow* main_window = nullptr;
+	SearchWidget* search_widget = nullptr;
+
+	QVBoxLayout* tableVLayout = nullptr;
+	QVBoxLayout* main_VLayout = nullptr;
 	Styles* styles = nullptr;
 	QFont* font;
+
 	std::vector<CardLine*> lines;
+	QWidget* scroll_widget = nullptr;
 	QScrollArea* scrollArea = nullptr;
-	QVBoxLayout* tableVLayout = nullptr;
+	
 
 
 
@@ -108,12 +115,12 @@ private:
 	std::vector<QLabel*> headers;
 	QLabel* card_id_header = nullptr;
 	QLabel* date_header = nullptr;
-	QLabel* fk_car_id_header = nullptr;
+	QLabel* owner_name_header = nullptr;
 
 private:
 	void addTableHeaders();
 	void addTableLines();
-
+	void paintEvent(QPaintEvent* event) override;
 
 public:
 	~CardsTableWidget() {

@@ -1,3 +1,5 @@
+#include <QPainter>
+#include <QStyleOption>
 #include"cardsTableWidget.h"
 #include"styles.h"
 #include"mainwindow.h"
@@ -29,7 +31,7 @@ CardLine::CardLine(QWidget* parent, MainWindow* mainWindow, int cardId, std::str
 		btn->installEventFilter(this);
 		btn->setBackgroundRole(QPalette::Midlight);
 		connect(btn, &TableButton::clicked, this, &CardLine::sendSignal);
-		
+
 		lineHlayout->addWidget(btn);
 	}
 
@@ -51,13 +53,22 @@ void CardLine::unhighlightLine() {
 }
 
 
+
+
+
+
+
+
+
+
 CardsTableWidget::CardsTableWidget(QWidget* parent, MainWindow* mainWindow)
 	: QWidget(parent),
 	main_window(mainWindow){
 
 	styles = new Styles;
-
+	main_VLayout = new QVBoxLayout;
 	tableVLayout = new QVBoxLayout;
+
 	tableVLayout->setAlignment(Qt::AlignTop);
 	scrollArea = new QScrollArea;
 	
@@ -69,12 +80,20 @@ CardsTableWidget::CardsTableWidget(QWidget* parent, MainWindow* mainWindow)
 
 	addTableHeaders();
 	addTableLines();
-	this->setLayout(tableVLayout);
 
-	scrollArea->setWidget(this);
+	scroll_widget = new QWidget;
+	scroll_widget->setLayout(tableVLayout);
+
+	scrollArea->setWidget(scroll_widget);
 	scrollArea->setBackgroundRole(QPalette::Midlight);
 	scrollArea->setStyleSheet(styles->scrollWidgetStyle);
 	scrollArea->setWidgetResizable(true);
+
+
+	
+	main_VLayout->addWidget(scrollArea);
+
+	this->setLayout(main_VLayout);
 }
 
 
@@ -131,13 +150,15 @@ void CardsTableWidget::addTableHeaders() {
 	font->setPointSize(18);
 	font->setFamily("Arial");
 
-	card_id_header = new QLabel("Card Id");
-	date_header = new QLabel("Date");
-	fk_car_id_header = new QLabel("Owner Name");
+	card_id_header = new QLabel("        Card Id");
+	date_header = new QLabel("	  Date");
+	owner_name_header = new QLabel("Owner Name      ");
 	headers.emplace_back(card_id_header);
 	headers.emplace_back(date_header);
-	headers.emplace_back(fk_car_id_header);
+	headers.emplace_back(owner_name_header);
 
+
+	headersHlayout->addSpacing(-26);
 	for (auto label : headers) {
 		label->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 		label->setAlignment(Qt::AlignCenter);
@@ -146,8 +167,24 @@ void CardsTableWidget::addTableHeaders() {
 		label->setStyleSheet(styles->tableHeader);
 		headersHlayout->addWidget(label);
 	}
-
-	tableVLayout->addLayout(headersHlayout);
+	main_VLayout->addLayout(headersHlayout);
 }
 
 
+
+
+void CardsTableWidget::paintEvent(QPaintEvent* event) {
+	QColor color1(227, 227, 227);
+
+	QStyleOption opt;
+	opt.initFrom(this);
+
+	QPainter painter(this);
+	QPen pen(color1);
+	pen.setWidth(2);
+	painter.setPen(pen);
+	painter.setRenderHint(QPainter::Antialiasing);
+	painter.setBrush(color1);
+
+	painter.drawRoundedRect(opt.rect, 15, 15);
+}

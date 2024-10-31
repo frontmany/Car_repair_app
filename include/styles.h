@@ -19,7 +19,6 @@ public:
 
 	QString scrollWidgetStyle = "QScrollArea {"
 		" border: 5px solid rgb(227,227,227);"
-		" background-color: rgb(227,227,227);"
 		" border-radius: 10px;"
 		"}";
 
@@ -104,5 +103,13 @@ public:
 		"}"
 		"QPushButton:hover {"
 		"background-color: transparent;"
+		"}";
+
+	QString searchLineEdit = "QLineEdit {"
+		"border: 2px solid rgb(30, 144, 255);"
+		"border-radius: 31px;"
+		"background-color: rgb(227,227,227);"
+		"color: black;"
+		"padding: 5px;"
 		"}";
 };

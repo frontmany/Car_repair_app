@@ -5,43 +5,58 @@
 #include"leftMenu.h"
 
 
-MainWindow::MainWindow() 
-	: QMainWindow(){
-	setLeftMenu();
-	setCardsTableWidget();
+MainWindow::MainWindow()
+	: QMainWindow() {
+	leftMenu_widget = new LeftMenu(nullptr, this);
+	setSearchWidget();
 
-	main_widget->setLayout(main_hlayout);
-	setCentralWidget(main_widget);
+}
+
+
+void MainWindow::updateWindow() {
+	main_widget = new QWidget();
+	main_hlayout = new QHBoxLayout;
+	setLeftMenu();
 }
 
 
 void MainWindow::setLeftMenu(){
-	leftMenu_widget = new LeftMenu(nullptr, this);
+	
 	main_hlayout->addWidget(leftMenu_widget);
 }
 
 
 void MainWindow::setCardsTableWidget(){
+	this->takeCentralWidget();
 	cards_table_widget = new CardsTableWidget(nullptr, this);
-	main_hlayout->addWidget(cards_table_widget->asScrolled());
+	updateWindow();
 
-
+	main_hlayout->addWidget(cards_table_widget);
+	main_widget->setLayout(main_hlayout);
+	setCentralWidget(main_widget);
 }
+
+
+void MainWindow::setSearchWidget() {
+	this->takeCentralWidget();
+	search_widget = new SearchWidget();
+	updateWindow();
+	
+	main_hlayout->addWidget(search_widget);
+	main_widget->setLayout(main_hlayout);
+	setCentralWidget(main_widget);	
+}
+
 
 void MainWindow::setCardWidget(CardLine* line) {
 	QString s = line->btn_date->text();
 	qDebug() << s;
-	
-}
 
-void MainWindow::setSearchWidget() {
-	search_widget = new SearchWidget();
-	main_hlayout->removeWidget(cards_table_widget->asScrolled());
-	main_hlayout->addWidget(search_widget);
 }
-
 
 
 MainWindow::~MainWindow() {
 	
 }
+
+

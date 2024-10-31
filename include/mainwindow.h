@@ -1,4 +1,5 @@
 #include <Qmainwindow>
+#include <QScrollArea>
 #include <Qlayout>
 
 
@@ -15,17 +16,6 @@ public:
 	MainWindow();
 	~MainWindow();
 
-private:
-	QWidget* main_widget = new QWidget();
-	QHBoxLayout* main_hlayout = new QHBoxLayout;
-
-	LeftMenu* leftMenu_widget = nullptr;
-	CardsTableWidget* cards_table_widget = nullptr;
-	SearchWidget* search_widget = nullptr;
-
-
-	
-
 public:
 	void setCardsTableWidget();
 	void setLeftMenu();
@@ -33,6 +23,19 @@ public:
 public slots:
 	void setCardWidget(CardLine* line);
 	void setSearchWidget();
-	
+
+private:
+	int currentWidget_Id = std::numeric_limits<int>::max();
+
+	QWidget* main_widget = new QWidget();
+	QHBoxLayout* main_hlayout = new QHBoxLayout;
+
+	LeftMenu* leftMenu_widget = nullptr;
+	SearchWidget* search_widget = nullptr;
+
+	CardsTableWidget* cards_table_widget = nullptr;
+
+private:
+	void updateWindow();
 };
 
