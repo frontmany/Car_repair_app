@@ -7,6 +7,7 @@
 class CardsTableWidget;
 class LeftMenu;
 class CardLine;
+class SearchWidget;
 
 class MainWindow : public QMainWindow{
 	Q_OBJECT
@@ -20,8 +21,7 @@ private:
 
 	LeftMenu* leftMenu_widget = nullptr;
 	CardsTableWidget* cards_table_widget = nullptr;
-
-
+	SearchWidget* search_widget = nullptr;
 
 
 	
@@ -31,7 +31,8 @@ public:
 	void setLeftMenu();
 
 public slots:
-	void setCardWidget();
+	void setCardWidget(CardLine* line);
+	void setSearchWidget();
 	
 };
 

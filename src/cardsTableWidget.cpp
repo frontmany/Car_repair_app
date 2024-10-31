@@ -6,8 +6,7 @@
 
 
 CardLine::CardLine(QWidget* parent, MainWindow* mainWindow, int cardId, std::string date, std::string ownerName)
-	: QWidget(parent),
-	main_window(mainWindow){
+	: QWidget(parent){
 	styles = new Styles;
 
 	font = new QFont;
@@ -30,10 +29,11 @@ CardLine::CardLine(QWidget* parent, MainWindow* mainWindow, int cardId, std::str
 		btn->installEventFilter(this);
 		btn->setBackgroundRole(QPalette::Midlight);
 		connect(btn, &TableButton::clicked, this, &CardLine::sendSignal);
-		connect(this, &CardLine::sendSignal, main_window, &MainWindow::setCardWidget);
+		
 		lineHlayout->addWidget(btn);
 	}
 
+	connect(this, &CardLine::sendLine, mainWindow, &MainWindow::setCardWidget);
 	this->setLayout(lineHlayout);
 }
 
@@ -113,7 +113,7 @@ void CardsTableWidget::addTableLines() {
 		
 	}
 	transaction.commit();
-
+	connection.close();
 
 	for (auto line : lines) {
 		tableVLayout->addWidget(line);

@@ -1,4 +1,5 @@
 #include"leftMenu.h"
+#include"mainwindow.h"
 #include "styles.h"
 
 void LeftMenu::markActiveButton() {
@@ -43,6 +44,7 @@ void LeftMenu::setButtons() {
 	search_btn->setFixedSize(168, 56);
 	search_btn->setFont(*font);
 	connect(search_btn, &QPushButton::clicked, this, &LeftMenu::markActiveButton);
+	connect(search_btn, &QPushButton::clicked, main_window, &MainWindow::setSearchWidget);
 
 
 	cards_btn = new QPushButton("Cards");
@@ -50,6 +52,7 @@ void LeftMenu::setButtons() {
 	cards_btn->setFixedSize(168, 56);
 	cards_btn->setFont(*font);
 	connect(cards_btn, &QPushButton::clicked, this, &LeftMenu::markActiveButton);
+	
 
 
 
@@ -70,8 +73,10 @@ void LeftMenu::setButtons() {
 }
 
 
-LeftMenu::LeftMenu(QWidget* parent) 
-	: QWidget(parent) {
+LeftMenu::LeftMenu(QWidget* parent, MainWindow* mainWindow)
+	: QWidget(parent),
+	main_window(mainWindow){
+
 	styles = new Styles;
 	setButtons();
 

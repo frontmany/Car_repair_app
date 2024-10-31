@@ -18,11 +18,11 @@ struct CardLine : public QWidget {
 	Q_OBJECT
 
 signals:
-	void sendLine();
+	void sendLine(CardLine* line);
 
 private slots:
 	void sendSignal() {
-		emit sendLine();
+		emit sendLine(this);
 	}
 
 public:
@@ -31,17 +31,24 @@ public:
 	void unhighlightLine();
 
 private:
-	MainWindow* main_window = nullptr;
 	Styles* styles = nullptr;
 	QFont* font;
 	QHBoxLayout* lineHlayout = nullptr;
 	std::vector<QPushButton*> vector_buttons;
 
 public:
-	int number_in_table = 0;
 	TableButton* btn_card_id = nullptr;
 	TableButton* btn_date = nullptr;
 	TableButton* btn_owner_name = nullptr;
+
+	~CardLine() {
+		delete lineHlayout;
+		delete font;
+		delete styles;
+		for (auto button : vector_buttons) {
+			delete button;
+		}
+	}
 };
 
 
@@ -69,6 +76,9 @@ protected:
 		line->unhighlightLine();
 		
 	}
+
+	~TableButton() {}
+
 };
 
 
@@ -105,7 +115,20 @@ private:
 	void addTableLines();
 
 
-
+public:
+	~CardsTableWidget() {
+		delete scrollArea; 
+		delete tableVLayout; 
+		delete styles;
+		delete font;
+		for (auto line : lines) {
+			delete line; 
+		}
+		
+		for (auto header : headers) {
+			delete header;
+		}
+	}
 
 };
 

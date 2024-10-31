@@ -14,11 +14,13 @@
 
 
 class Styles;
+class MainWindow;
 class LeftMenu : public QWidget {
 public:
-	LeftMenu(QWidget* parent = nullptr);
+	LeftMenu(QWidget* parent = nullptr, MainWindow* mainWindow = nullptr);
 
 private:
+	MainWindow* main_window = nullptr;
 	Styles* styles = nullptr;
 	QVector<QPushButton> buttonsVec;
 
