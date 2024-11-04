@@ -1,38 +1,45 @@
 #include "cardwidget.h"
+#include "mainwindow.h"
 #include "cardsTableWidget.h"
 #include "styles.h"
 #include "pqxx/pqxx"
 
 
 
-TopCardWidget::TopCardWidget(QWidget* parent) :QWidget(parent){
+TopCardWidget::TopCardWidget(QWidget* parent,
+    CardWidget* cardWidget, MainWindow* mainWindow) :QWidget(parent){
     styles = new Styles;
     Hlayout = new QHBoxLayout;
 
     font = new QFont;
     font->setPointSize(18);
-    font->setFamily("Verdana");
+    font->setFamily("Segoe UI");
+    font->setWeight(QFont::Bold);
 
     back_btn = new QPushButton("back");
-    back_btn->setFixedSize(56, 56);
+    back_btn->setFixedSize(46, 36);
     back_btn->setStyleSheet(styles->filterButton);
+    connect(back_btn, &QPushButton::clicked, mainWindow, &MainWindow::setCardsTableWidget);
+
 
     edit_btn = new QPushButton("edit");
-    edit_btn->setFixedSize(56, 56);
+    edit_btn->setFixedSize(46, 36);
     edit_btn->setStyleSheet(styles->filterButton);
+    connect(edit_btn, &QPushButton::clicked, this, &TopCardWidget::sendflSignal);
+    connect(this, &TopCardWidget::sendFlag, cardWidget, &CardWidget::setEditable);
+    connect(edit_btn, &QPushButton::clicked, this, &TopCardWidget::changeEditBtnState);
 
     save_btn = new QPushButton("save");
-    save_btn->setFixedSize(56, 56);
+    save_btn->setFixedSize(46, 36);
     save_btn->setStyleSheet(styles->filterButton);
 
 
-    main_label = new QLabel("Card Description");
+    main_label = new QLabel();
     main_label->setStyleSheet(styles->tableHeader);
-    main_label->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    main_label->setMinimumSize(76, 56);
-    main_label->setMaximumSize(76000, 56);
+    main_label->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    main_label->setMinimumSize(76, 36);
+    main_label->setMaximumSize(76000, 36);
     main_label->setFont(*font);
-
 
     Hlayout->addWidget(back_btn);
     Hlayout->addWidget(edit_btn);
@@ -42,10 +49,22 @@ TopCardWidget::TopCardWidget(QWidget* parent) :QWidget(parent){
 
     this->setLayout(Hlayout);
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    this->setMinimumSize(76, 56);
 
 }
 
+
+void TopCardWidget::changeEditBtnState() {
+    if (fl) {
+        edit_btn->setStyleSheet(styles->EditButtonUnActive);
+        fl = false;
+    }
+    else {
+        edit_btn->setStyleSheet(styles->EditButtonActive);
+        fl = true;
+    }
+    
+    
+}
 
 
 void TopCardWidget::paintEvent(QPaintEvent* event) {
@@ -99,20 +118,31 @@ Line::Line(QWidget* parent, const QString& serviceCode, const QString& serviceDe
         lineEdit->setMaximumSize(76000, 66);
         lineEdit->setFont(*font);
         lineEdit->setStyleSheet(styles->lineEditStyle);
+        lineEdit->setReadOnly(true);
         lineHlayout->addWidget(lineEdit);
     }
 
     this->setLayout(lineHlayout);
 
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    this->setMinimumSize(76, 28);
+    this->setMinimumSize(76, 66);
     this->setMaximumSize(76000, 66);
 }
 
 
 
 
+void CardWidget::setEditable(bool fl){
+    for (auto lineEdit : line_edits_vector) {
+        lineEdit->setReadOnly(fl);
+    }
 
+    for (auto line : lines_vector) {
+        for (auto lineEdit : line->lineEdits_vector) {
+            lineEdit->setReadOnly(fl);
+        }
+    }
+}
 
 
 void CardWidget::addTableHeaders() {
@@ -120,7 +150,8 @@ void CardWidget::addTableHeaders() {
 
     font = new QFont;
     font->setPointSize(14);
-    font->setFamily("Arial");
+    font->setFamily("Segoe UI");
+    font->setWeight(QFont::Light);
 
     service_code_header = new QLabel("Service Code  ");
     service_description_header = new QLabel("Description  ");
@@ -184,47 +215,70 @@ void CardWidget::addTableLines(QString cardCode, QString data, QString OwnerName
             QString::fromStdString(description), QString::fromStdString(replaced_parts_count),
             QString::fromStdString(price), QString::fromStdString(fk_provider_id),
             QString::fromStdString(provider_name));
-        lines.emplace_back(line);
+        lines_vector.emplace_back(line);
 
     }
 
     transaction.commit();
     connection.close();
 
-    for (auto line : lines) {
+    for (auto line : lines_vector) {
         Vlayout->addWidget(line);
     }
 }
 
 
 
-CardWidget::CardWidget(QWidget* parent, CardLine* line)
-    : QWidget(parent)
+CardWidget::CardWidget(QWidget* parent, CardLine* line, MainWindow* mainWindow)
+    : QWidget(parent), main_window(mainWindow)
 {
     styles = new Styles;
-
-    top_widget = new TopCardWidget(this);
-
+    main_Vlayout = new QVBoxLayout;
+    Vlayout = new QVBoxLayout(this);
+    
     font = new QFont;
     font->setPointSize(12);
-    font->setFamily("Verdana");
+    font->setFamily("Segoe UI");
+    font->setWeight(QFont::Light);
 
     QString cardCode = line->card_id;
     QString date = line->date;
     QString ownerName = line->owner_name;
 
-    Vlayout = new QVBoxLayout(this);
-    Vlayout->setAlignment(Qt::AlignTop);
 
-    Vlayout->addWidget(top_widget);
-    Vlayout->addSpacing(40);
+   
+    Vlayout->setAlignment(Qt::AlignTop);
+    main_Vlayout->setAlignment(Qt::AlignTop);
+
+    addTopWidget();
+    addSpacer();
     addTableHeaders();
     addTableLines(cardCode, date, ownerName);
+    Vlayout->addSpacing(62);
     setCardDetails(parent,cardCode, date, ownerName);
 
-    this->setLayout(Vlayout);
+    scroll_widget = new QWidget;
+    scroll_widget->setLayout(Vlayout);
+
+    scrollArea = new QScrollArea;
+    scrollArea->setWidget(scroll_widget);
+    scrollArea->setBackgroundRole(QPalette::Midlight);
+    scrollArea->setStyleSheet(styles->scrollWidgetStyle);
+    scrollArea->setWidgetResizable(true);
+
+
+    main_Vlayout->addWidget(scrollArea);
+    this->setLayout(main_Vlayout);
 }
 
+void CardWidget::addTopWidget() {
+    top_Hlayout = new QHBoxLayout;
+    top_widget = new TopCardWidget(this, this, main_window);
+    top_Hlayout->addSpacing(30);
+    top_Hlayout->addWidget(top_widget);
+    top_Hlayout->addSpacing(30);
+    main_Vlayout->addLayout(top_Hlayout);
+}
 
 void CardWidget::setCardDetails(QWidget* parent, QString cardCode, QString date, QString ownerName)
 {
@@ -332,8 +386,9 @@ void CardWidget::setCardDetails(QWidget* parent, QString cardCode, QString date,
         line_edits_vector[i]->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
         line_edits_vector[i]->setMinimumSize(20, 46);
         line_edits_vector[i]->setFont(*font);
+        line_edits_vector[i]->setReadOnly(true);
 
-        labels_vector[i]->setStyleSheet(styles->labelStyle);
+
         labels_vector[i]->setFixedSize(150, 46);
         labels_vector[i]->setFont(*font);
 
@@ -352,4 +407,29 @@ void CardWidget::addService(const QString& serviceCode, const QString& serviceDe
     const QString& executorName)
 {
     
+}
+
+
+void CardWidget::addSpacer() {
+    QLabel* spacer = new QLabel;
+    spacer->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    spacer->setMinimumSize(10, 30);
+    spacer->setMaximumSize(20, 60);
+    main_Vlayout->addWidget(spacer);
+}
+
+void CardWidget::paintEvent(QPaintEvent* event) {
+    QColor color1(227, 227, 227);
+
+    QStyleOption opt;
+    opt.initFrom(this);
+
+    QPainter painter(this);
+    QPen pen(color1);
+    pen.setWidth(2);
+    painter.setPen(pen);
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.setBrush(color1);
+
+    painter.drawRoundedRect(opt.rect, 15, 15);
 }

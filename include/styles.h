@@ -149,7 +149,7 @@ public:
 		"font-family: Arial, sans-serif;"
 		"font-size: 14px;"
 		"color: #333;" /* Темно-серый цвет текста */
-		"background-color: #ffffff;" /* Белый фон */
+		"background-color: transparent;" /* Белый фон */
 		"border: 1px solid #cccccc;" /* Светло-серая рамка */
 		"border-radius: 4px;" /* Скругленные углы */
 		"padding: 5px;" /* Отступы внутри поля ввода */
@@ -157,4 +157,28 @@ public:
 		"QLineEdit:focus {"
 		"border: 1px solid #66afe9;" /* Цвет рамки при фокусе */
 		"}";
+
+
+	QString EditButtonActive = "QPushButton {"
+		"background-color: transparent;"
+		"color: black;"
+		"border: 1px solid rgb(30, 144, 255);"
+		"padding: 10px;"
+		"border-radius: 5px;"
+		"}"
+		"QPushButton:hover {"
+		"background-color: #f0f0f0;"
+		"}";
+
+	QString EditButtonUnActive = "QPushButton {"
+		"background-color: transparent;"
+		"color: black;"
+		"border: 1px solid #ccc;"
+		"padding: 10px;"
+		"border-radius: 5px;"
+		"}"
+		"QPushButton:hover {"
+		"background-color: #f0f0f0;"
+		"}";
+
 };

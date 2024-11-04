@@ -159,7 +159,7 @@ void CardsTableWidget::addTableHeaders() {
 
 	font = new QFont;
 	font->setPointSize(18);
-	font->setFamily("Arial");
+	font->setFamily("Segoe UI");
 
 	card_id_header = new QLabel("       Card Code");
 	date_header = new QLabel("	  Date");

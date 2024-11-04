@@ -4,14 +4,18 @@
 #include <QPainter>
 #include <QStyleOption>
 #include <QVBoxLayout>
+#include <QScrollArea>
 #include <QPushButton>
 #include <QLabel>
 
 
 
 
+
 class Styles;
 class CardLine;
+class MainWindow;
+class TopCardWidget;
 
 struct Line : public QWidget {
 public:
@@ -23,9 +27,10 @@ private:
     Styles* styles = nullptr;
     QFont* font;
     QHBoxLayout* lineHlayout = nullptr;
-    std::vector<QLineEdit*> lineEdits_vector;
+    
 
 public:
+    std::vector<QLineEdit*> lineEdits_vector;
     QLineEdit* service_code = nullptr;
     QLineEdit* service_description = nullptr;
     QLineEdit* replacedParts_count = nullptr;
@@ -45,23 +50,7 @@ public:
 
 
 
-class TopCardWidget : public QWidget{
-public:
-    TopCardWidget(QWidget* parent);
 
-private:
-    QFont* font = nullptr;
-
-    Styles* styles = nullptr;
-    QHBoxLayout* Hlayout = nullptr;
-    QPushButton* back_btn = nullptr;
-    QPushButton* edit_btn = nullptr;
-    QPushButton* save_btn = nullptr;
-    QLabel* main_label = nullptr;
-
-    void paintEvent(QPaintEvent* event) override;
-
-};
 
 
 
@@ -70,7 +59,7 @@ class CardWidget : public QWidget {
     Q_OBJECT
 
 public:
-    CardWidget(QWidget* parent = nullptr, CardLine* line = nullptr);
+    CardWidget(QWidget* parent = nullptr, CardLine* line = nullptr, MainWindow* mainWindow = nullptr);
 
     void setCardDetails(QWidget* parent, QString cardCode, QString date, QString OwnerName);
 
@@ -78,9 +67,15 @@ public:
         int replacedPartsCount, double price, const QString& providerId,
         const QString& providerName);
 
+    void setEditable(bool fl);
 
 
 private:
+    MainWindow* main_window = nullptr;
+
+    QWidget* scroll_widget = nullptr;
+    QScrollArea* scrollArea = nullptr;
+
     TopCardWidget* top_widget = nullptr;
 
     Styles* styles = nullptr;
@@ -88,7 +83,6 @@ private:
     QHBoxLayout* headersHlayout = new QHBoxLayout;
     std::vector<QLabel*> headers;
 
-    std::vector<Line*> lines;
     QLabel* service_code_header = nullptr;
     QLabel* service_description_header = nullptr;
     QLabel* replacedParts_count_header = nullptr;
@@ -99,7 +93,11 @@ private:
 
 
     QVBoxLayout* Vlayout = nullptr;
+    QVBoxLayout* main_Vlayout = nullptr;
+    QHBoxLayout* top_Hlayout = nullptr;
 
+
+    std::vector<Line*> lines_vector;
     std::vector<QLineEdit*> line_edits_vector;
     std::vector<QLabel*> labels_vector;
     std::vector<QHBoxLayout*> Hlayouts_vector;
@@ -129,6 +127,39 @@ private:
     QHBoxLayout* owner_phone_Hlayout = nullptr;
 
 private:
+    void paintEvent(QPaintEvent* event) override;
+    void addSpacer();
+    void addTopWidget();
     void addTableHeaders();
     void addTableLines(QString cardCode, QString data, QString ownerName);
+};
+
+
+
+class TopCardWidget : public QWidget {
+    Q_OBJECT
+
+signals:
+    void sendFlag(bool fl);
+
+private slots:
+    void sendflSignal() { emit sendFlag(fl); }
+
+
+public:
+    TopCardWidget(QWidget* parent, CardWidget* cardWidget, MainWindow* mainWindow);
+
+private:
+    QFont* font = nullptr;
+    bool fl = false;
+    Styles* styles = nullptr;
+    QHBoxLayout* Hlayout = nullptr;
+    QPushButton* back_btn = nullptr;
+    QPushButton* edit_btn = nullptr;
+    QPushButton* save_btn = nullptr;
+    QLabel* main_label = nullptr;
+
+    void changeEditBtnState();
+    void paintEvent(QPaintEvent* event) override;
+
 };
