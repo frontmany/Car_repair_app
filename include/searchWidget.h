@@ -2,10 +2,14 @@
 #include <QPainter>
 #include <QLineEdit>
 #include <QMenu>
+#include <QWidget>
 #include <QPushButton>
 #include <QVBoxLayout>
 
 class Styles;
+
+
+
 
 class SearchWidget : public QWidget {
     Q_OBJECT
@@ -26,7 +30,13 @@ private:
     QMenu* menu = nullptr;
     QPushButton* sort_btn = nullptr;
 
+    QPushButton* add_btn = nullptr;
+    QPushButton* del_btn = nullptr;
+
 private:
+    void addSearchWidget();
     void addSortWidget();
+    void addAddWidget();
+    void addDelWidget();
     void paintEvent(QPaintEvent* event) override;
 };

@@ -8,8 +8,10 @@
 
 
 
-CardLine::CardLine(QWidget* parent, MainWindow* mainWindow, int cardId, std::string date, std::string ownerName)
-	: QWidget(parent){
+CardLine::CardLine(QWidget* parent, MainWindow* mainWindow, int cardId, std::string date1, std::string ownerName)
+	: QWidget(parent), card_id(QString::number(cardId)), owner_name(QString::fromStdString(ownerName)), 
+	date(QString::fromStdString(date1))
+{
 	styles = new Styles;
 
 	font = new QFont;
@@ -18,18 +20,18 @@ CardLine::CardLine(QWidget* parent, MainWindow* mainWindow, int cardId, std::str
 	lineHlayout = new QHBoxLayout;
 
 	btn_card_id = new TableButton(nullptr, this, QString::number(cardId));
-	btn_date = new TableButton(nullptr, this, QString::fromStdString(date));
+	btn_date = new TableButton(nullptr, this, date);
 	btn_owner_name = new TableButton(nullptr, this, QString::fromStdString(ownerName));
 	vector_buttons.emplace_back(btn_card_id);
 	vector_buttons.emplace_back(btn_date);
 	vector_buttons.emplace_back(btn_owner_name);
+
 
 	for (auto btn : vector_buttons) {
 		btn->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 		btn->setMinimumSize(10, 56);
 		btn->setFont(*font);
 		btn->setStyleSheet(styles->tableBtnUnactive);
-		btn->installEventFilter(this);
 		btn->setBackgroundRole(QPalette::Midlight);
 		connect(btn, &TableButton::clicked, this, &CardLine::sendSignal);
 
@@ -96,7 +98,7 @@ void CardsTableWidget::addSpacer() {
 	QLabel* spacer = new QLabel;
 	spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	spacer->setMinimumSize(10, 30);
-	spacer->setMaximumSize(20, 100);
+	spacer->setMaximumSize(20, 60);
 	main_VLayout->addWidget(spacer);
 }
 
@@ -105,6 +107,7 @@ void CardsTableWidget::addTopMenu() {
 	search_widget = new SearchWidget;
 	MenuHlayout->addSpacing(30);
 	MenuHlayout->addWidget(search_widget);
+	MenuHlayout->addSpacing(30);
 	MenuHlayout->setAlignment(Qt::AlignLeft);
 	main_VLayout->addLayout(MenuHlayout);
 }
@@ -158,7 +161,7 @@ void CardsTableWidget::addTableHeaders() {
 	font->setPointSize(18);
 	font->setFamily("Arial");
 
-	card_id_header = new QLabel("        Card Id");
+	card_id_header = new QLabel("       Card Code");
 	date_header = new QLabel("	  Date");
 	owner_name_header = new QLabel("Owner Name      ");
 	headers.emplace_back(card_id_header);

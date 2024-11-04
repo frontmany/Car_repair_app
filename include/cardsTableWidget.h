@@ -32,15 +32,20 @@ public:
 	void unhighlightLine();
 
 private:
+	TableButton* btn_card_id = nullptr;
+	TableButton* btn_date = nullptr;
+	TableButton* btn_owner_name = nullptr;
+
+
 	Styles* styles = nullptr;
 	QFont* font;
 	QHBoxLayout* lineHlayout = nullptr;
 	std::vector<QPushButton*> vector_buttons;
 
 public:
-	TableButton* btn_card_id = nullptr;
-	TableButton* btn_date = nullptr;
-	TableButton* btn_owner_name = nullptr;
+	QString card_id;
+	QString date;
+	QString owner_name;
 
 	~CardLine() {
 		delete lineHlayout;

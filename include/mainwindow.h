@@ -9,6 +9,7 @@ class CardsTableWidget;
 class LeftMenu;
 class CardLine;
 class SearchWidget;
+class CardWidget;
 
 class MainWindow : public QMainWindow{
 	Q_OBJECT
@@ -32,6 +33,7 @@ private:
 
 	LeftMenu* leftMenu_widget = nullptr;
 	SearchWidget* search_widget = nullptr;
+	CardWidget* card = nullptr;
 
 	CardsTableWidget* cards_table_widget = nullptr;
 

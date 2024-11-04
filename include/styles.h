@@ -122,7 +122,7 @@ public:
         "color: black;"
         "}"
         "QMenu::item:selected {"
-        "background-color: rgb(30, 144, 255);"
+        "background-color: rgb(240, 240, 240);"
 		"}";
 
 	QString filterButton = "QPushButton {"
@@ -136,4 +136,25 @@ public:
 		"background-color: #f0f0f0;"
 		"}";
 
+
+	QString labelStyle = "QLabel {"
+		"color: #333;" 
+		"background-color: rgb(255, 255, 255);" 
+		"padding: 5px;" /* Отступы вокруг текста */
+		"border: 1px solid rgb(255, 255, 255);"
+		"border-radius: 4px;"
+		"}";
+
+	QString lineEditStyle = "QLineEdit {"
+		"font-family: Arial, sans-serif;"
+		"font-size: 14px;"
+		"color: #333;" /* Темно-серый цвет текста */
+		"background-color: #ffffff;" /* Белый фон */
+		"border: 1px solid #cccccc;" /* Светло-серая рамка */
+		"border-radius: 4px;" /* Скругленные углы */
+		"padding: 5px;" /* Отступы внутри поля ввода */
+		"}"
+		"QLineEdit:focus {"
+		"border: 1px solid #66afe9;" /* Цвет рамки при фокусе */
+		"}";
 };

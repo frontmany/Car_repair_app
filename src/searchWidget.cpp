@@ -4,20 +4,15 @@
 #include <QStyleOption>
 #include <QPainter>
 
+
 SearchWidget::SearchWidget(QWidget* parent)
     : QWidget(parent) {
     styles = new Styles;
 
-    search_line_edit = new QLineEdit(this);
-    search_line_edit->setStyleSheet(styles->searchLineEdit);
-    search_line_edit->setPlaceholderText("search...");
-    search_line_edit->setFixedSize(168, 36);
-
-    searchHlayout = new QHBoxLayout;
-    searchHlayout->setAlignment(Qt::AlignLeft);
-    searchHlayout->addWidget(search_line_edit);
-
+    addSearchWidget();
     addSortWidget();
+    addAddWidget();
+    addDelWidget();
 
     searchVlayout = new QVBoxLayout(this);
     searchVlayout->addLayout(searchHlayout);
@@ -26,6 +21,18 @@ SearchWidget::SearchWidget(QWidget* parent)
 
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     this->setLayout(searchVlayout);
+}
+
+
+void SearchWidget::addSearchWidget() {
+    search_line_edit = new QLineEdit(this);
+    search_line_edit->setStyleSheet(styles->searchLineEdit);
+    search_line_edit->setPlaceholderText("search...");
+    search_line_edit->setFixedSize(168, 36);
+
+    searchHlayout = new QHBoxLayout;
+    searchHlayout->setAlignment(Qt::AlignLeft);
+    searchHlayout->addWidget(search_line_edit);
 }
 
 
@@ -44,6 +51,24 @@ void SearchWidget::addSortWidget() {
 
     searchHlayout->addWidget(sort_btn);
 }
+
+
+void SearchWidget::addAddWidget() {
+    add_btn = new QPushButton("add");
+    add_btn->setFixedSize(46, 36);
+    add_btn->setStyleSheet(styles->filterButton);
+    searchHlayout->addWidget(add_btn);
+    
+}
+
+
+void SearchWidget::addDelWidget() {
+    del_btn = new QPushButton("del");
+    del_btn->setFixedSize(46, 36);
+    del_btn->setStyleSheet(styles->filterButton);
+    searchHlayout->addWidget(del_btn);
+}
+
 
 void SearchWidget::paintEvent(QPaintEvent* event) {
     QColor color1(232, 233, 235);

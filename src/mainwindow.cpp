@@ -3,6 +3,7 @@
 #include "searchWidget.h"
 #include<iostream>
 #include"leftMenu.h"
+#include "cardwidget.h"
 
 
 MainWindow::MainWindow()
@@ -39,16 +40,20 @@ void MainWindow::setCardsTableWidget(){
 void MainWindow::setSearchWidget() {
 	this->takeCentralWidget();
 	updateWindow();
-
+	//todo
 	main_widget->setLayout(main_hlayout);
 	setCentralWidget(main_widget);	
 }
 
 
 void MainWindow::setCardWidget(CardLine* line) {
-	QString s = line->btn_date->text();
-	qDebug() << s;
+	this->takeCentralWidget();
+	card = new CardWidget(nullptr,line);
+	updateWindow();
 
+	main_hlayout->addWidget(card);
+	main_widget->setLayout(main_hlayout);
+	setCentralWidget(main_widget);
 }
 
 
