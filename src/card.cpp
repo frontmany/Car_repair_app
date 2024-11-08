@@ -103,6 +103,11 @@ void Card::getCardDetails(QString cardCode) {
 Card::Card(QString cardId){
     getServiceDetails(cardId);
     getCardDetails(cardId);
+    
+    for (int i = 0; i < service_details_vec.size();i++) {
+        original_service_codes.emplace_back(service_details_vec[i]["service_type_id"]);
+    }
+    
 
 }
 
@@ -182,7 +187,7 @@ void Card::commitChanges() {
     std::string id = card_details_map["card_code"].toStdString();
     std::string date = card_details_map["card_date"].toStdString();
     std::string carId = card_details_map["car_id"].toStdString();
-    //std::string servicetypeId = 
+    
 
     try {
         std::string connection_string = "dbname=mydb user=postgres password=123 host=localhost port=5432";
@@ -191,7 +196,23 @@ void Card::commitChanges() {
         
         std::string sqlDate = "UPDATE warranty_cards SET date = '" + date + "' WHERE card_id = " + id + ";";
         std::string sqlCar = "UPDATE warranty_cards SET fk_car_id = '" + carId + "' WHERE card_id = " + id + ";";
-        //std::string sqlServices = "UPDATE service_history SET fk_service_type_id = '" + carId + "' WHERE card_id = " + id + ";";
+
+        for (int i = 0; i < service_details_vec.size(); i++) {
+            std::string servicetypeIdNew = service_details_vec[i]["service_type_id"].toStdString();
+            std::string servicetypeIdOld = original_service_codes[i].toStdString();
+
+            std::string replacedParts = service_details_vec[i]["replaced_parts_count"].toStdString();
+            std::string sqlServicesParts = "UPDATE service_history SET replaced_parts_count = \$1 WHERE fk_card_id = \$2 AND fk_service_type_id = \$3;";
+            pqxx::result resultParts = transaction.exec_params(sqlServicesParts, replacedParts, id, servicetypeIdOld);
+
+            std::string replacedProvider = service_details_vec[i]["provider_id"].toStdString();
+            std::string sqlServicesProvider = "UPDATE service_history SET fk_provider_id = \$1 WHERE fk_card_id = \$2 AND fk_service_type_id = \$3;";
+            pqxx::result resultProvider = transaction.exec_params(sqlServicesProvider, replacedProvider, id, servicetypeIdOld);
+
+            std::string sqlServicesTypeId = "UPDATE service_history SET fk_service_type_id = \$1 WHERE fk_card_id = \$2 AND fk_service_type_id = \$3;";
+            pqxx::result resultTypeId = transaction.exec_params(sqlServicesTypeId, servicetypeIdNew, id, servicetypeIdOld);
+        }
+        
 
         transaction.exec(sqlDate);
         transaction.exec(sqlCar);
