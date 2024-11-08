@@ -48,7 +48,7 @@ void MainWindow::setSearchWidget() {
 
 void MainWindow::setCardWidget(CardLine* line) {
 	this->takeCentralWidget();
-	card = new CardWidget(nullptr,line, this);
+	card = new CardWidget(nullptr, line->card_id, this);
 	updateWindow();
 
 	main_hlayout->addWidget(card);

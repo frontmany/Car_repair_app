@@ -4,6 +4,7 @@
 #include"styles.h"
 #include"searchWidget.h"
 #include"mainwindow.h"
+#include<pqxx/pqxx>
 
 
 

@@ -16,33 +16,64 @@ class Styles;
 class CardLine;
 class MainWindow;
 class TopCardWidget;
+class Card;
+class CardWidget;
+
+
+
+
+struct Field : QWidget{
+    Q_OBJECT
+
+public:
+    Field(QString name, QString field, CardWidget* cardWidget);
+    Field(QString name, QString field, int lineNumber, CardWidget* cardWidget);
+
+    int line_number = -1;
+    QString name = "";
+    QLineEdit* edit = nullptr;
+
+private:
+    
+    QVBoxLayout* Vlayout = new QVBoxLayout;
+
+private slots:
+    void onTextChanged();
+
+signals:
+    void SendField(Field* field);
+};
+
+
+
 
 struct Line : public QWidget {
 public:
-    Line(QWidget* parent, const QString& serviceCode, const QString& serviceDescription,
+    Line(QWidget* parent, CardWidget* cardWidget, int lineNumber, const QString& serviceCode, const QString& serviceDescription,
         QString replacedPartsCount, QString price, const QString providerId,
         const QString& providerName);
 
 private:
+    int line_number = -1;
     Styles* styles = nullptr;
     QFont* font;
     QHBoxLayout* lineHlayout = nullptr;
     
 
 public:
-    std::vector<QLineEdit*> lineEdits_vector;
-    QLineEdit* service_code = nullptr;
-    QLineEdit* service_description = nullptr;
-    QLineEdit* replacedParts_count = nullptr;
-    QLineEdit* price = nullptr;
-    QLineEdit* provider_Id = nullptr;
-    QLineEdit* provider_name = nullptr;
+    std::vector<Field*> fields_vector;
+    Field* service_code = nullptr;
+    Field* service_description = nullptr;
+    Field* replacedParts_count = nullptr;
+    Field* price = nullptr;
+    Field* provider_Id = nullptr;
+    Field* provider_name = nullptr;
 
     ~Line() {
         delete lineHlayout;
         delete font;
         delete styles;
-        for (auto button : lineEdits_vector) {
+        for (auto button : fields_vector) {
             delete button;
         }
     }
@@ -59,18 +90,15 @@ class CardWidget : public QWidget {
     Q_OBJECT
 
 public:
-    CardWidget(QWidget* parent = nullptr, CardLine* line = nullptr, MainWindow* mainWindow = nullptr);
+    CardWidget(QWidget* parent = nullptr, QString cardId = "", MainWindow* mainWindow = nullptr);
 
-    void setCardDetails(QWidget* parent, QString cardCode, QString date, QString OwnerName);
-
-    void addService(const QString& serviceCode, const QString& serviceDescription,
-        int replacedPartsCount, double price, const QString& providerId,
-        const QString& providerName);
-
+    void setCardDetails();
     void setEditable(bool fl);
 
 
+
 private:
+    Card* card = nullptr;
     MainWindow* main_window = nullptr;
 
     QWidget* scroll_widget = nullptr;
@@ -98,17 +126,17 @@ private:
 
 
     std::vector<Line*> lines_vector;
-    std::vector<QLineEdit*> line_edits_vector;
+    std::vector<Field*> fields_vector;
     std::vector<QLabel*> labels_vector;
     std::vector<QHBoxLayout*> Hlayouts_vector;
 
-    QLineEdit* card_code = nullptr;
-    QLineEdit* date = nullptr;
-    QLineEdit* car_Id = nullptr;
-    QLineEdit* vin_number = nullptr;
-    QLineEdit* owner_Id = nullptr;
-    QLineEdit* owner_name = nullptr;
-    QLineEdit* owner_phone = nullptr;
+    Field* card_code = nullptr;
+    Field* date = nullptr;
+    Field* car_Id = nullptr;
+    Field* vin_number = nullptr;
+    Field* owner_Id = nullptr;
+    Field* owner_name = nullptr;
+    Field* owner_phone = nullptr;
 
     QLabel* cardCode_label = nullptr;
     QLabel* date_label = nullptr;
@@ -126,40 +154,18 @@ private:
     QHBoxLayout* owner_name_Hlayout = nullptr;
     QHBoxLayout* owner_phone_Hlayout = nullptr;
 
+public slots:
+    void editCard(Field* field);
+    void dbCommit();
+
+
 private:
     void paintEvent(QPaintEvent* event) override;
     void addSpacer();
     void addTopWidget();
     void addTableHeaders();
-    void addTableLines(QString cardCode, QString data, QString ownerName);
+    void addTableLines();
 };
 
 
 
-class TopCardWidget : public QWidget {
-    Q_OBJECT
-
-signals:
-    void sendFlag(bool fl);
-
-private slots:
-    void sendflSignal() { emit sendFlag(fl); }
-
-
-public:
-    TopCardWidget(QWidget* parent, CardWidget* cardWidget, MainWindow* mainWindow);
-
-private:
-    QFont* font = nullptr;
-    bool fl = false;
-    Styles* styles = nullptr;
-    QHBoxLayout* Hlayout = nullptr;
-    QPushButton* back_btn = nullptr;
-    QPushButton* edit_btn = nullptr;
-    QPushButton* save_btn = nullptr;
-    QLabel* main_label = nullptr;
-
-    void changeEditBtnState();
-    void paintEvent(QPaintEvent* event) override;
-
-};

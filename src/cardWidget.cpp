@@ -1,93 +1,49 @@
 #include "cardwidget.h"
+#include "card.h"
 #include "mainwindow.h"
+#include "topCardWidget.h"
 #include "cardsTableWidget.h"
 #include "styles.h"
-#include "pqxx/pqxx"
 
 
 
-TopCardWidget::TopCardWidget(QWidget* parent,
-    CardWidget* cardWidget, MainWindow* mainWindow) :QWidget(parent){
-    styles = new Styles;
-    Hlayout = new QHBoxLayout;
+Field::Field(QString name, QString field, CardWidget* cardWidget) {
+    edit = new QLineEdit(field);
+    this->name = name;
 
-    font = new QFont;
-    font->setPointSize(18);
-    font->setFamily("Segoe UI");
-    font->setWeight(QFont::Bold);
+    Vlayout->addWidget(edit);
+    this->setLayout(Vlayout);
 
-    back_btn = new QPushButton("back");
-    back_btn->setFixedSize(46, 36);
-    back_btn->setStyleSheet(styles->filterButton);
-    connect(back_btn, &QPushButton::clicked, mainWindow, &MainWindow::setCardsTableWidget);
+    connect(edit, &QLineEdit::textChanged, this, &Field::onTextChanged);
+    connect(this, &Field::SendField, cardWidget,  &CardWidget::editCard);
+}
 
+Field::Field(QString name, QString field, int lineNumber, CardWidget* cardWidget) {
+    edit = new QLineEdit(field);
+    this->name = name;
+    line_number = lineNumber;
 
-    edit_btn = new QPushButton("edit");
-    edit_btn->setFixedSize(46, 36);
-    edit_btn->setStyleSheet(styles->filterButton);
-    connect(edit_btn, &QPushButton::clicked, this, &TopCardWidget::sendflSignal);
-    connect(this, &TopCardWidget::sendFlag, cardWidget, &CardWidget::setEditable);
-    connect(edit_btn, &QPushButton::clicked, this, &TopCardWidget::changeEditBtnState);
+    Vlayout->addWidget(edit);
+    this->setLayout(Vlayout);
 
-    save_btn = new QPushButton("save");
-    save_btn->setFixedSize(46, 36);
-    save_btn->setStyleSheet(styles->filterButton);
-
-
-    main_label = new QLabel();
-    main_label->setStyleSheet(styles->tableHeader);
-    main_label->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    main_label->setMinimumSize(76, 36);
-    main_label->setMaximumSize(76000, 36);
-    main_label->setFont(*font);
-
-    Hlayout->addWidget(back_btn);
-    Hlayout->addWidget(edit_btn);
-    Hlayout->addWidget(save_btn);
-    Hlayout->addWidget(main_label);
-    Hlayout->setAlignment(Qt::AlignCenter);
-
-    this->setLayout(Hlayout);
-    this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-
+    connect(edit, &QLineEdit::textChanged, this, &Field::onTextChanged);
+    connect(this, &Field::SendField, cardWidget, &CardWidget::editCard);
 }
 
 
-void TopCardWidget::changeEditBtnState() {
-    if (fl) {
-        edit_btn->setStyleSheet(styles->EditButtonUnActive);
-        fl = false;
-    }
-    else {
-        edit_btn->setStyleSheet(styles->EditButtonActive);
-        fl = true;
-    }
-    
-    
+
+void Field::onTextChanged() {
+    emit SendField(this);
 }
 
 
-void TopCardWidget::paintEvent(QPaintEvent* event) {
-    QColor color1(232, 233, 235);
-
-    QStyleOption opt;
-    opt.initFrom(this);
-
-    QPainter painter(this);
-    QPen pen(color1);
-    pen.setWidth(2);
-    painter.setPen(pen);
-    painter.setRenderHint(QPainter::Antialiasing);
-    painter.setBrush(color1);
-
-    painter.drawRoundedRect(opt.rect, 15, 15);
-}
 
 
-Line::Line(QWidget* parent, const QString& serviceCode, const QString& serviceDescription,
+
+Line::Line(QWidget* parent, CardWidget* cardWidget, int lineNumber, const QString& serviceCode, const QString& serviceDescription,
     QString replacedPartsCount, QString price, const QString providerId,
     const QString& providerName)
-    : QWidget(parent)
+    : QWidget(parent), line_number(lineNumber)
 {
     styles = new Styles;
 
@@ -96,50 +52,62 @@ Line::Line(QWidget* parent, const QString& serviceCode, const QString& serviceDe
     font->setFamily("Verdana");
     lineHlayout = new QHBoxLayout;
 
-    service_code = new QLineEdit(serviceCode);
-    service_description = new QLineEdit(serviceDescription);
-    replacedParts_count = new QLineEdit(replacedPartsCount);
-    this->price = new QLineEdit(price);
-    provider_Id = new QLineEdit(providerId);
-    provider_name = new QLineEdit(providerName);
+
+    service_code = new Field("service_type_id", serviceCode, line_number, cardWidget);
+    service_description = new Field("service_description", serviceDescription, line_number, cardWidget);
+    replacedParts_count = new Field("replaced_parts_count", replacedPartsCount, line_number, cardWidget);
+    this->price = new Field("service_price", price, line_number, cardWidget);
+    provider_Id = new Field("provider_id", providerId, line_number, cardWidget);
+    provider_name = new Field("provider_name", providerName, line_number, cardWidget);
 
 
-    lineEdits_vector.emplace_back(service_code);
-    lineEdits_vector.emplace_back(service_description);
-    lineEdits_vector.emplace_back(replacedParts_count);
-    lineEdits_vector.emplace_back(this->price);
-    lineEdits_vector.emplace_back(provider_Id);
-    lineEdits_vector.emplace_back(provider_name);
+
+    fields_vector.emplace_back(service_code);
+    fields_vector.emplace_back(service_description);
+    fields_vector.emplace_back(replacedParts_count);
+    fields_vector.emplace_back(this->price);
+    fields_vector.emplace_back(provider_Id);
+    fields_vector.emplace_back(provider_name);
 
     lineHlayout->addSpacing(-10);
-    for (auto lineEdit : lineEdits_vector) {
-        lineEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-        lineEdit->setMinimumSize(76, 28);
-        lineEdit->setMaximumSize(76000, 66);
-        lineEdit->setFont(*font);
-        lineEdit->setStyleSheet(styles->lineEditStyle);
-        lineEdit->setReadOnly(true);
-        lineHlayout->addWidget(lineEdit);
+    for (auto field : fields_vector) {
+        field->edit->setFont(*font);
+        field->edit->setStyleSheet(styles->lineEditStyle);
+        field->edit->setReadOnly(true);
+        field->edit->setMinimumSize(76, 26);
+        field->edit->setMaximumSize(7600, 56);
+        field->edit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        lineHlayout->addWidget(field);
+
+        
     }
 
     this->setLayout(lineHlayout);
 
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    this->setMinimumSize(76, 66);
-    this->setMaximumSize(76000, 66);
+    this->setMinimumSize(76, 86);
+    this->setMaximumSize(76000, 100);
 }
 
 
 
 
 void CardWidget::setEditable(bool fl){
-    for (auto lineEdit : line_edits_vector) {
-        lineEdit->setReadOnly(fl);
+    for (auto field : fields_vector) {
+        if (field->name == "card_code" ||
+            field->name == "owner_id" || field->name == "owner_name" ||
+            field->name == "owner_phone") {
+            continue;
+        }
+       field->edit->setReadOnly(fl);
     }
 
     for (auto line : lines_vector) {
-        for (auto lineEdit : line->lineEdits_vector) {
-            lineEdit->setReadOnly(fl);
+        for (auto field : line->fields_vector) {
+            if (field->name == "service_price") {
+                continue;
+            }
+            field->edit->setReadOnly(fl);
         }
     }
 }
@@ -185,42 +153,18 @@ void CardWidget::addTableHeaders() {
 
 
 
-void CardWidget::addTableLines(QString cardCode, QString data, QString OwnerName) {
-    std::string connection_string = "dbname=mydb user=postgres password=123 host=localhost port=5432";
+void CardWidget::addTableLines() {
 
-    pqxx::connection connection(connection_string);
-    pqxx::work transaction(connection);
-
-    for (auto [fk_service_type_id, fk_provider_id, replaced_parts_count] : transaction.query<std::string, std::string, std::string>(
-        "SELECT fk_service_type_id, fk_provider_id, replaced_parts_count "
-        "FROM service_history WHERE fk_card_id = " + cardCode.toStdString() + ";"))
+    for (int i = 0; i < card->service_details_vec.size(); i++)
     {
+        Line* line = new Line(nullptr, this, i, card->service_details_vec[i]["service_type_id"],
+             card->service_details_vec[i]["service_description"], card->service_details_vec[i]["replaced_parts_count"],
+             card->service_details_vec[i]["service_price"], card->service_details_vec[i]["provider_id"],
+            card->service_details_vec[i]["provider_name"]);
 
-        std::string serviceDescription = "SELECT description, price FROM service_types WHERE service_type_id = "
-            + transaction.quote(fk_service_type_id) + ";";
-        pqxx::result result_description = transaction.exec(serviceDescription);
-
-        std::string description = result_description[0]["description"].as<std::string>();
-        std::string price = result_description[0]["price"].as<std::string>();
-
-
-
-        std::string serviceProvider = "SELECT provider_name FROM service_providers WHERE provider_id = "
-            + transaction.quote(fk_provider_id) + ";";
-        pqxx::result result_provider = transaction.exec(serviceProvider);
-
-        std::string provider_name = result_provider[0]["provider_name"].as<std::string>();
-
-        Line* line = new Line(nullptr, QString::fromStdString(fk_service_type_id), 
-            QString::fromStdString(description), QString::fromStdString(replaced_parts_count),
-            QString::fromStdString(price), QString::fromStdString(fk_provider_id),
-            QString::fromStdString(provider_name));
         lines_vector.emplace_back(line);
-
     }
 
-    transaction.commit();
-    connection.close();
 
     for (auto line : lines_vector) {
         Vlayout->addWidget(line);
@@ -229,7 +173,7 @@ void CardWidget::addTableLines(QString cardCode, QString data, QString OwnerName
 
 
 
-CardWidget::CardWidget(QWidget* parent, CardLine* line, MainWindow* mainWindow)
+CardWidget::CardWidget(QWidget* parent, QString cardId, MainWindow* mainWindow)
     : QWidget(parent), main_window(mainWindow)
 {
     styles = new Styles;
@@ -241,9 +185,7 @@ CardWidget::CardWidget(QWidget* parent, CardLine* line, MainWindow* mainWindow)
     font->setFamily("Segoe UI");
     font->setWeight(QFont::Light);
 
-    QString cardCode = line->card_id;
-    QString date = line->date;
-    QString ownerName = line->owner_name;
+    card = new Card(cardId);
 
 
    
@@ -253,9 +195,9 @@ CardWidget::CardWidget(QWidget* parent, CardLine* line, MainWindow* mainWindow)
     addTopWidget();
     addSpacer();
     addTableHeaders();
-    addTableLines(cardCode, date, ownerName);
+    addTableLines();
     Vlayout->addSpacing(62);
-    setCardDetails(parent,cardCode, date, ownerName);
+    setCardDetails();
 
     scroll_widget = new QWidget;
     scroll_widget->setLayout(Vlayout);
@@ -269,7 +211,9 @@ CardWidget::CardWidget(QWidget* parent, CardLine* line, MainWindow* mainWindow)
 
     main_Vlayout->addWidget(scrollArea);
     this->setLayout(main_Vlayout);
+    this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 }
+
 
 void CardWidget::addTopWidget() {
     top_Hlayout = new QHBoxLayout;
@@ -280,58 +224,25 @@ void CardWidget::addTopWidget() {
     main_Vlayout->addLayout(top_Hlayout);
 }
 
-void CardWidget::setCardDetails(QWidget* parent, QString cardCode, QString date, QString ownerName)
+
+void CardWidget::setCardDetails()
 {
-    std::string connection_string = "dbname=mydb user=postgres password=123 host=localhost port=5432";
-
-    pqxx::connection connection(connection_string);
-    pqxx::work transaction(connection);
-
-
-    std::string card = "SELECT fk_car_id FROM warranty_cards WHERE card_id = "
-        + transaction.quote(cardCode.toStdString()) + ";";
-    pqxx::result result_card = transaction.exec(card);
-
-    std::string carId = result_card[0]["fk_car_id"].as<std::string>();
+    card_code = new Field("card_code", card->card_code, this);
+    this->date = new Field("card_date", card->card_date, this);
+    car_Id = new Field("car_id", card->car_id, this);
+    vin_number = new Field("car_vin", card->car_vin, this);
+    owner_Id = new Field("owner_id", card->owner_id, this);
+    owner_name = new Field("owner_name", card->owner_name, this);
+    owner_phone = new Field("owner_phone", card->owner_phone, this);
 
 
-    std::string car = "SELECT vin, fk_owner_id FROM cars WHERE car_id = "
-        + transaction.quote(carId) + ";";
-    pqxx::result result_car = transaction.exec(car);
-
-    std::string vin = result_car[0]["vin"].as<std::string>();
-    std::string ownerId = result_car[0]["fk_owner_id"].as<std::string>();
-
-
-    std::string owner = "SELECT owner_telephone FROM owners WHERE owner_id = "
-        + transaction.quote(ownerId) + ";";
-    pqxx::result result_owner = transaction.exec(owner);
-
-    std::string ownerPhone = result_owner[0]["owner_telephone"].as<std::string>();
-
-    transaction.commit();
-    connection.close();
-
-    card_code = new QLineEdit(cardCode);
-    line_edits_vector.push_back(card_code);
-
-    this->date = new QLineEdit(date);
-    line_edits_vector.push_back(this->date);
-
-    car_Id = new QLineEdit(QString::fromStdString(carId));
-    line_edits_vector.push_back(car_Id);
-
-    vin_number = new QLineEdit(QString::fromStdString(vin));
-    line_edits_vector.push_back(vin_number);
-
-    owner_Id = new QLineEdit(QString::fromStdString(ownerId));
-    line_edits_vector.push_back(owner_Id);
-
-    owner_name = new QLineEdit(ownerName);
-    line_edits_vector.push_back(owner_name);
-
-    owner_phone = new QLineEdit(QString::fromStdString(ownerPhone));
-    line_edits_vector.push_back(owner_phone);
+    fields_vector.push_back(card_code);
+    fields_vector.push_back(this->date);
+    fields_vector.push_back(car_Id);
+    fields_vector.push_back(vin_number);
+    fields_vector.push_back(owner_Id);
+    fields_vector.push_back(owner_name);
+    fields_vector.push_back(owner_phone);
 
 
 
@@ -382,18 +293,18 @@ void CardWidget::setCardDetails(QWidget* parent, QString cardCode, QString date,
 
 
     for (int i = 0; i < Hlayouts_vector.size(); i++) {
-        line_edits_vector[i]->setStyleSheet(styles->lineEditStyle);
-        line_edits_vector[i]->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-        line_edits_vector[i]->setMinimumSize(20, 46);
-        line_edits_vector[i]->setFont(*font);
-        line_edits_vector[i]->setReadOnly(true);
+        fields_vector[i]->edit->setStyleSheet(styles->lineEditStyle);
+        fields_vector[i]->edit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+        fields_vector[i]->edit->setMinimumSize(20, 46);
+        fields_vector[i]->edit->setFont(*font);
+        fields_vector[i]->edit->setReadOnly(true);
 
 
         labels_vector[i]->setFixedSize(150, 46);
         labels_vector[i]->setFont(*font);
 
         Hlayouts_vector[i]->addWidget(labels_vector[i]);
-        Hlayouts_vector[i]->addWidget(line_edits_vector[i]);
+        Hlayouts_vector[i]->addWidget(fields_vector[i]);
         Vlayout->addLayout(Hlayouts_vector[i]);
     }
 
@@ -402,11 +313,177 @@ void CardWidget::setCardDetails(QWidget* parent, QString cardCode, QString date,
 }
 
 
-void CardWidget::addService(const QString& serviceCode, const QString& serviceDescription,
-    int replacedPartsCount, double price, const QString& executorId,
-    const QString& executorName)
-{
-    
+void CardWidget::editCard(Field* field) {
+    QString newValue = field->edit->text();
+    QString name = field->name;
+
+    if (field->line_number == -1) {
+        
+        if (field->name == "car_id") {
+            try {
+                std::map<QString, QString> map = Card::findCarDetailsbyId(newValue);
+                for (auto field : fields_vector) {
+                    if (field->name == "car_vin") {
+                        field->edit->setText(map["car_vin"]);
+                        card->card_details_map["car_vin"] = map["car_vin"];
+                    }
+                    if (field->name == "owner_id") {
+                        field->edit->setText(map["owner_id"]);
+                        card->card_details_map["owner_id"] = map["owner_id"];
+                    }
+                    if (field->name == "owner_name") {
+                        field->edit->setText(map["owner_name"]);
+                        card->card_details_map["owner_name"] = map["owner_name"];
+                    }
+                    if (field->name == "owner_phone") {
+                        field->edit->setText(map["owner_phone"]);
+                        card->card_details_map["owner_phone"] = map["owner_phone"];
+                    }
+                }
+            }
+            catch (...){
+                //todo
+            }
+        }
+
+
+        if (field->name == "car_vin") {
+            try {
+                std::map<QString, QString> map = Card::findCarDetailsbyVIN(newValue);
+                for (auto field : fields_vector) {
+                    if (field->name == "car_id") {
+                        field->edit->setText(map["car_id"]);
+                        card->card_details_map["car_id"] = map["car_id"];
+                    }
+                    if (field->name == "owner_id") {
+                        field->edit->setText(map["owner_id"]);
+                        card->card_details_map["owner_id"] = map["owner_id"];
+                    }
+                    if (field->name == "owner_name") {
+                        field->edit->setText(map["owner_name"]);
+                        card->card_details_map["owner_name"] = map["owner_name"];
+                    }
+                    if (field->name == "owner_phone") {
+                        field->edit->setText(map["owner_phone"]);
+                        card->card_details_map["owner_phone"] = map["owner_phone"];
+                    }
+                }
+            }
+            catch (...) {
+                //todo
+            }
+        }
+
+
+        card->card_details_map[name] = newValue;
+    }
+
+    else {
+        //fix
+        if (field->name == "service_type_id") {
+            try {
+                std::map<QString, QString> map = Card::findServiceDetailsbyId(newValue);
+
+                for (auto f : lines_vector[field->line_number]->fields_vector) {
+                    if (f->name == "service_description") {
+                        f->edit->setText(map["description"]);
+                        card->service_details_vec[field->line_number]["description"] = map["description"];
+                    }
+
+                    if (f->name == "service_price") {
+                        f->edit->setText(map["price"]);
+                        card->service_details_vec[field->line_number]["price"] = map["price"];
+                    }
+                }
+
+                
+            }
+            catch (...) {
+                //todo
+            }
+
+        }
+        
+
+        if (field->name == "service_description") {
+            try {
+                std::map<QString, QString> map = Card::findServiceDetailsbyDesc(newValue);
+
+                for (auto f : lines_vector[field->line_number]->fields_vector) {
+                    if (f->name == "service_type_id") {
+                        f->edit->setText(map["service_type_id"]);
+                        card->service_details_vec[field->line_number]["service_type_id"] = map["service_type_id"];
+                    }
+
+                    if (f->name == "service_price") {
+                        f->edit->setText(map["price"]);
+                        card->service_details_vec[field->line_number]["price"] = map["price"];
+                    }
+                }
+
+
+            }
+            catch (...) {
+                //todo
+            }
+
+        }
+
+        if (field->name == "replaced_parts_count") {
+            for (auto f : lines_vector[field->line_number]->fields_vector) {
+                if (f->name == "replaced_parts_count") {
+                    f->edit->setText(newValue);
+                    card->service_details_vec[field->line_number]["replaced_parts_count"] = newValue;
+                    break;
+                }
+
+            }
+        }
+
+        if (field->name == "provider_id") {
+            try {
+                std::map<QString, QString> map = Card::findProviderbyId(newValue);
+
+                for (auto f : lines_vector[field->line_number]->fields_vector) {
+                    if (f->name == "provider_name") {
+                        f->edit->setText(map["provider_name"]);
+                        card->service_details_vec[field->line_number]["provider_name"] = map["provider_name"];
+                    }
+                }
+
+
+            }
+            catch (...) {
+                //todo
+            }
+
+        }
+
+
+        if (field->name == "provider_name") {
+            try {
+                std::map<QString, QString> map = Card::findProviderbyName(newValue);
+
+                for (auto f : lines_vector[field->line_number]->fields_vector) {
+                    if (f->name == "provider_id") {
+                        f->edit->setText(map["provider_id"]);
+                        card->service_details_vec[field->line_number]["provider_id"] = map["provider_id"];
+                    }
+                }
+
+
+            }
+            catch (...) {
+                //todo
+            }
+
+        }
+    }
+}
+
+
+void CardWidget::dbCommit() {
+    card->commitChanges();
 }
 
 
