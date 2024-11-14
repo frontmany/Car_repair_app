@@ -8,6 +8,9 @@
 struct Card {
 public:
 	Card(QString cardId);
+	Card() {};
+	void addLine();
+	void addCard();
 	static const std::map<QString, QString> findCarDetailsbyId(QString carId);
 	static const std::map<QString, QString> findCarDetailsbyVIN(QString carVin);
 	static const std::map<QString, QString> findServiceDetailsbyId(QString serviceId);
@@ -33,7 +36,7 @@ public:
 private:
 	void getServiceDetails(QString cardCode);
 	void getCardDetails(QString cardCode);
-	
+
 };
 
 

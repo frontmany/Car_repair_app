@@ -1,12 +1,13 @@
 #include "searchWidget.h"
 #include "styles.h"
+#include "mainwindow.h"
 #include <QVBoxLayout>
 #include <QStyleOption>
 #include <QPainter>
 
 
-SearchWidget::SearchWidget(QWidget* parent)
-    : QWidget(parent) {
+SearchWidget::SearchWidget(QWidget* parent, MainWindow* mainWindow)
+    : QWidget(parent), main_window(mainWindow) {
     styles = new Styles;
 
     addSearchWidget();
@@ -58,6 +59,7 @@ void SearchWidget::addAddWidget() {
     add_btn->setFixedSize(46, 36);
     add_btn->setStyleSheet(styles->filterButton);
     searchHlayout->addWidget(add_btn);
+    connect(add_btn, &QPushButton::clicked, main_window, &MainWindow::setAddCardWidget);
     
 }
 

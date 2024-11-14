@@ -4,6 +4,7 @@
 #include<iostream>
 #include"leftMenu.h"
 #include "cardwidget.h"
+#include "addCardWidget.h"
 
 
 MainWindow::MainWindow()
@@ -40,7 +41,7 @@ void MainWindow::setCardsTableWidget(){
 void MainWindow::setSearchWidget() {
 	this->takeCentralWidget();
 	updateWindow();
-	//todo
+	//todo skip
 	main_widget->setLayout(main_hlayout);
 	setCentralWidget(main_widget);	
 }
@@ -56,6 +57,16 @@ void MainWindow::setCardWidget(CardLine* line) {
 	setCentralWidget(main_widget);
 }
 
+
+void MainWindow::setAddCardWidget() {
+	this->takeCentralWidget();
+	add_card = new AddCardWidget(nullptr, this);
+	updateWindow();
+
+	main_hlayout->addWidget(add_card);
+	main_widget->setLayout(main_hlayout);
+	setCentralWidget(main_widget);
+}
 
 MainWindow::~MainWindow() {
 	

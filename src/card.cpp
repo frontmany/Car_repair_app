@@ -50,6 +50,171 @@ void Card::getServiceDetails(QString cardCode) {
 }
 
 
+void Card::addCard() {
+    std::string connection_string = "dbname=mydb user=postgres password=123 host=localhost port=5432";
+
+    pqxx::connection connection(connection_string);
+    pqxx::work transaction(connection);
+
+    // Проверка владельца
+    if (card_details_map["owner_name"] == "") {
+        QMessageBox::critical(nullptr, "No owner name", "Owner name is not set");
+        return;
+    }
+    if (card_details_map["owner_phone"] == "") {
+        QMessageBox::critical(nullptr, "No owner phone", "Owner phone is not set");
+        return;
+    }
+    std::string check_owner_sql = "SELECT owner_id FROM owners WHERE owner_name = \$1 AND owner_telephone = \$2;";
+    pqxx::result res_toCheck = transaction.exec_params(check_owner_sql, card_details_map["owner_name"].toStdString(), card_details_map["owner_phone"].toStdString());
+
+    int ownerId = -1;
+    if (res_toCheck.size() > 0) {
+        ownerId = res_toCheck[0][0].as<int>();
+    } else {
+        std::string owner_sql = "INSERT INTO owners (owner_name, owner_telephone) VALUES (\$1, \$2) RETURNING owner_id;";
+        pqxx::result res_insert = transaction.exec_params(owner_sql, card_details_map["owner_name"].toStdString(), card_details_map["owner_phone"].toStdString());
+        ownerId = res_insert[0][0].as<int>();
+    }
+
+    // Проверка автомобиля
+    std::string check_car_sql = "SELECT car_id, fk_owner_id FROM cars WHERE vin = \$1;";
+    pqxx::result res_car_check = transaction.exec_params(check_car_sql, card_details_map["car_vin"].toStdString());
+
+    int carId = -1;
+    int ownerIdcheck = -1;
+    if (res_car_check.size() > 0) {
+        carId = res_car_check[0][0].as<int>();
+        ownerIdcheck = res_car_check[0][1].as<int>();
+        if (ownerId != ownerIdcheck) {
+            QMessageBox::critical(nullptr, "Non-compatible owner", "The car has a different owner");
+            return;
+        }
+    }
+    
+    else {
+        std::string car_sql = "INSERT INTO cars (vin, fk_owner_id) VALUES (\$1, \$2) RETURNING car_id;";
+        pqxx::result res_car_insert = transaction.exec_params(car_sql, card_details_map["car_vin"].toStdString(), ownerId);
+        carId = res_car_insert[0][0].as<int>();
+    }
+    
+
+
+    // Проверка карточки
+    if (card_details_map["card_date"] == "") {
+        QMessageBox::critical(nullptr, "Date not set", "The date is not set in the card");
+        return;
+    }
+    if (card_details_map["car_vin"] == "") {
+        QMessageBox::critical(nullptr, "Vin number not set", "Vin number is not set in the card");
+        return;
+    }
+    int cardId = -1;
+    try {
+        std::string check_card_sql = "SELECT card_id FROM warranty_cards WHERE date = '" + card_details_map["card_date"].toStdString() + "' AND fk_car_id = \$1;";
+        pqxx::result res_card_check = transaction.exec_params(check_card_sql, carId);
+        if (res_card_check.size() > 0) {
+            QMessageBox::critical(nullptr, "Existing card", "Such card already exists");
+            return;
+        }
+        else {
+            std::string card_sql = "INSERT INTO warranty_cards (date, fk_car_id) VALUES (\$1, \$2) RETURNING card_id;";
+            pqxx::result res_card_insert = transaction.exec_params(card_sql, card_details_map["card_date"].toStdString(), carId);
+            cardId = res_card_insert[0][0].as<int>();
+        }
+
+    }
+    catch (...) {
+        QMessageBox::critical(nullptr, "bad Date", "Wrong date format");
+        return;
+    }
+    
+    
+
+    // Обработка истории
+    if (service_details_vec.size() == 0) {
+        QMessageBox::critical(nullptr, "No services", "The card does not specify the services");
+        return;
+    }
+    transaction.commit();
+    connection.close();
+
+
+    std::string connection_string2 = "dbname=mydb user=postgres password=123 host=localhost port=5432";
+
+    pqxx::connection connection2(connection_string2);
+    pqxx::work transaction2(connection2);
+
+    for (auto& smap : service_details_vec) {
+        if (smap["provider_id"] == "") {
+            QMessageBox::critical(nullptr, "Wrong data", "Provider ID is empty.");
+            return;
+        }
+
+        if (smap["service_type_id"] == "") {
+            QMessageBox::critical(nullptr, "Wrong data", "Service Type ID is empty.");
+            return;
+        }
+
+        if (smap["replaced_parts_count"] == "") {
+            QMessageBox::critical(nullptr, "Wrong data", "Replaced Parts Count is empty.");
+            return;
+        }
+
+        if (smap["price"] == "") {
+            QMessageBox::critical(nullptr, "Wrong data", "Service Price is empty.");
+            return;
+        }
+
+        if (smap["provider_name"] == "") {
+            QMessageBox::critical(nullptr, "Wrong data", "Provider Name is empty.");
+            return;
+        }
+
+        if (smap["description"] == "") {
+            QMessageBox::critical(nullptr, "Wrong data", "Service Description is empty.");
+            return;
+        }
+
+        std::string check_provider_sql = "SELECT COUNT(*) FROM service_providers WHERE provider_id = \$1;";
+        pqxx::result res_provider_check = transaction2.exec_params(check_provider_sql, smap["provider_id"].toStdString());
+        if (res_provider_check[0][0].as<int>() == 0) {
+            QMessageBox::critical(nullptr, "Non-existent provider", "No such provider exists " + smap["provider_name"]);
+            return;
+        }
+
+        std::string check_service_sql = "SELECT COUNT(*) FROM service_types WHERE service_type_id = \$1;";
+        pqxx::result res_service_check = transaction2.exec_params(check_service_sql, smap["service_type_id"].toStdString());
+        if (res_service_check[0][0].as<int>() == 0) {
+            QMessageBox::critical(nullptr, "Non-existent service", "No such service exists " + smap["service_type_description"]);
+            return;
+        }
+        std::string s1 = std::to_string(cardId);
+        std::string s2 = smap["service_type_id"].toStdString();
+        std::string s3 = smap["provider_id"].toStdString();
+        std::string s4 = smap["replaced_parts_count"].toStdString();
+
+        std::string history_sql = "INSERT INTO service_history (fk_card_id, fk_service_type_id, fk_provider_id, replaced_parts_count) VALUES (\$1, \$2, \$3, \$4);";
+        transaction2.exec_params(history_sql, std::to_string(cardId), smap["service_type_id"].toStdString(), smap["provider_id"].toStdString(), smap["replaced_parts_count"].toStdString());
+    }
+
+    transaction2.commit();
+    connection2.close();
+}
+
+
+void Card::addLine() {
+    std::map<QString, QString> map;
+    map["service_type_id"] = "";
+    map["provider_id"] = "";
+    map["service_description"] = "";
+    map["replaced_parts_count"] = "";
+    map["service_price"] = "";
+    map["provider_name"] = "";
+
+    service_details_vec.emplace_back(map);
+}
+
 void Card::getCardDetails(QString cardCode) {
     std::string connection_string = "dbname=mydb user=postgres password=123 host=localhost port=5432";
 
@@ -283,6 +448,7 @@ std::map<QString, QString> const Card::findCarDetailsbyVIN(QString carVin) {
 
     std::string ownerPhone = result_owner[0]["owner_telephone"].as<std::string>();
     std::string ownerName = result_owner[0]["owner_name"].as<std::string>();
+
 
 
     std::map<QString, QString> map;

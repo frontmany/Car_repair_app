@@ -2,6 +2,7 @@
 #include "card.h"
 #include "mainwindow.h"
 #include "topCardWidget.h"
+#include "addCardWidget.h"
 #include "cardsTableWidget.h"
 #include "styles.h"
 
@@ -74,7 +75,7 @@ Line::Line(QWidget* parent, CardWidget* cardWidget, int lineNumber, const QStrin
         field->edit->setFont(*font);
         field->edit->setStyleSheet(styles->lineEditStyle);
         field->edit->setReadOnly(true);
-        field->edit->setMinimumSize(76, 26);
+        field->edit->setMinimumSize(76, 10);
         field->edit->setMaximumSize(7600, 56);
         field->edit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         lineHlayout->addWidget(field);
@@ -85,11 +86,9 @@ Line::Line(QWidget* parent, CardWidget* cardWidget, int lineNumber, const QStrin
     this->setLayout(lineHlayout);
 
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    this->setMinimumSize(76, 86);
+    this->setMinimumSize(76, 76);
     this->setMaximumSize(76000, 100);
 }
-
-
 
 
 void CardWidget::setEditable(bool fl){
@@ -97,6 +96,12 @@ void CardWidget::setEditable(bool fl){
         if (field->name == "card_code" ||
             field->name == "owner_id" || field->name == "owner_name" ||
             field->name == "owner_phone") {
+            if (!fl) {
+                field->edit->setStyleSheet(styles->lineEditInactiveStyle);
+            }
+            if (fl) {
+                field->edit->setStyleSheet(styles->lineEditStyle);
+            }
             continue;
         }
        field->edit->setReadOnly(fl);
@@ -105,6 +110,12 @@ void CardWidget::setEditable(bool fl){
     for (auto line : lines_vector) {
         for (auto field : line->fields_vector) {
             if (field->name == "service_price") {
+                if (!fl) {
+                    field->edit->setStyleSheet(styles->lineEditInactiveStyle);
+                }
+                if (fl) {
+                    field->edit->setStyleSheet(styles->lineEditStyle);
+                }
                 continue;
             }
             field->edit->setReadOnly(fl);

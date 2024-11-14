@@ -159,6 +159,19 @@ public:
 		"}";
 
 
+	QString lineEditInactiveStyle = "QLineEdit {"
+		"font-family: Arial, sans-serif;"
+		"font-size: 14px;"
+		"color: #a0a0a0;" /* Серый цвет текста для неактивного состояния */
+		"background-color: #e0e0e0;" /* Светло-серый фон для неактивного состояния */
+		"border: 1px solid #cccccc;" /* Светло-серая рамка */
+		"border-radius: 4px;" /* Скругленные углы */
+		"padding: 5px;" /* Отступы внутри поля ввода */
+		"}"
+		"QLineEdit:focus {"
+		"border: 1px solid #cccccc;" /* Цвет рамки при фокусе остается прежним, чтобы не выделять неактивное поле */
+		"}";
+
 	QString EditButtonActive = "QPushButton {"
 		"background-color: transparent;"
 		"color: black;"

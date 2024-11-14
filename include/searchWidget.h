@@ -7,6 +7,7 @@
 #include <QVBoxLayout>
 
 class Styles;
+class MainWindow;
 
 
 
@@ -16,10 +17,11 @@ class SearchWidget : public QWidget {
 
 public:
     Styles* styles = nullptr;
-    explicit SearchWidget(QWidget* parent = nullptr);
+    explicit SearchWidget(QWidget* parent = nullptr, MainWindow* mainWindow = nullptr);
     ~SearchWidget();
 
 private:
+    MainWindow* main_window = nullptr;
     bool first_setup = true;
     const int Widget_Id = 2;
     

@@ -105,7 +105,7 @@ void CardsTableWidget::addSpacer() {
 
 
 void CardsTableWidget::addTopMenu() {
-	search_widget = new SearchWidget;
+	search_widget = new SearchWidget(nullptr, main_window);
 	MenuHlayout->addSpacing(30);
 	MenuHlayout->addWidget(search_widget);
 	MenuHlayout->addSpacing(30);
