@@ -329,7 +329,6 @@ void CardWidget::editCard(Field* field) {
     QString name = field->name;
 
     if (field->line_number == -1) {
-        
         if (field->name == "car_id") {
             try {
                 std::map<QString, QString> map = Card::findCarDetailsbyId(newValue);
@@ -353,7 +352,6 @@ void CardWidget::editCard(Field* field) {
                 }
             }
             catch (...){
-                //todo
             }
         }
 
@@ -381,7 +379,6 @@ void CardWidget::editCard(Field* field) {
                 }
             }
             catch (...) {
-                //todo
             }
         }
 
@@ -390,8 +387,8 @@ void CardWidget::editCard(Field* field) {
     }
 
     else {
-        //fix
         if (field->name == "service_type_id") {
+            card->service_details_vec[field->line_number]["service_type_id"] = newValue;
             try {
                 std::map<QString, QString> map = Card::findServiceDetailsbyId(newValue);
 
@@ -406,17 +403,15 @@ void CardWidget::editCard(Field* field) {
                         card->service_details_vec[field->line_number]["price"] = map["price"];
                     }
                 }
-
-                
             }
             catch (...) {
-                //todo
             }
 
         }
         
 
         if (field->name == "service_description") {
+            card->service_details_vec[field->line_number]["service_description"] = newValue;
             try {
                 std::map<QString, QString> map = Card::findServiceDetailsbyDesc(newValue);
 
@@ -431,27 +426,18 @@ void CardWidget::editCard(Field* field) {
                         card->service_details_vec[field->line_number]["price"] = map["price"];
                     }
                 }
-
-
             }
             catch (...) {
-                //todo
             }
 
         }
 
         if (field->name == "replaced_parts_count") {
-            for (auto f : lines_vector[field->line_number]->fields_vector) {
-                if (f->name == "replaced_parts_count") {
-                    f->edit->setText(newValue);
-                    card->service_details_vec[field->line_number]["replaced_parts_count"] = newValue;
-                    break;
-                }
-
-            }
+            card->service_details_vec[field->line_number]["replaced_parts_count"] = newValue;
         }
 
         if (field->name == "provider_id") {
+            card->service_details_vec[field->line_number]["provider_id"] = newValue;
             try {
                 std::map<QString, QString> map = Card::findProviderbyId(newValue);
 
@@ -465,13 +451,13 @@ void CardWidget::editCard(Field* field) {
 
             }
             catch (...) {
-                //todo
             }
 
         }
 
 
         if (field->name == "provider_name") {
+            card->service_details_vec[field->line_number]["provider_name"] = newValue;
             try {
                 std::map<QString, QString> map = Card::findProviderbyName(newValue);
 
@@ -481,11 +467,9 @@ void CardWidget::editCard(Field* field) {
                         card->service_details_vec[field->line_number]["provider_id"] = map["provider_id"];
                     }
                 }
-
-
+                
             }
             catch (...) {
-                //todo
             }
 
         }

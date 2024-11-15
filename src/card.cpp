@@ -359,10 +359,69 @@ void Card::commitChanges() {
         pqxx::connection connection(connection_string);
         pqxx::work transaction(connection);
         
+        try{
+            std::string check_car_sql = "SELECT vin FROM cars WHERE car_id = \$1;";
+            pqxx::result res_car_check = transaction.exec_params(check_car_sql, card_details_map["car_id"].toStdString());
+            if (res_car_check[0][0].as<std::string>()!= card_details_map["car_vin"].toStdString()) {
+                QMessageBox::critical(nullptr, "Non-car", "The cars's ID and VIN do not match");
+                return;
+            }
+            std::string check_car2_sql = "SELECT car_id FROM cars WHERE vin = \$1;";
+            pqxx::result res_car2_check = transaction.exec_params(check_car2_sql, card_details_map["car_vin"].toStdString());
+            if (res_car2_check[0][0].as<std::string>() != card_details_map["car_id"].toStdString()) {
+                QMessageBox::critical(nullptr, "Non-car", "The cars's ID and VIN do not match");
+                return;
+            }
+        }
+        catch (...) {
+            QMessageBox::critical(nullptr, "Non-existent car", "Non-existent car");
+            return;
+        }
+
         std::string sqlDate = "UPDATE warranty_cards SET date = '" + date + "' WHERE card_id = " + id + ";";
         std::string sqlCar = "UPDATE warranty_cards SET fk_car_id = '" + carId + "' WHERE card_id = " + id + ";";
 
+
         for (int i = 0; i < service_details_vec.size(); i++) {
+            try {
+                std::string check_provider_sql = "SELECT provider_name FROM service_providers WHERE provider_id = \$1;";
+                pqxx::result res_provider_check = transaction.exec_params(check_provider_sql, service_details_vec[i]["provider_id"].toStdString());
+                if (res_provider_check[0][0].as<std::string>() != service_details_vec[i]["provider_name"].toStdString()) {
+                    QMessageBox::critical(nullptr, "Non-provider", "The providers's ID and name do not match");
+                    return;
+                }
+                std::string check_provider2_sql = "SELECT provider_id FROM service_providers WHERE provider_name = \$1;";
+                pqxx::result res_provider2_check = transaction.exec_params(check_provider2_sql, service_details_vec[i]["provider_name"].toStdString());
+                if (res_provider2_check[0][0].as<std::string>() != service_details_vec[i]["provider_id"].toStdString()) {
+                    QMessageBox::critical(nullptr, "Non-provider", "The providers's ID and name do not match");
+                    return;
+                }
+            }
+            catch (...){
+                QMessageBox::critical(nullptr, "Non-existent provider", "Non-existent provider");
+                return;
+            }
+            
+
+            try {
+                std::string check_service_sql = "SELECT description FROM service_types WHERE service_type_id = \$1;";
+                pqxx::result res_service_check = transaction.exec_params(check_service_sql, service_details_vec[i]["service_type_id"].toStdString());
+                if (res_service_check[0][0].as<std::string>() != service_details_vec[i]["service_description"].toStdString()) {
+                    QMessageBox::critical(nullptr, "Non-description", "The description's ID and description text do not match");
+                    return;
+                }
+                std::string check_service2_sql = "SELECT service_type_id FROM service_types WHERE description  = \$1;";
+                pqxx::result res_service2_check = transaction.exec_params(check_service2_sql, service_details_vec[i]["service_description"].toStdString());
+                if (res_service2_check[0][0].as<std::string>() != service_details_vec[i]["service_type_id"].toStdString()) {
+                    QMessageBox::critical(nullptr, "Non-description", "The description's ID and description text do not match");
+                    return;
+                }
+            }
+            catch (...) {
+                QMessageBox::critical(nullptr, "Non-existent service", "Non-existent service");
+                return;
+            }
+
             std::string servicetypeIdNew = service_details_vec[i]["service_type_id"].toStdString();
             std::string servicetypeIdOld = original_service_codes[i].toStdString();
 
@@ -389,7 +448,6 @@ void Card::commitChanges() {
         QMessageBox::critical(nullptr, "Ошибка SQL",
             QString("Ошибка: %1\nSQL: %2").arg(e.what()).arg(e.query().c_str()));
     }
-
 
 }
 
