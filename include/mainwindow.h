@@ -28,6 +28,7 @@ public slots:
 	void setSearchWidget();
 	void setAddCardWidget();
 
+
 private:
 	int currentWidget_Id = std::numeric_limits<int>::max();
 

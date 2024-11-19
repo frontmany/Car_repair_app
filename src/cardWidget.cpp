@@ -32,6 +32,19 @@ Field::Field(QString name, QString field, int lineNumber, CardWidget* cardWidget
 }
 
 
+Field::Field(QString name, int lineNumber, CardWidget* cardWidget) {
+    edit = new QLineEdit();
+    this->name = name;
+    line_number = lineNumber;
+
+    Vlayout->addWidget(edit);
+    this->setLayout(Vlayout);
+
+    connect(edit, &QLineEdit::textChanged, this, &Field::onTextChanged);
+    connect(this, &Field::SendField, cardWidget, &CardWidget::editCard);
+}
+
+
 
 void Field::onTextChanged() {
     emit SendField(this);
@@ -44,7 +57,7 @@ void Field::onTextChanged() {
 Line::Line(QWidget* parent, CardWidget* cardWidget, int lineNumber, const QString& serviceCode, const QString& serviceDescription,
     QString replacedPartsCount, QString price, const QString providerId,
     const QString& providerName)
-    : QWidget(parent), line_number(lineNumber)
+    : QWidget(parent), line_number(lineNumber), card_widget(cardWidget)
 {
     styles = new Styles;
 
@@ -79,8 +92,6 @@ Line::Line(QWidget* parent, CardWidget* cardWidget, int lineNumber, const QStrin
         field->edit->setMaximumSize(7600, 56);
         field->edit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         lineHlayout->addWidget(field);
-
-        
     }
 
     this->setLayout(lineHlayout);
@@ -90,6 +101,59 @@ Line::Line(QWidget* parent, CardWidget* cardWidget, int lineNumber, const QStrin
     this->setMaximumSize(76000, 100);
 }
 
+
+Line::Line(QWidget* parent, int lineNumber, CardWidget* cardWidget)
+    : QWidget(parent), line_number(lineNumber), card_widget(cardWidget) {
+    styles = new Styles;
+
+    font = new QFont;
+    font->setPointSize(16);
+    font->setFamily("Verdana");
+    lineHlayout = new QHBoxLayout;
+
+
+    service_code = new Field("service_type_id", line_number, cardWidget);
+    service_description = new Field("service_description", line_number, cardWidget);
+    replacedParts_count = new Field("replaced_parts_count", line_number, cardWidget);
+    this->price = new Field("service_price", line_number, cardWidget);
+    provider_Id = new Field("provider_id", line_number, cardWidget);
+    provider_name = new Field("provider_name", line_number, cardWidget);
+
+
+
+    fields_vector.emplace_back(service_code);
+    fields_vector.emplace_back(service_description);
+    fields_vector.emplace_back(replacedParts_count);
+    fields_vector.emplace_back(this->price);
+    fields_vector.emplace_back(provider_Id);
+    fields_vector.emplace_back(provider_name);
+
+    lineHlayout->addSpacing(-10);
+    for (auto field : fields_vector) {
+        field->edit->setFont(*font);
+        field->edit->setStyleSheet(styles->lineEditStyle);
+        field->edit->setMinimumSize(76, 10);
+        field->edit->setMaximumSize(7600, 56);
+        field->edit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        field->edit->setReadOnly(true);
+        lineHlayout->addWidget(field);
+
+
+    }
+
+    this->setLayout(lineHlayout);
+
+    this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    this->setMinimumSize(76, 76);
+    this->setMaximumSize(76000, 100);
+}
+
+void Line::setDelBtn(QPushButton* d_b) {
+    del_btn = d_b;
+    connect(del_btn, &QPushButton::clicked, this, &Line::sendNumber);
+    connect(this, &Line::sendLineNumber, card_widget, &CardWidget::removeLine);
+
+}
 
 void CardWidget::setEditable(bool fl){
     for (auto field : fields_vector) {
@@ -121,6 +185,65 @@ void CardWidget::setEditable(bool fl){
             field->edit->setReadOnly(fl);
         }
     }
+}
+
+
+void CardWidget::setEditLine(bool fl) {
+    if (fl && lines_vector.size() != 0) {
+        for (auto line : lines_vector) {
+            QPushButton* delBtn = new QPushButton("del");
+            line->setDelBtn(delBtn);
+
+            for (auto h : headers) {
+                if (h->text() == "Description  ") {
+                    h->setText("Description          ");
+                }
+                if (h->text() == "Replaced Parts  ") {
+                    h->setText("Replaced Parts         ");
+                }
+                if (h->text() == "Price  ") {
+                    h->setText("Price            ");
+                }
+                if (h->text() == "Provider Id  ") {
+                    h->setText("Provider Id            ");
+                }
+                if (h->text() == "Provider Name  ") {
+                    h->setText("Provider Name                    ");
+                }
+            }
+
+            line->lineHlayout->addWidget(line->del_btn);
+
+        }
+    }
+
+    else if (lines_vector.size() != 0) {
+        for (auto line : lines_vector) {
+            line->lineHlayout->removeWidget(line->del_btn);
+            line->del_btn->hide();
+            line->del_btn = nullptr;
+
+            for (auto h : headers) {
+                if (h->text() == "Description          ") {
+                    h->setText("Description  ");
+                }
+                if (h->text() == "Replaced Parts         ") {
+                    h->setText("Replaced Parts  ");
+                }
+                if (h->text() == "Price            ") {
+                    h->setText("Price  ");
+                }
+                if (h->text() == "Provider Id            ") {
+                    h->setText("Provider Id  ");
+                }
+                if (h->text() == "Provider Name                    ") {
+                    h->setText("Provider Name  ");
+                }
+            }
+
+        }
+    }
+
 }
 
 
@@ -178,8 +301,10 @@ void CardWidget::addTableLines() {
 
 
     for (auto line : lines_vector) {
-        Vlayout->addWidget(line);
+        Vlayout_Lines->addWidget(line);
     }
+
+    Vlayout->addLayout(Vlayout_Lines);
 }
 
 
@@ -189,8 +314,9 @@ CardWidget::CardWidget(QWidget* parent, QString cardId, MainWindow* mainWindow)
 {
     styles = new Styles;
     main_Vlayout = new QVBoxLayout;
-    Vlayout = new QVBoxLayout(this);
-    
+    Vlayout = new QVBoxLayout();
+    Vlayout_Lines = new QVBoxLayout();
+
     font = new QFont;
     font->setPointSize(12);
     font->setFamily("Segoe UI");
@@ -207,9 +333,9 @@ CardWidget::CardWidget(QWidget* parent, QString cardId, MainWindow* mainWindow)
     addSpacer();
     addTableHeaders();
     addTableLines();
+    addTotalLabel();
     Vlayout->addSpacing(62);
     setCardDetails();
-
     scroll_widget = new QWidget;
     scroll_widget->setLayout(Vlayout);
 
@@ -399,8 +525,10 @@ void CardWidget::editCard(Field* field) {
                     }
 
                     if (f->name == "service_price") {
+
                         f->edit->setText(map["price"]);
                         card->service_details_vec[field->line_number]["price"] = map["price"];
+                        updateTotalLabel();
                     }
                 }
             }
@@ -504,4 +632,115 @@ void CardWidget::paintEvent(QPaintEvent* event) {
     painter.setBrush(color1);
 
     painter.drawRoundedRect(opt.rect, 15, 15);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+void CardWidget::addLine() {
+    if (top_widget->del_fl == false) {
+        top_widget->changeDelBtnState();
+        for (auto line : lines_vector) {
+            line->lineHlayout->removeWidget(line->del_btn);
+            line->del_btn->hide();
+            line->del_btn = nullptr;
+        }
+
+        Line* line = new Line(nullptr, lines_vector.size(), this);
+        lines_vector.emplace_back(line);
+        Vlayout_Lines->addWidget(line);
+        card->addLine();
+        card->original_service_codes.emplace_back("-1");
+    }
+
+    else {
+        Line* line = new Line(nullptr, lines_vector.size(), this);
+        lines_vector.emplace_back(line);
+        Vlayout_Lines->addWidget(line);
+        card->addLine();
+        card->original_service_codes.emplace_back("-1");
+    }
+
+
+}
+
+void CardWidget::updateTotalLabel() {
+    double sum = 0;
+    for (auto l : lines_vector) {
+        sum += std::stoi(l->fields_vector[3]->edit->text().toStdString());
+    }
+    total->setText("Total: " + QString::number(sum));
+}
+
+void CardWidget::addTotalLabel() {
+    double sum = 0;
+    for (auto l : lines_vector) {
+        sum += std::stoi(l->fields_vector[3]->edit->text().toStdString());
+    }
+    QString totalString =  "Total: " + QString::number(sum);
+
+    total_hlayout = new QHBoxLayout();
+    total_hlayout->setAlignment(Qt::AlignLeft);
+
+    total = new QLabel(totalString);
+    total->setStyleSheet(styles->tableHeader);
+    total_hlayout->addWidget(total);
+
+    total->setMinimumSize(76, 76);
+    total->setMaximumSize(76000, 100);
+
+
+    Vlayout->addLayout(total_hlayout);
+}
+
+
+void CardWidget::removeLine(int lineNumber) {
+    for (auto line : lines_vector) {
+        if (line->line_number == lineNumber) {
+            Vlayout_Lines->removeWidget(line);
+            lines_vector.erase(std::find(lines_vector.begin(), lines_vector.end(), line));
+            line->~Line();
+        }
+        if (line->line_number > lineNumber) {
+            line->line_number--;
+            for (auto f : line->fields_vector) {
+                f->line_number--;
+            }
+        }
+    }
+
+    card->service_details_vec.erase(card->service_details_vec.begin() + lineNumber);
+    card->original_service_codes.erase(card->original_service_codes.begin() + lineNumber);
+
+
+
+    if (lines_vector.size() == 0) {
+        for (auto h : headers) {
+            if (h->text() == "Description          ") {
+                h->setText("Description  ");
+            }
+            if (h->text() == "Replaced Parts         ") {
+                h->setText("Replaced Parts  ");
+            }
+            if (h->text() == "Price            ") {
+                h->setText("Price  ");
+            }
+            if (h->text() == "Provider Id            ") {
+                h->setText("Provider Id  ");
+            }
+            if (h->text() == "Provider Name                    ") {
+                h->setText("Provider Name  ");
+            }
+        }
+    }
+
 }

@@ -62,9 +62,6 @@ void CardLine::unhighlightLine() {
 
 
 
-
-
-
 CardsTableWidget::CardsTableWidget(QWidget* parent, MainWindow* mainWindow)
 	: QWidget(parent),
 	main_window(mainWindow){
@@ -94,6 +91,44 @@ CardsTableWidget::CardsTableWidget(QWidget* parent, MainWindow* mainWindow)
 	this->setLayout(main_VLayout);
 }
 
+void CardsTableWidget::clearLayout() {
+	QLayoutItem* item;
+	while ((item = tableVLayout->takeAt(0)) != nullptr) {
+		if (QWidget* widget = item->widget()) {
+			widget->hide();
+		}
+		delete item;
+	}
+}
+
+void CardsTableWidget::updateTable(QString findString) { //todo
+	if (findString == "") {
+		clearLayout();
+		addTableLines();
+		return;
+	}
+
+
+	std::string fstring = findString.toStdString();
+	if (!tableVLayout->isEmpty()) {
+		clearLayout();
+	}
+	
+	for (auto line : lines) {
+		std::string id = line->card_id.toStdString();
+		std::string date = line->date.toStdString();
+		std::string name = line->owner_name.toStdString();
+		if (fstring.find(id) != std::string::npos) {
+			tableVLayout->addWidget(line);
+		}
+		if (fstring.find(date) != std::string::npos) {
+			tableVLayout->addWidget(line);
+		}
+		if (fstring.find(name) != std::string::npos) {
+			tableVLayout->addWidget(line);
+		}
+	}
+}
 
 void CardsTableWidget::addSpacer() {
 	QLabel* spacer = new QLabel;
@@ -105,7 +140,7 @@ void CardsTableWidget::addSpacer() {
 
 
 void CardsTableWidget::addTopMenu() {
-	search_widget = new SearchWidget(nullptr, main_window);
+	search_widget = new SearchWidget(nullptr, main_window, this);
 	MenuHlayout->addSpacing(30);
 	MenuHlayout->addWidget(search_widget);
 	MenuHlayout->addSpacing(30);

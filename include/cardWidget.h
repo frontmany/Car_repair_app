@@ -29,9 +29,9 @@ struct Field : QWidget{
 public:
     Field(QString name, QString field, CardWidget* cardWidget);
     Field(QString name, QString field, int lineNumber, CardWidget* cardWidget);
+    Field(QString name, int lineNumber, CardWidget* cardWidget);
 
-    Field(QString name, QString field, AddCardWidget* addcardWidget);
-    Field(QString name, QString field, int lineNumber, AddCardWidget* addcardWidget);
+
 
     int line_number = -1;
     QString name = "";
@@ -52,6 +52,7 @@ signals:
 
 
 struct Line : public QWidget {
+    Q_OBJECT
 public:
     Line(QWidget* parent, CardWidget* cardWidget, int lineNumber, const QString& serviceCode, const QString& serviceDescription,
         QString replacedPartsCount, QString price, const QString providerId,
@@ -61,12 +62,21 @@ public:
         QString replacedPartsCount, QString price, const QString providerId,
         const QString& providerName);
 
+    Line(QWidget* parent, int lineNumber, CardWidget* cardWidget);
+
+    void setDelBtn(QPushButton* d_b);
+
 private:
-    int line_number = -1;
+
+    CardWidget* card_widget = nullptr;
     Styles* styles = nullptr;
     QFont* font;
-    QHBoxLayout* lineHlayout = nullptr;
-    
+
+signals:
+    void sendLineNumber(int n);
+
+private slots:
+    void sendNumber() { emit sendLineNumber(line_number); }
 
 public:
     std::vector<Field*> fields_vector;
@@ -76,6 +86,10 @@ public:
     Field* price = nullptr;
     Field* provider_Id = nullptr;
     Field* provider_name = nullptr;
+
+    int line_number = -1;
+    QHBoxLayout* lineHlayout = nullptr;
+    QPushButton* del_btn = nullptr;
 
     ~Line() {
         delete lineHlayout;
@@ -103,9 +117,13 @@ public:
     void setCardDetails();
     void setEditable(bool fl);
 
-
+    void addLine();
+    void removeLine(int lineNumber);
+    void setEditLine(bool fl);
 
 private:
+
+
     Card* card = nullptr;
     MainWindow* main_window = nullptr;
 
@@ -127,10 +145,13 @@ private:
     QLabel* provider_name_header = nullptr;
 
 
+    QLabel* total = nullptr;
+    QHBoxLayout* total_hlayout = nullptr;
 
     QVBoxLayout* Vlayout = nullptr;
     QVBoxLayout* main_Vlayout = nullptr;
     QHBoxLayout* top_Hlayout = nullptr;
+    QVBoxLayout* Vlayout_Lines = nullptr;
 
 
     std::vector<Line*> lines_vector;
@@ -173,6 +194,8 @@ private:
     void addTopWidget();
     void addTableHeaders();
     void addTableLines();
+    void addTotalLabel();
+    void updateTotalLabel();
 };
 
 

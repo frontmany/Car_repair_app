@@ -8,6 +8,7 @@
 
 class Styles;
 class MainWindow;
+class CardsTableWidget;
 
 
 
@@ -17,14 +18,15 @@ class SearchWidget : public QWidget {
 
 public:
     Styles* styles = nullptr;
-    explicit SearchWidget(QWidget* parent = nullptr, MainWindow* mainWindow = nullptr);
+    SearchWidget(QWidget* parent = nullptr, MainWindow* mainWindow = nullptr,  CardsTableWidget* cardsTableWidget = nullptr);
     ~SearchWidget();
 
 private:
     MainWindow* main_window = nullptr;
     bool first_setup = true;
     const int Widget_Id = 2;
-    
+    CardsTableWidget* cards_table_widget = nullptr;
+
     QVBoxLayout* searchVlayout = nullptr;
     QHBoxLayout* searchHlayout = nullptr;
     QLineEdit* search_line_edit;

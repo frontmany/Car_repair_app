@@ -94,9 +94,12 @@ protected:
 
 
 class CardsTableWidget : public QWidget {
+	Q_OBJECT
+
 public:
 	CardsTableWidget(QWidget* parent = nullptr, MainWindow* mainWindow = nullptr);
 	void tableButtonClicked(const QString& buttonName) {}
+	void updateTable(QString findString);
 
 private:
 	MainWindow* main_window = nullptr;
@@ -114,7 +117,7 @@ private:
 
 
 
-	//хедера таблицы
+
 	QHBoxLayout* headersHlayout = new QHBoxLayout;
 	std::vector<QLabel*> headers;
 
@@ -132,6 +135,7 @@ private:
 	void addTableHeaders();
 	void addTableLines();
 	void paintEvent(QPaintEvent* event) override;
+	void clearLayout();
 
 public:
 	~CardsTableWidget() {

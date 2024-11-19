@@ -4,10 +4,11 @@
 #include <QVBoxLayout>
 #include <QStyleOption>
 #include <QPainter>
+#include "cardsTableWidget.h"
 
 
-SearchWidget::SearchWidget(QWidget* parent, MainWindow* mainWindow)
-    : QWidget(parent), main_window(mainWindow) {
+SearchWidget::SearchWidget(QWidget* parent, MainWindow* mainWindow, CardsTableWidget* cardsTableWidget)
+    : QWidget(parent), main_window(mainWindow), cards_table_widget(cardsTableWidget) {
     styles = new Styles;
 
     addSearchWidget();
@@ -18,18 +19,18 @@ SearchWidget::SearchWidget(QWidget* parent, MainWindow* mainWindow)
     searchVlayout = new QVBoxLayout(this);
     searchVlayout->addLayout(searchHlayout);
 
-   
 
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     this->setLayout(searchVlayout);
-}
 
+}
 
 void SearchWidget::addSearchWidget() {
     search_line_edit = new QLineEdit(this);
     search_line_edit->setStyleSheet(styles->searchLineEdit);
     search_line_edit->setPlaceholderText("search...");
     search_line_edit->setFixedSize(168, 36);
+    connect(search_line_edit, &QLineEdit::textChanged, cards_table_widget, &CardsTableWidget::updateTable);
 
     searchHlayout = new QHBoxLayout;
     searchHlayout->setAlignment(Qt::AlignLeft);

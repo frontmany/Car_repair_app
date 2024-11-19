@@ -20,6 +20,17 @@ TopCardWidget::TopCardWidget(QWidget* parent,
     back_btn->setStyleSheet(styles->filterButton);
     connect(back_btn, &QPushButton::clicked, mainWindow, &MainWindow::setCardsTableWidget);
 
+    add_btn = new QPushButton("add line");
+    add_btn->setFixedSize(46, 36);
+    add_btn->setStyleSheet(styles->filterButton);
+    connect(add_btn, &QPushButton::clicked, cardWidget, &CardWidget::addLine);
+
+    del_btn = new QPushButton("del line");
+    del_btn->setFixedSize(46, 36);
+    del_btn->setStyleSheet(styles->filterButton);
+    connect(del_btn, &QPushButton::clicked, this, &TopCardWidget::sendDelflSignal);
+    connect(this, &TopCardWidget::sendDelFlag, cardWidget, &CardWidget::setEditLine);
+    connect(del_btn, &QPushButton::clicked, this, &TopCardWidget::changeDelBtnState);
 
     edit_btn = new QPushButton("edit");
     edit_btn->setFixedSize(46, 36);
@@ -42,6 +53,8 @@ TopCardWidget::TopCardWidget(QWidget* parent,
     main_label->setFont(*font);
 
     Hlayout->addWidget(back_btn);
+    Hlayout->addWidget(add_btn);
+    Hlayout->addWidget(del_btn);
     Hlayout->addWidget(edit_btn);
     Hlayout->addWidget(save_btn);
     Hlayout->addWidget(main_label);
