@@ -3,16 +3,21 @@
 #include <QString>
 #include <QScrollArea>
 #include <QLabel>
+#include <QThread>
 #include<string>
 #include<vector>
 #include<pqxx/pqxx>
 #include<QPushButton>
-
+#include <algorithm> 
+#include <cctype> 
 
 class TableButton;
 class Styles;
 class MainWindow;
 class SearchWidget;
+
+
+
 
 
 struct CardLine : public QWidget {
@@ -57,6 +62,33 @@ public:
 	}
 };
 
+class TableWorker : public QObject {
+	Q_OBJECT
+
+public:
+	TableWorker(QVBoxLayout* layout, std::vector<CardLine*>& lines,
+		MainWindow* mainWindow, QString& findString);
+
+	void process() {
+		clearLayout();
+		updateTable();
+	}
+
+
+signals:
+	void finished();
+
+
+private:
+	void clearLayout();
+	void updateTable();
+
+	MainWindow* main_window = nullptr;
+	QLayout* tableVLayout;
+	const std::vector<CardLine*>& lines; 
+	QString searchString;
+};
+
 
 class TableButton : public QPushButton{
 private:
@@ -99,7 +131,7 @@ class CardsTableWidget : public QWidget {
 public:
 	CardsTableWidget(QWidget* parent = nullptr, MainWindow* mainWindow = nullptr);
 	void tableButtonClicked(const QString& buttonName) {}
-	void updateTable(QString findString);
+	void upTable(QString findString);
 
 private:
 	MainWindow* main_window = nullptr;
@@ -135,7 +167,6 @@ private:
 	void addTableHeaders();
 	void addTableLines();
 	void paintEvent(QPaintEvent* event) override;
-	void clearLayout();
 
 public:
 	~CardsTableWidget() {

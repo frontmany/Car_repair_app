@@ -20,5 +20,6 @@ include_directories("C:/Program Files/libpqxx/include" "include")
 link_directories("C:/Program Files/libpqxx/lib" "C:/Program Files/PostgreSQL/16/lib")
 
 
+
 add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
 target_link_libraries(${PROJECT_NAME} pqxxd libpq Ws2_32 Qt6::Widgets)

@@ -30,7 +30,7 @@ void SearchWidget::addSearchWidget() {
     search_line_edit->setStyleSheet(styles->searchLineEdit);
     search_line_edit->setPlaceholderText("search...");
     search_line_edit->setFixedSize(168, 36);
-    connect(search_line_edit, &QLineEdit::textChanged, cards_table_widget, &CardsTableWidget::updateTable);
+    connect(search_line_edit, &QLineEdit::textChanged, cards_table_widget, &CardsTableWidget::upTable);
 
     searchHlayout = new QHBoxLayout;
     searchHlayout->setAlignment(Qt::AlignLeft);
