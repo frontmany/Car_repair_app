@@ -349,6 +349,11 @@ std::map<QString, QString> const Card::findServiceDetailsbyDesc(QString descript
 
 
 void Card::commitChanges() {
+    if (service_details_vec.size() == 0) {
+        QMessageBox::critical(nullptr, "No services", "The card does not specify the services");
+        return;
+    }
+
     std::string id = card_details_map["card_code"].toStdString();
     std::string date = card_details_map["card_date"].toStdString();
     std::string carId = card_details_map["car_id"].toStdString();

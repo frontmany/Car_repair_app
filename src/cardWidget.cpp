@@ -493,6 +493,7 @@ void CardWidget::editCard(Field* field) {
                     if (field->name == "owner_id") {
                         field->edit->setText(map["owner_id"]);
                         card->card_details_map["owner_id"] = map["owner_id"];
+
                     }
                     if (field->name == "owner_name") {
                         field->edit->setText(map["owner_name"]);
@@ -562,6 +563,7 @@ void CardWidget::editCard(Field* field) {
 
         if (field->name == "replaced_parts_count") {
             card->service_details_vec[field->line_number]["replaced_parts_count"] = newValue;
+            updateTotalLabel();
         }
 
         if (field->name == "provider_id") {
@@ -676,7 +678,15 @@ void CardWidget::addLine() {
 void CardWidget::updateTotalLabel() {
     double sum = 0;
     for (auto l : lines_vector) {
-        sum += std::stoi(l->fields_vector[3]->edit->text().toStdString());
+        try {
+            int a = std::stoi(l->fields_vector[3]->edit->text().toStdString());
+            int b = std::stoi(l->fields_vector[2]->edit->text().toStdString());
+            sum += a * b;
+
+        }
+        catch(...){
+
+        }
     }
     total->setText("Total: " + QString::number(sum));
 }
@@ -684,7 +694,8 @@ void CardWidget::updateTotalLabel() {
 void CardWidget::addTotalLabel() {
     double sum = 0;
     for (auto l : lines_vector) {
-        sum += std::stoi(l->fields_vector[3]->edit->text().toStdString());
+        sum += std::stoi(l->fields_vector[3]->edit->text().toStdString())
+            * std::stoi(l->fields_vector[2]->edit->text().toStdString());
     }
     QString totalString =  "Total: " + QString::number(sum);
 
@@ -708,6 +719,7 @@ void CardWidget::removeLine(int lineNumber) {
         if (line->line_number == lineNumber) {
             Vlayout_Lines->removeWidget(line);
             lines_vector.erase(std::find(lines_vector.begin(), lines_vector.end(), line));
+            updateTotalLabel();
             line->~Line();
         }
         if (line->line_number > lineNumber) {
