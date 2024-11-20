@@ -25,6 +25,10 @@ SearchWidget::SearchWidget(QWidget* parent, MainWindow* mainWindow, CardsTableWi
 
 }
 
+void SearchWidget::onSortActionTriggered(const QString& columnName) {
+    cards_table_widget->handleSortAction(columnName);
+}
+
 void SearchWidget::addSearchWidget() {
     search_line_edit = new QLineEdit(this);
     search_line_edit->setStyleSheet(styles->searchLineEdit);
@@ -45,12 +49,27 @@ void SearchWidget::addSortWidget() {
 
     menu = new QMenu(this);
     menu->setStyleSheet(styles->filterMenu);
-    menu->addAction("by id");
-    menu->addAction("by date");
-    menu->addAction("by name");
+
+    sortById = menu->addAction("by id");
+    sortByDate = menu->addAction("by date");
+    sortByName = menu->addAction("by name");
+
+
+
+    connect(sortById, &QAction::triggered, this, [this]() {
+        QString columnName = "by id"; 
+        onSortActionTriggered(columnName);
+        });
+    connect(sortByDate, &QAction::triggered, this, [this]() {
+        QString columnName = "by date"; 
+        onSortActionTriggered(columnName);
+        });
+    connect(sortByName, &QAction::triggered, this, [this]() {
+        QString columnName = "by name"; 
+        onSortActionTriggered(columnName);
+        });
 
     sort_btn->setMenu(menu);
-
     searchHlayout->addWidget(sort_btn);
 }
 

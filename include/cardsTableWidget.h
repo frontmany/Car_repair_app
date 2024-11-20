@@ -66,7 +66,7 @@ class TableWorker : public QObject {
 	Q_OBJECT
 
 public:
-	TableWorker(QVBoxLayout* layout, std::vector<CardLine*>& lines,
+	TableWorker(QVBoxLayout* layout, std::vector<CardLine*>& lines,std::vector<CardLine*>& linesCurrnt, 
 		MainWindow* mainWindow, QString& findString);
 
 	void process() {
@@ -86,6 +86,7 @@ private:
 	MainWindow* main_window = nullptr;
 	QLayout* tableVLayout;
 	const std::vector<CardLine*>& lines; 
+	std::vector<CardLine*>& lines_current; 
 	QString searchString;
 };
 
@@ -132,7 +133,7 @@ public:
 	CardsTableWidget(QWidget* parent = nullptr, MainWindow* mainWindow = nullptr);
 	void tableButtonClicked(const QString& buttonName) {}
 	void upTable(QString findString);
-
+	void handleSortAction(QString menulabel);
 private:
 	MainWindow* main_window = nullptr;
 	SearchWidget* search_widget = nullptr;
@@ -143,6 +144,7 @@ private:
 	QFont* font;
 
 	std::vector<CardLine*> lines;
+	std::vector<CardLine*> lines_current;
 	QWidget* scroll_widget = nullptr;
 	QScrollArea* scrollArea = nullptr;
 	
@@ -167,6 +169,11 @@ private:
 	void addTableHeaders();
 	void addTableLines();
 	void paintEvent(QPaintEvent* event) override;
+
+	void sortCardLinesById();
+	void sortCardLinesByDate();
+	void sortCardLinesByName();
+	void updateTable();
 
 public:
 	~CardsTableWidget() {

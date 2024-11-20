@@ -21,6 +21,9 @@ public:
     SearchWidget(QWidget* parent = nullptr, MainWindow* mainWindow = nullptr,  CardsTableWidget* cardsTableWidget = nullptr);
     ~SearchWidget();
 
+public slots:
+    void onSortActionTriggered(const QString& columnName);
+
 private:
     MainWindow* main_window = nullptr;
     bool first_setup = true;
@@ -32,6 +35,9 @@ private:
     QLineEdit* search_line_edit;
 
     QMenu* menu = nullptr;
+    QAction* sortById = nullptr;
+    QAction* sortByDate = nullptr;
+    QAction* sortByName = nullptr;
     QPushButton* sort_btn = nullptr;
 
     QPushButton* add_btn = nullptr;

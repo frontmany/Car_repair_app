@@ -92,15 +92,19 @@ void TableWorker::clearLayout() {
 	while ((item = tableVLayout->takeAt(0)) != nullptr) {
 		QWidget* widget = item->widget();
 		widget->deleteLater();
-		
 		delete item;
 	}
+	for (auto line : lines_current) {
+		delete line;
+	}
+	lines_current.clear();
 }
 
 
-TableWorker::TableWorker(QVBoxLayout* layout, std::vector<CardLine*>& lines,
+TableWorker::TableWorker(QVBoxLayout* layout, std::vector<CardLine*>& lines, std::vector<CardLine*>& linesCurrent,
 	MainWindow* mainWindow, QString& findString) 
-	: tableVLayout(layout), lines(lines), searchString(findString), main_window(mainWindow) {}
+	: tableVLayout(layout), lines(lines), searchString(findString), main_window(mainWindow),
+	lines_current(linesCurrent){}
 
 
 void TableWorker::updateTable() {
@@ -108,14 +112,17 @@ void TableWorker::updateTable() {
 		clearLayout(); 
 		for (const auto& line : lines) {
 			CardLine* l = new CardLine(nullptr, main_window, std::stoi(line->card_id.toStdString()), line->date.toStdString(), line->owner_name.toStdString());
+			CardLine* l2 = new CardLine(nullptr, main_window, std::stoi(line->card_id.toStdString()), line->date.toStdString(), line->owner_name.toStdString());
+
 			tableVLayout->addWidget(l);
+			lines_current.emplace_back(l2);
 		}
 		emit finished();
 		return;
 	}
 
 	std::string fstring = searchString.toStdString();
-	std::transform(fstring.begin(), fstring.end(), fstring.begin(), [](unsigned char c) { return std::tolower(c); }); // Преобразуем в нижний регистр
+	std::transform(fstring.begin(), fstring.end(), fstring.begin(), [](unsigned char c) { return std::tolower(c); }); 
 
 	clearLayout(); 
 
@@ -132,7 +139,9 @@ void TableWorker::updateTable() {
 		if (id.find(fstring) != std::string::npos || date.find(fstring) != std::string::npos ||
 			name.find(fstring) != std::string::npos) {
 			CardLine* l = new CardLine(nullptr, main_window, std::stoi(line->card_id.toStdString()), line->date.toStdString(), line->owner_name.toStdString());
+			CardLine* l2 = new CardLine(nullptr, main_window, std::stoi(line->card_id.toStdString()), line->date.toStdString(), line->owner_name.toStdString());
 			tableVLayout->addWidget(l);
+			lines_current.emplace_back(l2);
 		}
 	}
 
@@ -142,7 +151,7 @@ void TableWorker::updateTable() {
 
 void CardsTableWidget::upTable(QString findString) {
 	QThread* thread = new QThread;
-	TableWorker* worker = new TableWorker(tableVLayout, lines, main_window, findString);
+	TableWorker* worker = new TableWorker(tableVLayout, lines, lines_current, main_window, findString);
 
 	connect(thread, &QThread::started, worker, &TableWorker::process);
 	connect(worker, &TableWorker::finished, thread, &QThread::quit);
@@ -153,6 +162,65 @@ void CardsTableWidget::upTable(QString findString) {
 	thread->start();
 }
 
+
+
+
+
+
+void CardsTableWidget::sortCardLinesById() {
+	std::sort(lines_current.begin(), lines_current.end(), [](CardLine* a, CardLine* b) {
+		return a->card_id < b->card_id;
+		});
+}
+
+
+void CardsTableWidget::sortCardLinesByDate() {
+	std::sort(lines_current.begin(), lines_current.end(), [](CardLine* a, CardLine* b) {
+		return a->date < b->date;
+		});
+}
+
+void CardsTableWidget::sortCardLinesByName() {
+	std::sort(lines_current.begin(), lines_current.end(), [](CardLine* a, CardLine* b) {
+		return a->owner_name < b->owner_name;
+		});
+}
+
+
+void CardsTableWidget::handleSortAction(QString menulabel) {
+	if (menulabel == "by id") {
+		sortCardLinesById();
+		updateTable();
+	}
+	if (menulabel == "by date") {
+		sortCardLinesByDate();
+		updateTable();
+	}
+	if (menulabel == "by name") {
+		sortCardLinesByName();
+		updateTable();
+	}
+}
+
+
+void CardsTableWidget::updateTable() {
+	QLayoutItem* item;
+	while ((item = tableVLayout->takeAt(0)) != nullptr) {
+		QWidget* widget = item->widget();
+		widget->deleteLater();
+
+		delete item;
+	}
+
+	for (const auto& line : lines_current) {
+		std::string id = line->card_id.toStdString();
+		std::string date = line->date.toStdString();
+		std::string name = line->owner_name.toStdString();
+		CardLine* l = new CardLine(nullptr, main_window, std::stoi(line->card_id.toStdString()), line->date.toStdString(), line->owner_name.toStdString());
+		tableVLayout->addWidget(l);
+		
+	}
+}
 
 void CardsTableWidget::addSpacer() {
 	QLabel* spacer = new QLabel;
@@ -200,7 +268,9 @@ void CardsTableWidget::addTableLines() {
 
 		CardLine* line1 = new CardLine(nullptr, main_window, card_id, date, owner_name);
 		CardLine* line2 = new CardLine(nullptr, main_window, card_id, date, owner_name);
+		CardLine* line3 = new CardLine(nullptr, main_window, card_id, date, owner_name);
 		lines.emplace_back(line1);
+		lines_current.emplace_back(line3);
 		tableVLayout->addWidget(line2);
 		
 	}
