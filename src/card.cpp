@@ -271,6 +271,7 @@ Card::Card(QString cardId){
     
     for (int i = 0; i < service_details_vec.size();i++) {
         original_service_codes.emplace_back(service_details_vec[i]["service_type_id"]);
+        original_service_codes_count++;
     }
     
 
@@ -387,6 +388,16 @@ void Card::commitChanges() {
         std::string sqlCar = "UPDATE warranty_cards SET fk_car_id = '" + carId + "' WHERE card_id = " + id + ";";
 
 
+
+        for (int i = 0; i < original_service_codes.size(); i++) {
+            std::string servicetypeIdOld = original_service_codes[i].toStdString();
+            if (servicetypeIdOld != "-1") {
+                std::string sqlServicesParts = "DELETE FROM service_history WHERE fk_card_id = \$1 AND fk_service_type_id = \$2;";
+                pqxx::result resultParts = transaction.exec_params(sqlServicesParts, id, servicetypeIdOld);
+            }
+        }
+
+
         for (int i = 0; i < service_details_vec.size(); i++) {
             try {
                 std::string check_provider_sql = "SELECT provider_name FROM service_providers WHERE provider_id = \$1;";
@@ -427,30 +438,15 @@ void Card::commitChanges() {
                 return; 
             }
 
+
+
             std::string servicetypeIdNew = service_details_vec[i]["service_type_id"].toStdString();
-            if (original_service_codes[i].toStdString() != "-1") {
-                std::string servicetypeIdOld = original_service_codes[i].toStdString();
+            std::string newServiceTypeId = servicetypeIdNew;
+            std::string newReplacedParts = service_details_vec[i]["replaced_parts_count"].toStdString();
+            std::string newProviderId = service_details_vec[i]["provider_id"].toStdString();
 
-                std::string replacedParts = service_details_vec[i]["replaced_parts_count"].toStdString();
-                std::string sqlServicesParts = "UPDATE service_history SET replaced_parts_count = \$1 WHERE fk_card_id = \$2 AND fk_service_type_id = \$3;";
-                pqxx::result resultParts = transaction.exec_params(sqlServicesParts, replacedParts, id, servicetypeIdOld);
-
-                std::string replacedProvider = service_details_vec[i]["provider_id"].toStdString();
-                std::string sqlServicesProvider = "UPDATE service_history SET fk_provider_id = \$1 WHERE fk_card_id = \$2 AND fk_service_type_id = \$3;";
-                pqxx::result resultProvider = transaction.exec_params(sqlServicesProvider, replacedProvider, id, servicetypeIdOld);
-
-                std::string sqlServicesTypeId = "UPDATE service_history SET fk_service_type_id = \$1 WHERE fk_card_id = \$2 AND fk_service_type_id = \$3;";
-                pqxx::result resultTypeId = transaction.exec_params(sqlServicesTypeId, servicetypeIdNew, id, servicetypeIdOld);
-            }
-            else {
-                std::string newServiceTypeId = servicetypeIdNew;
-                std::string newReplacedParts = service_details_vec[i]["replaced_parts_count"].toStdString();
-                std::string newProviderId = service_details_vec[i]["provider_id"].toStdString();
-
-                std::string sqlInsertNewService = "INSERT INTO service_history (fk_card_id, fk_service_type_id, replaced_parts_count, fk_provider_id) VALUES (\$1, \$2, \$3, \$4);";
-                pqxx::result resultInsert = transaction.exec_params(sqlInsertNewService, id, newServiceTypeId, newReplacedParts, newProviderId);
-            }
-           
+            std::string sqlInsertNewService = "INSERT INTO service_history (fk_card_id, fk_service_type_id, replaced_parts_count, fk_provider_id) VALUES (\$1, \$2, \$3, \$4);";
+            pqxx::result resultInsert = transaction.exec_params(sqlInsertNewService, id, newServiceTypeId, newReplacedParts, newProviderId);
         }
         
 

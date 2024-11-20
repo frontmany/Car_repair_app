@@ -19,6 +19,7 @@ public:
 	static const std::map<QString, QString> findProviderbyName(QString providerName);
 
 public:
+	int original_service_codes_count = 0;
 	std::vector<QString> original_service_codes;
 	std::vector<std::map<QString, QString>> service_details_vec;
 	QString card_code = "";

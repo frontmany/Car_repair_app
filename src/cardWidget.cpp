@@ -731,7 +731,9 @@ void CardWidget::removeLine(int lineNumber) {
     }
 
     card->service_details_vec.erase(card->service_details_vec.begin() + lineNumber);
-    card->original_service_codes.erase(card->original_service_codes.begin() + lineNumber);
+    if (lineNumber >= card->original_service_codes_count) {
+        card->original_service_codes.erase(card->original_service_codes.begin() + lineNumber);
+    }
 
 
 
