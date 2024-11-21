@@ -26,8 +26,8 @@ private:
 
 	QVBoxLayout* leftMenu_vlayout = nullptr;
 	QPushButton* cards_btn = nullptr;
-	QPushButton* search_btn = nullptr;
-	QPushButton* owners_btn = nullptr;
+	QPushButton* carsAndOwners_btn = nullptr;
+	QPushButton* serviceTypes_btn = nullptr;
 	QPushButton* active_btn = nullptr;
 	
 	

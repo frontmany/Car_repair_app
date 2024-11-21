@@ -10,7 +10,7 @@
 MainWindow::MainWindow()
 	: QMainWindow() {
 	leftMenu_widget = new LeftMenu(nullptr, this);
-	setSearchWidget();
+	setCardsTableWidget();
 
 }
 
