@@ -89,6 +89,22 @@ void SearchWidget::addDelWidget() {
     del_btn->setFixedSize(46, 36);
     del_btn->setStyleSheet(styles->filterButton);
     searchHlayout->addWidget(del_btn);
+    connect(del_btn, &QPushButton::clicked, this, &SearchWidget::sendDelflSignal);
+    connect(this, &SearchWidget::sendDelFlag, cards_table_widget, &CardsTableWidget::deleteCardbtn);
+    connect(del_btn, &QPushButton::clicked, this, &SearchWidget::changeDelBtnState);
+}
+
+void SearchWidget::changeDelBtnState() {
+    if (del_fl) {
+        del_btn->setStyleSheet(styles->EditButtonActive);
+        del_fl = false;
+
+    }
+    else {
+        del_btn->setStyleSheet(styles->EditButtonUnActive);
+        del_fl = true;
+    }
+
 }
 
 

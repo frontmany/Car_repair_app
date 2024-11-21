@@ -9,9 +9,10 @@
 
 
 
-CardLine::CardLine(QWidget* parent, MainWindow* mainWindow, int cardId, std::string date1, std::string ownerName)
-	: QWidget(parent), card_id(QString::number(cardId)), owner_name(QString::fromStdString(ownerName)), 
-	date(QString::fromStdString(date1))
+CardLine::CardLine(QWidget* parent, MainWindow* mainWindow,
+	int cardId, std::string date1, std::string ownerName, CardsTableWidget* cardsTableWidget)
+	: QWidget(parent), card_id(QString::number(cardId)), owner_name(QString::fromStdString(ownerName)),
+	date(QString::fromStdString(date1)), cards_table_widget(cardsTableWidget)
 {
 	styles = new Styles;
 
@@ -43,7 +44,6 @@ CardLine::CardLine(QWidget* parent, MainWindow* mainWindow, int cardId, std::str
 	this->setLayout(lineHlayout);
 }
 
-
 void CardLine::highlightLine(){
 	btn_card_id->setStyleSheet(styles->tableBtnActive);
 	btn_date->setStyleSheet(styles->tableBtnActive);
@@ -54,6 +54,13 @@ void CardLine::unhighlightLine() {
 	btn_card_id->setStyleSheet(styles->tableBtnUnactive);
 	btn_date->setStyleSheet(styles->tableBtnUnactive);
 	btn_owner_name->setStyleSheet(styles->tableBtnUnactive);
+}
+
+void CardLine::setDelBtn(QPushButton* d_b) {
+	del_btn = d_b;
+	connect(del_btn, &QPushButton::clicked, this, &CardLine::sendNumber);
+	connect(this, &CardLine::sendLineNumber, cards_table_widget, &CardsTableWidget::removeLine);
+
 }
 
 
@@ -102,20 +109,20 @@ void TableWorker::clearLayout() {
 
 
 TableWorker::TableWorker(QVBoxLayout* layout, std::vector<CardLine*>& lines, std::vector<CardLine*>& linesCurrent,
-	MainWindow* mainWindow, QString& findString) 
+	MainWindow* mainWindow, QString& findString, CardsTableWidget* cardsTableWidget) 
 	: tableVLayout(layout), lines(lines), searchString(findString), main_window(mainWindow),
-	lines_current(linesCurrent){}
+	lines_current(linesCurrent), cards_table_widget(cardsTableWidget){}
 
 
 void TableWorker::updateTable() {
 	if (searchString.isEmpty()) {
 		clearLayout(); 
 		for (const auto& line : lines) {
-			CardLine* l = new CardLine(nullptr, main_window, std::stoi(line->card_id.toStdString()), line->date.toStdString(), line->owner_name.toStdString());
-			CardLine* l2 = new CardLine(nullptr, main_window, std::stoi(line->card_id.toStdString()), line->date.toStdString(), line->owner_name.toStdString());
+			CardLine* l = new CardLine(nullptr, main_window, std::stoi(line->card_id.toStdString()), line->date.toStdString(), line->owner_name.toStdString(), cards_table_widget);
+			
 
 			tableVLayout->addWidget(l);
-			lines_current.emplace_back(l2);
+			lines_current.emplace_back(l);
 		}
 		emit finished();
 		return;
@@ -138,10 +145,9 @@ void TableWorker::updateTable() {
 
 		if (id.find(fstring) != std::string::npos || date.find(fstring) != std::string::npos ||
 			name.find(fstring) != std::string::npos) {
-			CardLine* l = new CardLine(nullptr, main_window, std::stoi(line->card_id.toStdString()), line->date.toStdString(), line->owner_name.toStdString());
-			CardLine* l2 = new CardLine(nullptr, main_window, std::stoi(line->card_id.toStdString()), line->date.toStdString(), line->owner_name.toStdString());
+			CardLine* l = new CardLine(nullptr, main_window, std::stoi(line->card_id.toStdString()), line->date.toStdString(), line->owner_name.toStdString(), cards_table_widget);
 			tableVLayout->addWidget(l);
-			lines_current.emplace_back(l2);
+			lines_current.emplace_back(l);
 		}
 	}
 
@@ -151,14 +157,17 @@ void TableWorker::updateTable() {
 
 void CardsTableWidget::upTable(QString findString) {
 	QThread* thread = new QThread;
-	TableWorker* worker = new TableWorker(tableVLayout, lines, lines_current, main_window, findString);
+	TableWorker* worker = new TableWorker(tableVLayout, lines, lines_current, main_window, findString, this);
 
 	connect(thread, &QThread::started, worker, &TableWorker::process);
 	connect(worker, &TableWorker::finished, thread, &QThread::quit);
 	connect(worker, &TableWorker::finished, worker, &TableWorker::deleteLater);
 	connect(thread, &QThread::finished, thread, &QThread::deleteLater);
 
-
+	if (!search_widget->del_fl) {
+		deleteCardbtn(search_widget->del_fl);
+		search_widget->changeDelBtnState();
+	}
 	thread->start();
 }
 
@@ -189,14 +198,26 @@ void CardsTableWidget::sortCardLinesByName() {
 
 void CardsTableWidget::handleSortAction(QString menulabel) {
 	if (menulabel == "by id") {
+		if (!search_widget->del_fl) {
+			deleteCardbtn(search_widget->del_fl);
+			search_widget->changeDelBtnState();
+		}
 		sortCardLinesById();
 		updateTable();
 	}
 	if (menulabel == "by date") {
+		if (!search_widget->del_fl) {
+			deleteCardbtn(search_widget->del_fl);
+			search_widget->changeDelBtnState();
+		}
 		sortCardLinesByDate();
 		updateTable();
 	}
 	if (menulabel == "by name") {
+		if (!search_widget->del_fl) {
+			deleteCardbtn(search_widget->del_fl);
+			search_widget->changeDelBtnState();
+		}
 		sortCardLinesByName();
 		updateTable();
 	}
@@ -204,22 +225,26 @@ void CardsTableWidget::handleSortAction(QString menulabel) {
 
 
 void CardsTableWidget::updateTable() {
+	std::vector<CardLine*> linesCurrentCopy;
+	for (const auto& line : lines_current) {
+		CardLine* l = new CardLine(nullptr, main_window, std::stoi(line->card_id.toStdString()), line->date.toStdString(), line->owner_name.toStdString(), this);
+		linesCurrentCopy.emplace_back(l);
+	}
+
 	QLayoutItem* item;
 	while ((item = tableVLayout->takeAt(0)) != nullptr) {
 		QWidget* widget = item->widget();
 		widget->deleteLater();
-
 		delete item;
-	}
-
-	for (const auto& line : lines_current) {
-		std::string id = line->card_id.toStdString();
-		std::string date = line->date.toStdString();
-		std::string name = line->owner_name.toStdString();
-		CardLine* l = new CardLine(nullptr, main_window, std::stoi(line->card_id.toStdString()), line->date.toStdString(), line->owner_name.toStdString());
-		tableVLayout->addWidget(l);
 		
 	}
+	lines_current.clear();
+
+	for (const auto& line : linesCurrentCopy) {
+		tableVLayout->addWidget(line);
+		
+	}
+	lines_current = linesCurrentCopy;
 }
 
 void CardsTableWidget::addSpacer() {
@@ -266,11 +291,10 @@ void CardsTableWidget::addTableLines() {
 
 
 
-		CardLine* line1 = new CardLine(nullptr, main_window, card_id, date, owner_name);
-		CardLine* line2 = new CardLine(nullptr, main_window, card_id, date, owner_name);
-		CardLine* line3 = new CardLine(nullptr, main_window, card_id, date, owner_name);
+		CardLine* line1 = new CardLine(nullptr, main_window, card_id, date, owner_name, this);
+		CardLine* line2 = new CardLine(nullptr, main_window, card_id, date, owner_name, this);
 		lines.emplace_back(line1);
-		lines_current.emplace_back(line3);
+		lines_current.emplace_back(line2);
 		tableVLayout->addWidget(line2);
 		
 	}
@@ -312,6 +336,81 @@ void CardsTableWidget::addTableHeaders() {
 
 
 
+void CardsTableWidget::deleteCardbtn(bool fl){
+	if (fl && lines_current.size() != 0) {
+		for (auto line : lines_current) {
+			QPushButton* delBtn = new QPushButton("del");
+			line->setDelBtn(delBtn);
+
+			for (auto h : headers) {
+				if (h->text() == "       Card Code") {
+					h->setText("    Card Code");
+				}
+				if (h->text() == "	  Date") {
+					h->setText("Date       ");
+				}
+				if (h->text() == "Owner Name      ") {
+					h->setText("Owner Name                       ");
+				}
+			}
+
+			line->lineHlayout->addWidget(line->del_btn);
+			
+		}
+	}
+
+	else if (lines_current.size() != 0) {
+		for (auto line : lines_current) {
+			line->lineHlayout->removeWidget(line->del_btn);
+			line->del_btn->hide();
+			line->del_btn = nullptr;
+
+			for (auto h : headers) {
+				if (h->text() == "    Card Code") {
+					h->setText("       Card Code");
+				}
+				if (h->text() == "Date       ") {
+					h->setText("	  Date");
+				}
+				if (h->text() == "Owner Name                       ") {
+					h->setText("Owner Name      ");
+				}
+			}
+
+		}
+	}
+}
+
+void CardsTableWidget::removeLine(int cardId) {
+	for (auto line : lines_current) {
+		if (line->card_id.toInt() == cardId) {
+			tableVLayout->removeWidget(line);
+			line->deleteLater();
+			lines_current.erase(std::remove(lines_current.begin(), lines_current.end(), line), lines_current.end());
+			
+		}
+	}
+
+	for (auto line : lines) {
+		if (line->card_id.toInt() == cardId) {
+			lines.erase(std::remove(lines.begin(), lines.end(), line), lines.end());
+		}
+	}
+
+	std::string connection_string = "dbname=mydb user=postgres password=123 host=localhost port=5432";
+	pqxx::connection connection(connection_string);
+	pqxx::work transaction(connection);
+	
+	std::string sql_service_history = "DELETE FROM service_history WHERE fk_card_id = " + transaction.quote(cardId) + ";";
+	pqxx::result result_service_history = transaction.exec(sql_service_history);
+
+	std::string sql_cars = "DELETE FROM warranty_cards WHERE card_id = " + transaction.quote(cardId) + ";";
+	pqxx::result result_cars = transaction.exec(sql_cars);
+
+
+	transaction.commit();
+	connection.close();
+}
 
 void CardsTableWidget::paintEvent(QPaintEvent* event) {
 	QColor color1(227, 227, 227);

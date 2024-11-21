@@ -15,6 +15,7 @@ class TableButton;
 class Styles;
 class MainWindow;
 class SearchWidget;
+class CardsTableWidget;
 
 
 
@@ -25,32 +26,37 @@ struct CardLine : public QWidget {
 
 signals:
 	void sendLine(CardLine* line);
+	void sendLineNumber(int n);
 
 private slots:
-	void sendSignal() {
-		emit sendLine(this);
-	}
+	void sendSignal() {emit sendLine(this); }
+	void sendNumber() { emit sendLineNumber(card_id.toInt()); }
+
 
 public:
-	CardLine(QWidget* parent, MainWindow* mainWindow, int cardId, std::string date, std::string ownerName);
+	CardLine(QWidget* parent, MainWindow* mainWindow, int cardId,
+		std::string date, std::string ownerName, CardsTableWidget* cardsTableWidget);
 	void highlightLine();
 	void unhighlightLine();
+	void setDelBtn(QPushButton* d_b);
 
 private:
 	TableButton* btn_card_id = nullptr;
 	TableButton* btn_date = nullptr;
 	TableButton* btn_owner_name = nullptr;
-
+	CardsTableWidget* cards_table_widget = nullptr;
 
 	Styles* styles = nullptr;
 	QFont* font;
-	QHBoxLayout* lineHlayout = nullptr;
 	std::vector<QPushButton*> vector_buttons;
 
 public:
 	QString card_id;
 	QString date;
 	QString owner_name;
+
+	QHBoxLayout* lineHlayout = nullptr;
+	QPushButton* del_btn = nullptr;
 
 	~CardLine() {
 		delete lineHlayout;
@@ -60,6 +66,8 @@ public:
 			delete button;
 		}
 	}
+
+
 };
 
 class TableWorker : public QObject {
@@ -67,7 +75,7 @@ class TableWorker : public QObject {
 
 public:
 	TableWorker(QVBoxLayout* layout, std::vector<CardLine*>& lines,std::vector<CardLine*>& linesCurrnt, 
-		MainWindow* mainWindow, QString& findString);
+		MainWindow* mainWindow, QString& findString, CardsTableWidget* cardsTableWidget);
 
 	void process() {
 		clearLayout();
@@ -80,6 +88,7 @@ signals:
 
 
 private:
+	CardsTableWidget* cards_table_widget = nullptr;
 	void clearLayout();
 	void updateTable();
 
@@ -134,6 +143,9 @@ public:
 	void tableButtonClicked(const QString& buttonName) {}
 	void upTable(QString findString);
 	void handleSortAction(QString menulabel);
+	void deleteCardbtn(bool fl);
+	void removeLine(int cardId);
+
 private:
 	MainWindow* main_window = nullptr;
 	SearchWidget* search_widget = nullptr;

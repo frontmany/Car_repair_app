@@ -20,9 +20,20 @@ public:
     Styles* styles = nullptr;
     SearchWidget(QWidget* parent = nullptr, MainWindow* mainWindow = nullptr,  CardsTableWidget* cardsTableWidget = nullptr);
     ~SearchWidget();
+    void changeDelBtnState();
 
 public slots:
     void onSortActionTriggered(const QString& columnName);
+    void sendDelflSignal() { emit sendDelFlag(del_fl); }
+
+
+
+signals:
+    void sendDelFlag(bool fl);
+
+
+
+
 
 private:
     MainWindow* main_window = nullptr;
@@ -49,4 +60,7 @@ private:
     void addAddWidget();
     void addDelWidget();
     void paintEvent(QPaintEvent* event) override;
+
+public:
+    bool del_fl = true;
 };

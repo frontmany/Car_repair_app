@@ -88,8 +88,9 @@ public:
     Field* provider_name = nullptr;
 
     int line_number = -1;
-    QHBoxLayout* lineHlayout = nullptr;
     QPushButton* del_btn = nullptr;
+    QHBoxLayout* lineHlayout = nullptr;
+   
 
     ~Line() {
         delete lineHlayout;
