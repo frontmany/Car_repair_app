@@ -67,6 +67,15 @@ public:
 		"font-weight: 800;"
 		"}";
 
+	QString tableHeaderBlack = "QLabel {"
+		"background-color: transparent;"
+		"color: rgb(0, 23, 59);"
+		"border: 2px solid transparent;"
+		"border-radius: 5px;"
+		"padding: 10px 20px;"
+		"font-size: 20px;"
+		"font-weight: 800;"
+		"}";
 
 	QString tableBtnUnactive = "QPushButton {"
 		"background-color: transparent;"
@@ -194,4 +203,18 @@ public:
 		"background-color: #f0f0f0;"
 		"}";
 
+
+	QString StableBtn = "QPushButton {"
+		"background-color: transparent;"
+		"color: rgb(109, 109, 110);"
+		"border: 2px solid transparent;"
+		"padding: 10px 20px;"
+		"font-size: 16px;"
+		"font-weight: 600;"
+		"}"
+		"QPushButton:hover {"
+		"background-color: transparent;"
+		"outline: 0;"
+		"color: rgb(109, 109, 110);"
+		"}";
 };

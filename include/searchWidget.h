@@ -9,6 +9,8 @@
 class Styles;
 class MainWindow;
 class CardsTableWidget;
+class STable;
+class OTable;
 
 
 
@@ -19,6 +21,8 @@ class SearchWidget : public QWidget {
 public:
     Styles* styles = nullptr;
     SearchWidget(QWidget* parent = nullptr, MainWindow* mainWindow = nullptr,  CardsTableWidget* cardsTableWidget = nullptr);
+    SearchWidget(QWidget* parent = nullptr, MainWindow* mainWindow = nullptr,  STable* sTableWidget = nullptr);
+    SearchWidget(QWidget* parent, MainWindow* mainWindow, OTable* oTableWidget);
     ~SearchWidget();
     void changeDelBtnState();
 
@@ -40,6 +44,8 @@ private:
     bool first_setup = true;
     const int Widget_Id = 2;
     CardsTableWidget* cards_table_widget = nullptr;
+    STable* s_table_widget = nullptr;
+    OTable* o_table_widget = nullptr;
 
     QVBoxLayout* searchVlayout = nullptr;
     QHBoxLayout* searchHlayout = nullptr;
@@ -53,12 +59,23 @@ private:
 
     QPushButton* add_btn = nullptr;
     QPushButton* del_btn = nullptr;
+    QPushButton* save_btn = nullptr;
 
 private:
     void addSearchWidget();
     void addSortWidget();
     void addAddWidget();
     void addDelWidget();
+
+    void addAddWidget2();
+    void addDelWidget2();
+    void addsaveButton2();
+
+
+    void addAddWidget3();
+    void addDelWidget3();
+    void addsaveButton3();
+
     void paintEvent(QPaintEvent* event) override;
 
 public:

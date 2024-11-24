@@ -5,6 +5,8 @@
 #include <QStyleOption>
 #include <QPainter>
 #include "cardsTableWidget.h"
+#include "carsAndOwnersWidget.h"
+#include "services.h"
 
 
 SearchWidget::SearchWidget(QWidget* parent, MainWindow* mainWindow, CardsTableWidget* cardsTableWidget)
@@ -25,8 +27,78 @@ SearchWidget::SearchWidget(QWidget* parent, MainWindow* mainWindow, CardsTableWi
 
 }
 
+SearchWidget::SearchWidget(QWidget* parent, MainWindow* mainWindow, STable* sTableWidget)
+    : s_table_widget(sTableWidget){
+    styles = new Styles;
+    searchHlayout = new QHBoxLayout;
+    searchHlayout->setAlignment(Qt::AlignLeft);
+
+    addAddWidget2();
+    addDelWidget2();
+    addsaveButton2();
+    searchVlayout = new QVBoxLayout(this);
+    searchVlayout->addLayout(searchHlayout);
+
+
+    this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    this->setLayout(searchVlayout);
+}
+
+SearchWidget::SearchWidget(QWidget* parent, MainWindow* mainWindow, OTable* oTableWidget)
+    : o_table_widget(oTableWidget) {
+    styles = new Styles;
+    searchHlayout = new QHBoxLayout;
+    searchHlayout->setAlignment(Qt::AlignLeft);
+
+    addAddWidget3();
+    addDelWidget3();
+    addsaveButton3();
+    searchVlayout = new QVBoxLayout(this);
+    searchVlayout->addLayout(searchHlayout);
+
+
+    this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    this->setLayout(searchVlayout);
+}
+
+
 void SearchWidget::onSortActionTriggered(const QString& columnName) {
     cards_table_widget->handleSortAction(columnName);
+}
+
+void SearchWidget::addAddWidget3() {
+    add_btn = new QPushButton("add");
+    add_btn->setFixedSize(46, 36);
+    add_btn->setStyleSheet(styles->filterButton);
+    searchHlayout->addWidget(add_btn);
+    connect(add_btn, &QPushButton::clicked, o_table_widget, &OTable::addService);
+}
+
+void SearchWidget::addDelWidget3() {
+    del_btn = new QPushButton("del");
+    del_btn->setFixedSize(46, 36);
+    del_btn->setStyleSheet(styles->filterButton);
+    searchHlayout->addWidget(del_btn);
+    connect(del_btn, &QPushButton::clicked, this, &SearchWidget::sendDelflSignal);
+    connect(this, &SearchWidget::sendDelFlag, o_table_widget, &OTable::deleteCardbtn);
+    connect(del_btn, &QPushButton::clicked, this, &SearchWidget::changeDelBtnState);
+}
+
+void SearchWidget::addsaveButton3() {
+    save_btn = new QPushButton("save");
+    save_btn->setFixedSize(46, 36);
+    save_btn->setStyleSheet(styles->filterButton);
+    searchHlayout->addWidget(save_btn);
+    connect(save_btn, &QPushButton::clicked, o_table_widget, &OTable::dbAdd);
+}
+
+
+void SearchWidget::addsaveButton2() {
+    save_btn = new QPushButton("save");
+    save_btn->setFixedSize(46, 36);
+    save_btn->setStyleSheet(styles->filterButton);
+    searchHlayout->addWidget(save_btn);
+    connect(save_btn, &QPushButton::clicked, s_table_widget, &STable::dbAdd);
 }
 
 void SearchWidget::addSearchWidget() {
@@ -83,7 +155,6 @@ void SearchWidget::addAddWidget() {
     
 }
 
-
 void SearchWidget::addDelWidget() {
     del_btn = new QPushButton("del");
     del_btn->setFixedSize(46, 36);
@@ -93,6 +164,27 @@ void SearchWidget::addDelWidget() {
     connect(this, &SearchWidget::sendDelFlag, cards_table_widget, &CardsTableWidget::deleteCardbtn);
     connect(del_btn, &QPushButton::clicked, this, &SearchWidget::changeDelBtnState);
 }
+
+void SearchWidget::addAddWidget2() {
+    add_btn = new QPushButton("add");
+    add_btn->setFixedSize(46, 36);
+    add_btn->setStyleSheet(styles->filterButton);
+    searchHlayout->addWidget(add_btn);
+    connect(add_btn, &QPushButton::clicked, s_table_widget, &STable::addService);
+
+}
+
+void SearchWidget::addDelWidget2() {
+    del_btn = new QPushButton("del");
+    del_btn->setFixedSize(46, 36);
+    del_btn->setStyleSheet(styles->filterButton);
+    searchHlayout->addWidget(del_btn);
+    connect(del_btn, &QPushButton::clicked, this, &SearchWidget::sendDelflSignal);
+    connect(this, &SearchWidget::sendDelFlag, s_table_widget, &STable::deleteCardbtn);
+    connect(del_btn, &QPushButton::clicked, this, &SearchWidget::changeDelBtnState);
+}
+
+
 
 void SearchWidget::changeDelBtnState() {
     if (del_fl) {

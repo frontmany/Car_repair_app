@@ -44,7 +44,7 @@ void LeftMenu::setButtons() {
 	carsAndOwners_btn->setFixedSize(200, 56);
 	carsAndOwners_btn->setFont(*font);
 	connect(carsAndOwners_btn, &QPushButton::clicked, this, &LeftMenu::markActiveButton);
-	connect(carsAndOwners_btn, &QPushButton::clicked, main_window, &MainWindow::setSearchWidget);
+	connect(carsAndOwners_btn, &QPushButton::clicked, main_window, &MainWindow::setOWidget);
 
 
 	cards_btn = new QPushButton("Cards");
@@ -62,7 +62,7 @@ void LeftMenu::setButtons() {
 	serviceTypes_btn->setFixedSize(200, 56);
 	serviceTypes_btn->setFont(*font);
 	connect(serviceTypes_btn, &QPushButton::clicked, this, &LeftMenu::markActiveButton);
-
+	connect(serviceTypes_btn, &QPushButton::clicked, main_window, &MainWindow::setServicesWidget);
 
 	leftMenu_vlayout->addSpacing(48);
 	leftMenu_vlayout->addWidget(cards_btn);

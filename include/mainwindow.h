@@ -11,8 +11,10 @@ class CardLine;
 class SearchWidget;
 class CardWidget;
 class AddCardWidget;
+class STable;
+class OTable;
 
-class MainWindow : public QMainWindow{
+class MainWindow : public QMainWindow {
 	Q_OBJECT
 public:
 	MainWindow();
@@ -25,7 +27,8 @@ public:
 
 public slots:
 	void setCardWidget(CardLine* line);
-	void setSearchWidget();
+	void setOWidget();
+	void setServicesWidget();
 	void setAddCardWidget();
 
 
@@ -42,8 +45,10 @@ private:
 	AddCardWidget* add_card = nullptr;
 	CardsTableWidget* cards_table_widget = nullptr;
 
+	STable* s_table_widget = nullptr;
+	OTable* o_table_widget = nullptr;
+
 private:
 	void updateWindow();
 
 };
-

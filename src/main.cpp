@@ -18,7 +18,7 @@ int main(int argc, char* argv[])
     int height = screenGeometry.height() / 1.48;
 
 
-    mainwindow->setMinimumSize(953, 280);
+    mainwindow->setMinimumSize(1300, 280);
     mainwindow->resize(width, height);
     mainwindow->show();
     return app.exec();
