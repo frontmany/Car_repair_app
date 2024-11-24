@@ -333,6 +333,9 @@ void STable::dbAdd() {
 		}
 
 		SCardLine* line1 = new SCardLine(nullptr, main_window, service_id, desc, price, this);
+		QPushButton* delBtn = new QPushButton("del");
+		line1->setDelBtn(delBtn);
+		line1->lineHlayout->addWidget(line1->del_btn);
 		lines.emplace_back(line1);
 		tableVLayout->addWidget(line1);
 

@@ -98,7 +98,7 @@ signals:
 
 private slots:
 	void sendSignal() { emit sendLine(this); }
-	void sendVIN() { emit sendLineVIN(vin); }
+	void sendVIN() { emit sendLineVIN(car_id); }
 
 
 public:
@@ -169,7 +169,7 @@ public:
 	OTable(QWidget* parent = nullptr, MainWindow* mainWindow = nullptr);
 	void tableButtonClicked(const QString& buttonName) {}
 	void deleteCardbtn(bool fl);
-	void removeLine(QString vin);
+	void removeLine(QString carId);
 	void addService();
 	void removeAddLine();
 	void dbAdd();

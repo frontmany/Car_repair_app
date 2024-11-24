@@ -398,32 +398,38 @@ void OTable::dbAdd() {
 		}
 
 		OCardLine* line1 = new OCardLine(nullptr, main_window, car_id, vin, name, phone, this);
+		QPushButton* delBtn = new QPushButton("del");
+		line1->setDelBtn(delBtn);
+		line1->lineHlayout->addWidget(line1->del_btn);
 		lines.emplace_back(line1);
 		tableVLayout->addWidget(line1);
 
 		tableVLayout->removeWidget(o_add_line);
 		o_add_line->hide();
 		isInTable = false;
+
+
+
 	}
 	else {
 		QMessageBox::warning(nullptr, "Error", "To save it, you need to add a car to owner relation line here");
 	}
 }
 
-void OTable::removeLine(QString vin) {
+void OTable::removeLine(QString carId) {
 	std::string connection_string = "dbname=mydb user=postgres password=123 host=localhost port=5432";
 	pqxx::connection connection(connection_string);
 	pqxx::work transaction(connection);
 
 	try {
-		std::string sql_car = "DELETE FROM cars WHERE vin = '" + vin.toStdString() + "';"; 
+		std::string sql_car = "DELETE FROM cars WHERE car_id = '" + carId.toStdString() + "';";
 		pqxx::result result_service_history = transaction.exec(sql_car);
 
 		transaction.commit(); 
 
 
 		for (auto line : lines) {
-			if (line->vin == vin) {
+			if (line->car_id == carId) {
 				tableVLayout->removeWidget(line);
 				line->deleteLater();
 				lines.erase(std::remove(lines.begin(), lines.end(), line), lines.end());

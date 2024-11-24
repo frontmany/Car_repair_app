@@ -277,22 +277,17 @@ void CardsTableWidget::addTableLines() {
 	{
 		std::string sql_cars = "SELECT * FROM cars WHERE car_id = " + transaction.quote(fk_car_id) + ";";
 		pqxx::result result_cars = transaction.exec(sql_cars);
-		int owner_id = 0;
+		
+		std::string vin = "";
 		for (const auto& row : result_cars) {
-			owner_id = row["fk_owner_id"].as<int>();
-		}
-
-		std::string sql_owners = "SELECT * FROM owners WHERE owner_id = " + transaction.quote(owner_id) + ";";
-		pqxx::result result_owners = transaction.exec(sql_owners);
-		std::string owner_name = "";
-		for (const auto& row : result_owners) {
-			owner_name = row["owner_name"].as<std::string>();
+			vin = row["vin"].as<std::string>();
 		}
 
 
 
-		CardLine* line1 = new CardLine(nullptr, main_window, card_id, date, owner_name, this);
-		CardLine* line2 = new CardLine(nullptr, main_window, card_id, date, owner_name, this);
+
+		CardLine* line1 = new CardLine(nullptr, main_window, card_id, date, vin, this);
+		CardLine* line2 = new CardLine(nullptr, main_window, card_id, date, vin, this);
 		lines.emplace_back(line1);
 		lines_current.emplace_back(line2);
 		tableVLayout->addWidget(line2);
@@ -316,7 +311,7 @@ void CardsTableWidget::addTableHeaders() {
 
 	card_id_header = new QLabel("       Card Code");
 	date_header = new QLabel("	  Date");
-	owner_name_header = new QLabel("Owner Name      ");
+	owner_name_header = new QLabel("VIN      ");
 	headers.emplace_back(card_id_header);
 	headers.emplace_back(date_header);
 	headers.emplace_back(owner_name_header);
@@ -349,8 +344,8 @@ void CardsTableWidget::deleteCardbtn(bool fl){
 				if (h->text() == "	  Date") {
 					h->setText("Date       ");
 				}
-				if (h->text() == "Owner Name      ") {
-					h->setText("Owner Name                       ");
+				if (h->text() == "VIN      ") {
+					h->setText("VIN                       ");
 				}
 			}
 
@@ -372,8 +367,8 @@ void CardsTableWidget::deleteCardbtn(bool fl){
 				if (h->text() == "Date       ") {
 					h->setText("	  Date");
 				}
-				if (h->text() == "Owner Name                       ") {
-					h->setText("Owner Name      ");
+				if (h->text() == "VIN                       ") {
+					h->setText("VIN      ");
 				}
 			}
 

@@ -167,6 +167,18 @@ public:
 		"border: 1px solid #66afe9;" /* Цвет рамки при фокусе */
 		"}";
 
+	QString lineEditStyleHint = "QLineEdit {"
+		"font-family: Arial, sans-serif;"
+		"font-size: 14px;"
+		"color: #333;" 
+		"background-color: transparent;" 
+
+		"border-radius: 4px;" 
+		"padding: 5px;"
+		"}"
+		"QLineEdit:focus {"
+		"border: 1px solid #66afe9;" /* Цвет рамки при фокусе */
+		"}";
 
 	QString lineEditInactiveStyle = "QLineEdit {"
 		"font-family: Arial, sans-serif;"
@@ -216,5 +228,34 @@ public:
 		"background-color: transparent;"
 		"outline: 0;"
 		"color: rgb(109, 109, 110);"
+		"}";
+
+
+	QString comboBoxHint = "QComboBox {"
+		"   background-color: white;"
+		"   border: 2px solid #ccc;"
+		"   padding: 5px;"
+		"   font-size: 14px;"
+		"}"
+		"QComboBox::drop-down {"
+		"   border: none;"
+		"   width: 30px;"
+		"}"
+		"QComboBox::down-arrow {"
+		"   image: url('path/to/your/arrow_icon.png');"
+		"   width: 15px;"
+		"   height: 15px;"
+		"}"
+		"QComboBox:hover {"
+		"   border: 2px solid #888;"
+		"}"
+		"QComboBox:focus {"
+		"   border: 2px solid #0078d7;"
+		"}"
+		"QComboBox QAbstractItemView {"
+		"   border: 1px solid #ccc;"
+		"   selection-background-color: #0078d7;"
+		"   selection-color: white;"
+		"   background-color: white;"
 		"}";
 };
