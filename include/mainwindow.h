@@ -11,6 +11,7 @@ class CardLine;
 class SearchWidget;
 class CardWidget;
 class AddCardWidget;
+class PTable;
 class STable;
 class OTable;
 
@@ -30,6 +31,7 @@ public slots:
 	void setOWidget();
 	void setServicesWidget();
 	void setAddCardWidget();
+	void setProvidersWidget();
 
 
 private:
@@ -45,6 +47,7 @@ private:
 	AddCardWidget* add_card = nullptr;
 	CardsTableWidget* cards_table_widget = nullptr;
 
+	PTable* p_table_widget = nullptr;
 	STable* s_table_widget = nullptr;
 	OTable* o_table_widget = nullptr;
 

@@ -28,6 +28,7 @@ private:
 	QPushButton* cards_btn = nullptr;
 	QPushButton* carsAndOwners_btn = nullptr;
 	QPushButton* serviceTypes_btn = nullptr;
+	QPushButton* providers_btn = nullptr;
 	QPushButton* active_btn = nullptr;
 	
 	

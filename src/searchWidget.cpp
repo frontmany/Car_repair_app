@@ -5,8 +5,10 @@
 #include <QStyleOption>
 #include <QPainter>
 #include "cardsTableWidget.h"
+#include "providersWidget.h"
 #include "carsAndOwnersWidget.h"
 #include "services.h"
+
 
 
 SearchWidget::SearchWidget(QWidget* parent, MainWindow* mainWindow, CardsTableWidget* cardsTableWidget)
@@ -27,6 +29,7 @@ SearchWidget::SearchWidget(QWidget* parent, MainWindow* mainWindow, CardsTableWi
 
 }
 
+
 SearchWidget::SearchWidget(QWidget* parent, MainWindow* mainWindow, STable* sTableWidget)
     : s_table_widget(sTableWidget){
     styles = new Styles;
@@ -44,6 +47,7 @@ SearchWidget::SearchWidget(QWidget* parent, MainWindow* mainWindow, STable* sTab
     this->setLayout(searchVlayout);
 }
 
+
 SearchWidget::SearchWidget(QWidget* parent, MainWindow* mainWindow, OTable* oTableWidget)
     : o_table_widget(oTableWidget) {
     styles = new Styles;
@@ -60,6 +64,29 @@ SearchWidget::SearchWidget(QWidget* parent, MainWindow* mainWindow, OTable* oTab
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     this->setLayout(searchVlayout);
 }
+
+
+SearchWidget::SearchWidget(QWidget* parent, MainWindow* mainWindow, PTable* pTableWidget)
+    : p_table_widget(pTableWidget) {
+    styles = new Styles;
+    searchHlayout = new QHBoxLayout;
+    searchHlayout->setAlignment(Qt::AlignLeft);
+
+    addAddWidget4();
+    addDelWidget4();
+    addsaveButton4();
+    searchVlayout = new QVBoxLayout(this);
+    searchVlayout->addLayout(searchHlayout);
+
+
+    this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    this->setLayout(searchVlayout);
+}
+
+
+
+
+
 
 
 void SearchWidget::onSortActionTriggered(const QString& columnName) {
@@ -182,6 +209,36 @@ void SearchWidget::addDelWidget2() {
     connect(del_btn, &QPushButton::clicked, this, &SearchWidget::sendDelflSignal);
     connect(this, &SearchWidget::sendDelFlag, s_table_widget, &STable::deleteCardbtn);
     connect(del_btn, &QPushButton::clicked, this, &SearchWidget::changeDelBtnState);
+}
+
+
+void SearchWidget::addAddWidget4() {
+    add_btn = new QPushButton("add");
+    add_btn->setFixedSize(46, 36);
+    add_btn->setStyleSheet(styles->filterButton);
+    searchHlayout->addWidget(add_btn);
+    connect(add_btn, &QPushButton::clicked, p_table_widget, &PTable::addService);
+
+}
+
+void SearchWidget::addDelWidget4() {
+    del_btn = new QPushButton("del");
+    del_btn->setFixedSize(46, 36);
+    del_btn->setStyleSheet(styles->filterButton);
+    searchHlayout->addWidget(del_btn);
+    connect(del_btn, &QPushButton::clicked, this, &SearchWidget::sendDelflSignal);
+    connect(this, &SearchWidget::sendDelFlag, p_table_widget, &PTable::deleteCardbtn);
+    connect(del_btn, &QPushButton::clicked, this, &SearchWidget::changeDelBtnState);
+
+}
+
+void SearchWidget::addsaveButton4() {
+    save_btn = new QPushButton("save");
+    save_btn->setFixedSize(46, 36);
+    save_btn->setStyleSheet(styles->filterButton);
+    searchHlayout->addWidget(save_btn);
+    connect(save_btn, &QPushButton::clicked, p_table_widget, &PTable::dbAdd);
+
 }
 
 

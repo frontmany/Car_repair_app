@@ -7,21 +7,50 @@ void LeftMenu::markActiveButton() {
 
 	if (senderObject == cards_btn) {
 		cards_btn->setStyleSheet(styles->leftMenuBtnStyleActive);
+		cards_btn->setEnabled(false);
 		carsAndOwners_btn->setStyleSheet(styles->leftMenuBtnStyleInactive);
 		serviceTypes_btn->setStyleSheet(styles->leftMenuBtnStyleInactive);
+		providers_btn->setStyleSheet(styles->leftMenuBtnStyleInactive);
+
+		providers_btn->setEnabled(true);
+		serviceTypes_btn->setEnabled(true);
+		carsAndOwners_btn->setEnabled(true);
 	}
 	
 	if (senderObject == carsAndOwners_btn) {
 		carsAndOwners_btn->setStyleSheet(styles->leftMenuBtnStyleActive);
+		carsAndOwners_btn->setEnabled(false);
 		cards_btn->setStyleSheet(styles->leftMenuBtnStyleInactive);
 		serviceTypes_btn->setStyleSheet(styles->leftMenuBtnStyleInactive);
+		providers_btn->setStyleSheet(styles->leftMenuBtnStyleInactive);
+
+		providers_btn->setEnabled(true);
+		serviceTypes_btn->setEnabled(true);
+		cards_btn->setEnabled(true);
 	}
 
 	if (senderObject == serviceTypes_btn) {
 		serviceTypes_btn->setStyleSheet(styles->leftMenuBtnStyleActive);
+		serviceTypes_btn->setEnabled(false);
 		carsAndOwners_btn->setStyleSheet(styles->leftMenuBtnStyleInactive);
 		cards_btn->setStyleSheet(styles->leftMenuBtnStyleInactive);
+		providers_btn->setStyleSheet(styles->leftMenuBtnStyleInactive);
 		
+		providers_btn->setEnabled(true);
+		carsAndOwners_btn->setEnabled(true);
+		cards_btn->setEnabled(true);
+	}
+
+	if (senderObject == providers_btn) {
+		providers_btn->setStyleSheet(styles->leftMenuBtnStyleActive);
+		providers_btn->setEnabled(false);
+		serviceTypes_btn->setStyleSheet(styles->leftMenuBtnStyleInactive);
+		carsAndOwners_btn->setStyleSheet(styles->leftMenuBtnStyleInactive);
+		cards_btn->setStyleSheet(styles->leftMenuBtnStyleInactive);
+
+		serviceTypes_btn->setEnabled(true);
+		carsAndOwners_btn->setEnabled(true);
+		cards_btn->setEnabled(true);
 	}
 }
 
@@ -55,8 +84,6 @@ void LeftMenu::setButtons() {
 	connect(cards_btn, &QPushButton::clicked, main_window, &MainWindow::setCardsTableWidget);
 
 
-
-
 	serviceTypes_btn = new QPushButton("Services");
 	serviceTypes_btn->setStyleSheet(styles->leftMenuBtnStyleInactive);
 	serviceTypes_btn->setFixedSize(200, 56);
@@ -64,10 +91,18 @@ void LeftMenu::setButtons() {
 	connect(serviceTypes_btn, &QPushButton::clicked, this, &LeftMenu::markActiveButton);
 	connect(serviceTypes_btn, &QPushButton::clicked, main_window, &MainWindow::setServicesWidget);
 
+	providers_btn = new QPushButton("Providers");
+	providers_btn->setStyleSheet(styles->leftMenuBtnStyleInactive);
+	providers_btn->setFixedSize(200, 56);
+	providers_btn->setFont(*font);
+	connect(providers_btn, &QPushButton::clicked, this, &LeftMenu::markActiveButton);
+	connect(providers_btn, &QPushButton::clicked, main_window, &MainWindow::setProvidersWidget);
+
 	leftMenu_vlayout->addSpacing(48);
 	leftMenu_vlayout->addWidget(cards_btn);
 	leftMenu_vlayout->addWidget(carsAndOwners_btn);
 	leftMenu_vlayout->addWidget(serviceTypes_btn);
+	leftMenu_vlayout->addWidget(providers_btn);
 	leftMenu_vlayout->setAlignment(Qt::AlignTop);
 	
 }

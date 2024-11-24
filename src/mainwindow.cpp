@@ -3,6 +3,7 @@
 #include"carsAndOwnersWidget.h"
 #include"services.h"
 #include "searchWidget.h"
+#include "providersWidget.h"
 #include<iostream>
 #include"leftMenu.h"
 #include "cardwidget.h"
@@ -40,6 +41,15 @@ void MainWindow::setCardsTableWidget() {
 
 
 
+}
+
+void MainWindow::setProvidersWidget() {
+	this->takeCentralWidget();
+	p_table_widget = new PTable(this, this);
+	updateWindow();
+	main_hlayout->addWidget(p_table_widget);
+	main_widget->setLayout(main_hlayout);
+	setCentralWidget(main_widget);
 }
 
 
