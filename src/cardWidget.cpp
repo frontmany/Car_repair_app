@@ -642,10 +642,50 @@ void CardWidget::paintEvent(QPaintEvent* event) {
 
 
 
+void CardWidget::setCarFromHint(QString vin) {
+    Field* f = new Field("car_vin", vin, this);
+    editCard(f);
+    delete f;
+}
 
 
 
+void CardWidget::setServiceFromHint(QString id) {
+    AField* f = nullptr;
+    bool emptyLineExist = false;
 
+    for (auto line : lines_vector) {
+        for (auto field : line->fields_vector) {
+            if (field->name == "service_type_id") {
+                if (field->edit->text() == "") {
+                    Field* f = new Field("service_type_id", id, field->line_number, this);
+                    editCard(f);
+                    emptyLineExist = true;
+                    delete f;
+                    return;
+                }
+            }
+        }
+    }
+
+    if (!emptyLineExist) {
+        addLine();
+        for (auto line : lines_vector) {
+            for (auto field : line->fields_vector) {
+                if (field->name == "service_type_id") {
+                    if (field->edit->text() == "") {
+                        Field* f = new Field("service_type_id", id, field->line_number, this);
+                        editCard(f);
+                        emptyLineExist = true;
+                        delete f;
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
+}
 
 
 void CardWidget::addLine() {
@@ -715,13 +755,20 @@ void CardWidget::addTotalLabel() {
 
 
 void CardWidget::removeLine(int lineNumber) {
-    for (auto line : lines_vector) {
+
+    auto it = std::remove_if(lines_vector.begin(), lines_vector.end(), [&](Line* line) {
         if (line->line_number == lineNumber) {
             Vlayout_Lines->removeWidget(line);
-            lines_vector.erase(std::find(lines_vector.begin(), lines_vector.end(), line));
-            updateTotalLabel();
-            line->~Line();
+            delete line; 
+            return true; 
         }
+        return false;
+        });
+
+    lines_vector.erase(it, lines_vector.end()); 
+    updateTotalLabel(); 
+
+    for (auto line : lines_vector) {
         if (line->line_number > lineNumber) {
             line->line_number--;
             for (auto f : line->fields_vector) {
@@ -730,11 +777,15 @@ void CardWidget::removeLine(int lineNumber) {
         }
     }
 
-    card->service_details_vec.erase(card->service_details_vec.begin() + lineNumber);
-    if (lineNumber >= card->original_service_codes_count) {
-        card->original_service_codes.erase(card->original_service_codes.begin() + lineNumber);
+
+    if (lineNumber < card->service_details_vec.size()) {
+        card->service_details_vec.erase(card->service_details_vec.begin() + lineNumber);
     }
 
+
+    if (lineNumber < card->original_service_codes.size() && lineNumber >= card->original_service_codes_count) {
+        card->original_service_codes.erase(card->original_service_codes.begin() + lineNumber);
+    }
 
 
     if (lines_vector.size() == 0) {

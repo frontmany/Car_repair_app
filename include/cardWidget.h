@@ -121,6 +121,7 @@ public:
     void addLine();
     void removeLine(int lineNumber);
     void setEditLine(bool fl);
+    void setServiceFromHint(QString id);
 
 private:
 
@@ -187,6 +188,7 @@ private:
 public slots:
     void editCard(Field* field);
     void dbCommit();
+    void setCarFromHint(QString vin);
 
 
 private:

@@ -5,117 +5,200 @@
 #include"styles.h"
 #include <pqxx/pqxx>
 
-
-OwnersDialog::OwnersDialog(const std::vector<std::tuple<std::string, std::string, std::string>>& ownersData, QWidget* parent)
-    : QDialog(parent) {
+RowWidget::RowWidget(const std::string& vin, const std::string& name, const std::string& phone, QWidget* parent)
+    : QWidget(parent), vin(vin) {
+    QHBoxLayout* rowLayout = new QHBoxLayout(this);
     styles = new Styles;
+    vinEdit = new ClickableLineEdit(this);
+    vinEdit->setText(QString::fromStdString(vin));
+    vinEdit->setReadOnly(true);
+    vinEdit->setStyleSheet(styles->lineEditStyleHint);
 
+    nameEdit = new ClickableLineEdit(this);
+    nameEdit->setText(QString::fromStdString(name));
+    nameEdit->setReadOnly(true);
+    nameEdit->setStyleSheet(styles->lineEditStyleHint);
+
+    phoneEdit = new ClickableLineEdit(this);
+    phoneEdit->setText(QString::fromStdString(phone));
+    phoneEdit->setReadOnly(true);
+    phoneEdit->setStyleSheet(styles->lineEditStyleHint);
+
+    rowLayout->addWidget(vinEdit);
+    rowLayout->addWidget(nameEdit);
+    rowLayout->addWidget(phoneEdit);
+    setLayout(rowLayout);
+
+
+    connect(vinEdit, &ClickableLineEdit::clicked, this, [this]() { emit rowClicked(this); });
+    connect(nameEdit, &ClickableLineEdit::clicked, this, [this]() { emit rowClicked(this); });
+    connect(phoneEdit, &ClickableLineEdit::clicked, this, [this]() { emit rowClicked(this); });
+}
+
+RowWidget::RowWidget(const std::string& Id, const std::string& desc, double price, QWidget* parent)
+    : QWidget(parent), id(Id) {
+    QHBoxLayout* rowLayout = new QHBoxLayout(this);
+    styles = new Styles;
+    idEdit = new ClickableLineEdit(this);
+    idEdit->setText(QString::fromStdString(id));
+    idEdit->setReadOnly(true);
+    idEdit->setStyleSheet(styles->lineEditStyleHint);
+    idEdit->setFixedSize(60, 30);
+
+    descEdit = new ClickableLineEdit(this);
+    descEdit->setText(QString::fromStdString(desc));
+    descEdit->setReadOnly(true);
+    descEdit->setStyleSheet(styles->lineEditStyleHint);
+
+    priceEdit = new ClickableLineEdit(this);
+    priceEdit->setText(QString::fromStdString(std::to_string((int)price)));
+    priceEdit->setReadOnly(true);
+    priceEdit->setStyleSheet(styles->lineEditStyleHint);
+    priceEdit->setFixedSize(90, 30);
+
+    rowLayout->addWidget(idEdit);
+    rowLayout->addWidget(descEdit);
+    rowLayout->addWidget(priceEdit);
+    setLayout(rowLayout);
+
+
+    connect(idEdit, &ClickableLineEdit::clicked, this, [this]() { emit rowClicked(this); });
+    connect(descEdit, &ClickableLineEdit::clicked, this, [this]() { emit rowClicked(this); });
+    connect(priceEdit, &ClickableLineEdit::clicked, this, [this]() { emit rowClicked(this); });
+
+}
+
+OwnersDialog::OwnersDialog(const std::vector<std::tuple<std::string, std::string,
+    std::string>>& ownersData, QWidget* parent, AddCardWidget* addCardWidget, CardWidget* cardWidget)
+    : QDialog(parent), card_widget(cardWidget), add_card_widget(addCardWidget) {
+    styles = new Styles;
     QVBoxLayout* mainLayout = new QVBoxLayout(this);
-    QGridLayout* gridLayout = new QGridLayout();
+    QVBoxLayout* gridLayout = new QVBoxLayout();
 
-    QLineEdit* vinHeader = new QLineEdit("VIN");
-    vinHeader->setReadOnly(true);
-    vinHeader->setStyleSheet(styles->lineEditStyleHint);
+    // Создание кнопки "Send VIN"
+    QPushButton* sendVinButton = new QPushButton("Send VIN");
+    connect(sendVinButton, &QPushButton::clicked, this, &OwnersDialog::sendVin);
 
-    QLineEdit* nameHeader = new QLineEdit("Owner Name");
-    nameHeader->setReadOnly(true);
-    nameHeader->setStyleSheet(styles->lineEditStyleHint);
-
-    QLineEdit* phoneHeader = new QLineEdit("Owner Telephone");
-    phoneHeader->setReadOnly(true);
-    phoneHeader->setStyleSheet(styles->lineEditStyleHint);
-
-    gridLayout->addWidget(vinHeader, 0, 0);
-    gridLayout->addWidget(nameHeader, 0, 1);
-    gridLayout->addWidget(phoneHeader, 0, 2);
-
-    int row = 1;
     for (const auto& [vin, name, phone] : ownersData) {
-        QLineEdit* vinEdit = new QLineEdit(QString::fromStdString(vin));
-        vinEdit->setReadOnly(true);
-        vinEdit->setStyleSheet(styles->lineEditStyleHint);
-
-        QLineEdit* nameEdit = new QLineEdit(QString::fromStdString(name));
-        nameEdit->setReadOnly(true);
-        nameEdit->setStyleSheet(styles->lineEditStyleHint);
-
-        QLineEdit* phoneEdit = new QLineEdit(QString::fromStdString(phone));
-        phoneEdit->setReadOnly(true);
-        phoneEdit->setStyleSheet(styles->lineEditStyleHint);
-
-        gridLayout->addWidget(vinEdit, row, 0);
-        gridLayout->addWidget(nameEdit, row, 1);
-        gridLayout->addWidget(phoneEdit, row, 2);
-        row++;
+        RowWidget* rowWidget = new RowWidget(vin, name, phone);
+        connect(rowWidget, &RowWidget::rowClicked, this, &OwnersDialog::selectRow);
+        gridLayout->addWidget(rowWidget);
     }
 
     mainLayout->addLayout(gridLayout);
-
-
+    mainLayout->addWidget(sendVinButton);
     setLayout(mainLayout);
     setWindowTitle("Owners List");
     resize(600, 300);
 }
 
+void OwnersDialog::selectRow(RowWidget* row) {
+    if (selectedRow == row) {
+        selectedRow = nullptr; 
+        row->setStyleSheet(styles->lineEditStyleHint);
+        row->vinEdit->setStyleSheet(styles->lineEditStyleHint);
+        row->nameEdit->setStyleSheet(styles->lineEditStyleHint);
+        row->phoneEdit->setStyleSheet(styles->lineEditStyleHint);
+    }
+    else {
+        if (selectedRow) {
+            selectedRow->setStyleSheet(styles->lineEditStyleHint);
+            selectedRow->vinEdit->setStyleSheet(styles->lineEditStyleHint);
+            selectedRow->nameEdit->setStyleSheet(styles->lineEditStyleHint);
+            selectedRow->phoneEdit->setStyleSheet(styles->lineEditStyleHint);
+        }
+        selectedRow = row;
+        selectedRow->setStyleSheet(styles->lineEditStyleSelected);
+        row->vinEdit->setStyleSheet(styles->lineEditStyleSelected);
+        row->nameEdit->setStyleSheet(styles->lineEditStyleSelected);
+        row->phoneEdit->setStyleSheet(styles->lineEditStyleSelected);
+    }
+}
 
 
-ServicesDialog::ServicesDialog(const std::vector<std::tuple<std::string, std::string, double>>& servicesData, QWidget* parent) {
-    styles = new Styles;
-
-    QVBoxLayout* mainLayout = new QVBoxLayout(this);
-    QGridLayout* gridLayout = new QGridLayout();
-
-    QLineEdit* idHeader = new QLineEdit("ID");
-    idHeader->setReadOnly(true);
-    idHeader->setStyleSheet(styles->lineEditStyleHint);
-
-    QLineEdit* descriptionHeader = new QLineEdit("Description");
-    descriptionHeader->setReadOnly(true);
-    descriptionHeader->setStyleSheet(styles->lineEditStyleHint);
-
-    QLineEdit* priceHeader = new QLineEdit("Price");
-    priceHeader->setReadOnly(true);
-    priceHeader->setStyleSheet(styles->lineEditStyleHint);
-
-    gridLayout->addWidget(idHeader, 0, 0);
-    gridLayout->addWidget(descriptionHeader, 0, 1);
-    gridLayout->addWidget(priceHeader, 0, 2);
-
-
-    int row = 1;
-    for (const auto& [id, description, price] : servicesData) {
-        QLineEdit* idEdit = new QLineEdit(QString::fromStdString(id));
-        idEdit->setReadOnly(true);
-        idEdit->setFixedSize(80, 30);
-        idEdit->setStyleSheet(styles->lineEditStyleHint);
-
-        QLineEdit* descriptionEdit = new QLineEdit(QString::fromStdString(description));
-        descriptionEdit->setFixedSize(220, 30);
-        descriptionEdit->setReadOnly(true);
-        descriptionEdit->setStyleSheet(styles->lineEditStyleHint);
-
-        QLineEdit* priceEdit = new QLineEdit(QString::number(price));
-        priceEdit->setReadOnly(true);
-        priceEdit->setStyleSheet(styles->lineEditStyleHint);
-
-        gridLayout->addWidget(idEdit, row, 0);
-        gridLayout->addWidget(descriptionEdit, row, 1);
-        gridLayout->addWidget(priceEdit, row, 2);
-        row++;
+void OwnersDialog::sendVin() {
+    if (selectedRow) {
+        QString vin = selectedRow->getVin();
+        if (card_widget != nullptr) {
+            card_widget->setCarFromHint(vin);
+        }
+        if (add_card_widget != nullptr) {
+            add_card_widget->setCarFromHint(vin);
+        }
     }
 
-    mainLayout->addLayout(gridLayout);
-
-    setLayout(mainLayout);
-    setWindowTitle("Services List");
-    resize(300, 200);
 }
 
 
 
 
+
+
+
+ServicesDialog::ServicesDialog(const std::vector<std::tuple<std::string, std::string, double>>& servicesData, QWidget* parent, AddCardWidget* addCardWidget, CardWidget* cardWidget)
+    : QDialog(parent), card_widget(cardWidget), add_card_widget(addCardWidget) {
+    styles = new Styles;
+    QVBoxLayout* mainLayout = new QVBoxLayout(this);
+    QVBoxLayout* gridLayout = new QVBoxLayout();
+
+
+    QPushButton* sendVinButton = new QPushButton("Send ID");
+    connect(sendVinButton, &QPushButton::clicked, this, &ServicesDialog::sendID);
+
+    for (const auto& [id, desc, price] : servicesData) {
+        RowWidget* rowWidget = new RowWidget(id, desc, price);
+        connect(rowWidget, &RowWidget::rowClicked, this, &ServicesDialog::selectRow);
+        gridLayout->addWidget(rowWidget);
+    }
+
+    mainLayout->addLayout(gridLayout);
+    mainLayout->addWidget(sendVinButton);
+    setLayout(mainLayout);
+    setWindowTitle("Owners List");
+    resize(400, 200);
+
+    
+}
+
+void ServicesDialog::selectRow(RowWidget* row) {
+    if (selectedRow == row) {
+        selectedRow = nullptr; 
+        row->setStyleSheet(styles->lineEditStyleHint);
+        row->idEdit->setStyleSheet(styles->lineEditStyleHint);
+        row->descEdit->setStyleSheet(styles->lineEditStyleHint);
+        row->priceEdit->setStyleSheet(styles->lineEditStyleHint);
+    }
+    else {
+        if (selectedRow) {
+            selectedRow->setStyleSheet(styles->lineEditStyleHint);
+            selectedRow->idEdit->setStyleSheet(styles->lineEditStyleHint);
+            selectedRow->descEdit->setStyleSheet(styles->lineEditStyleHint);
+            selectedRow->priceEdit->setStyleSheet(styles->lineEditStyleHint);
+        }
+        selectedRow = row; 
+        selectedRow->setStyleSheet(styles->lineEditStyleSelected);
+        row->idEdit->setStyleSheet(styles->lineEditStyleSelected);
+        row->descEdit->setStyleSheet(styles->lineEditStyleSelected);
+        row->priceEdit->setStyleSheet(styles->lineEditStyleSelected);
+    }
+}
+
+void ServicesDialog::sendID() {
+    if (selectedRow) {
+        QString id = QString::fromStdString(selectedRow->id);
+        if (card_widget != nullptr) {
+            card_widget->setServiceFromHint(id);
+        }
+        if (add_card_widget != nullptr) {
+            add_card_widget->setServiceFromHint(id);
+        }
+    }
+}
+
+
 TopCardWidget::TopCardWidget(QWidget* parent,
-    CardWidget* cardWidget, MainWindow* mainWindow) :QWidget(parent) {
+    CardWidget* cardWidget, MainWindow* mainWindow)
+    :QWidget(parent), card_widget(cardWidget) {
     styles = new Styles;
     Hlayout = new QHBoxLayout;
 
@@ -177,7 +260,8 @@ TopCardWidget::TopCardWidget(QWidget* parent,
 }
 
 TopCardWidget::TopCardWidget(QWidget* parent,
-    AddCardWidget* addcardWidget, MainWindow* mainWindow) :QWidget(parent) {
+    AddCardWidget* addcardWidget, MainWindow* mainWindow)
+    :QWidget(parent), add_card_widget(addcardWidget){
     styles = new Styles;
     Hlayout = new QHBoxLayout;
 
@@ -280,7 +364,7 @@ void TopCardWidget::addOwnersHint() {
     }
 
 
-    OwnersDialog* dialog = new OwnersDialog(ownersData);
+    OwnersDialog* dialog = new OwnersDialog(ownersData, nullptr, add_card_widget, card_widget);
     connect(owners_btn, &QPushButton::clicked, dialog, &OwnersDialog::show);
 
     transaction.commit();
@@ -315,7 +399,7 @@ void TopCardWidget::addServicesHint() {
         servicesData.emplace_back(id, description, price);
     }
 
-    ServicesDialog* dialog = new ServicesDialog(servicesData);
+    ServicesDialog* dialog = new ServicesDialog(servicesData, nullptr, add_card_widget, card_widget);
     connect(services_btn, &QPushButton::clicked, dialog, &OwnersDialog::show);
 
     transaction.commit(); 

@@ -106,6 +106,8 @@ public:
     void setCardDetails();
     void editCard(AField* field);
     void dbAdd();
+    void setCarFromHint(QString vin);
+    void setServiceFromHint(QString id);
 
 public slots:
     void removeLine(int lineNumber);

@@ -149,7 +149,7 @@ public:
 	QString labelStyle = "QLabel {"
 		"color: #333;" 
 		"background-color: rgb(255, 255, 255);" 
-		"padding: 5px;" /* Отступы вокруг текста */
+		"padding: 5px;" 
 		"border: 1px solid rgb(255, 255, 255);"
 		"border-radius: 4px;"
 		"}";
@@ -157,14 +157,14 @@ public:
 	QString lineEditStyle = "QLineEdit {"
 		"font-family: Arial, sans-serif;"
 		"font-size: 14px;"
-		"color: #333;" /* Темно-серый цвет текста */
-		"background-color: transparent;" /* Белый фон */
-		"border: 1px solid #cccccc;" /* Светло-серая рамка */
-		"border-radius: 4px;" /* Скругленные углы */
-		"padding: 5px;" /* Отступы внутри поля ввода */
+		"color: #333;" 
+		"background-color: transparent;" 
+		"border: 1px solid #cccccc;" 
+		"border-radius: 4px;" 
+		"padding: 5px;" 
 		"}"
 		"QLineEdit:focus {"
-		"border: 1px solid #66afe9;" /* Цвет рамки при фокусе */
+		"border: 1px solid #66afe9;" 
 		"}";
 
 	QString lineEditStyleHint = "QLineEdit {"
@@ -177,20 +177,33 @@ public:
 		"padding: 5px;"
 		"}"
 		"QLineEdit:focus {"
-		"border: 1px solid #66afe9;" /* Цвет рамки при фокусе */
+		"border: transparent;"
+		"}";
+
+	QString lineEditStyleSelected = "QLineEdit {"
+		"font-family: Arial, sans-serif;"
+		"font-size: 14px;"
+		"color: #333;" 
+		"background-color: transparent;" 
+		"border: 1px solid #66afe9;" 
+		"border-radius: 4px;" 
+		"padding: 5px;" 
+		"}"
+		"QLineEdit:focus {"
+		"border: 1px solid #66afe9;" 
 		"}";
 
 	QString lineEditInactiveStyle = "QLineEdit {"
 		"font-family: Arial, sans-serif;"
 		"font-size: 14px;"
-		"color: #a0a0a0;" /* Серый цвет текста для неактивного состояния */
-		"background-color: #e0e0e0;" /* Светло-серый фон для неактивного состояния */
-		"border: 1px solid #cccccc;" /* Светло-серая рамка */
-		"border-radius: 4px;" /* Скругленные углы */
-		"padding: 5px;" /* Отступы внутри поля ввода */
+		"color: #a0a0a0;"
+		"background-color: #e0e0e0;" 
+		"border: 1px solid #cccccc;" 
+		"border-radius: 4px;" 
+		"padding: 5px;" 
 		"}"
 		"QLineEdit:focus {"
-		"border: 1px solid #cccccc;" /* Цвет рамки при фокусе остается прежним, чтобы не выделять неактивное поле */
+		"border: 1px solid #cccccc;" 
 		"}";
 
 	QString EditButtonActive = "QPushButton {"
@@ -230,32 +243,5 @@ public:
 		"color: rgb(109, 109, 110);"
 		"}";
 
-
-	QString comboBoxHint = "QComboBox {"
-		"   background-color: white;"
-		"   border: 2px solid #ccc;"
-		"   padding: 5px;"
-		"   font-size: 14px;"
-		"}"
-		"QComboBox::drop-down {"
-		"   border: none;"
-		"   width: 30px;"
-		"}"
-		"QComboBox::down-arrow {"
-		"   image: url('path/to/your/arrow_icon.png');"
-		"   width: 15px;"
-		"   height: 15px;"
-		"}"
-		"QComboBox:hover {"
-		"   border: 2px solid #888;"
-		"}"
-		"QComboBox:focus {"
-		"   border: 2px solid #0078d7;"
-		"}"
-		"QComboBox QAbstractItemView {"
-		"   border: 1px solid #ccc;"
-		"   selection-background-color: #0078d7;"
-		"   selection-color: white;"
-		"   background-color: white;"
-		"}";
+	
 };

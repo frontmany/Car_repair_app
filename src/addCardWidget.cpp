@@ -333,6 +333,10 @@ void AddCardWidget::editCard(AField* field) {
             try {
                 std::map<QString, QString> map = Card::findCarDetailsbyVIN(newValue);
                 for (auto field : fields_vector) {
+                    if (field->name == "car_vin") {
+                        field->edit->setText(newValue);
+                        card->card_details_map["car_vin"] = newValue;
+                    }
                     if (field->name == "car_id") {
                         field->edit->setText(map["car_id"]);
                         card->card_details_map["car_id"] = map["car_id"];
@@ -462,17 +466,71 @@ void AddCardWidget::editCard(AField* field) {
     }
 }
 
-void AddCardWidget::dbAdd() {
-    card->addCard();
+
+void AddCardWidget::setCarFromHint(QString vin) {
+    AField* f = new AField("car_vin", vin, this);
+    editCard(f);
+    delete f;
 }
 
-void AddCardWidget::removeLine(int lineNumber) {
+
+void AddCardWidget::setServiceFromHint(QString id) {
+    AField* f = nullptr;
+    bool emptyLineExist = false;
+    
     for (auto line : lines_vector) {
+        for (auto field : line->fields_vector) {
+            if (field->name == "service_type_id") {
+                if (field->edit->text() == "") {
+                    AField* f = new AField("service_type_id", id, field->line_number, this);
+                    editCard(f);
+                    emptyLineExist = true;
+                    delete f;
+                    return;
+                }
+            }
+        }
+    }
+
+    if (!emptyLineExist) {
+        addLine();
+        for (auto line : lines_vector) {
+            for (auto field : line->fields_vector) {
+                if (field->name == "service_type_id") {
+                    if (field->edit->text() == "") {
+                        AField* f = new AField("service_type_id", id, field->line_number, this);
+                        editCard(f);
+                        emptyLineExist = true;
+                        delete f;
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
+}
+
+
+void AddCardWidget::dbAdd() {
+    card->addCard();
+} 
+
+void AddCardWidget::removeLine(int lineNumber) {
+    auto it = std::remove_if(lines_vector.begin(), lines_vector.end(), [&](ALine* line) {
         if (line->line_number == lineNumber) {
             Vlayout_Lines->removeWidget(line);
-            lines_vector.erase(std::find(lines_vector.begin(), lines_vector.end(), line));
-            line->~ALine();
+            delete line; // Предполагая, что вы используете динамическое выделение памяти
+            return true; // Удаляем элемент
         }
+        return false; // Не удаляем элемент
+    });
+
+    // Удаляем элементы, которые были помечены для удаления
+    lines_vector.erase(it, lines_vector.end());
+
+    // Обновляем номера строк для оставшихся элементов
+    for (auto line : lines_vector) {
         if (line->line_number > lineNumber) {
             line->line_number--;
             for (auto f : line->fields_vector) {
@@ -480,7 +538,6 @@ void AddCardWidget::removeLine(int lineNumber) {
             }
         }
     }
-
     card->service_details_vec.erase(card->service_details_vec.begin() + lineNumber);
 
 

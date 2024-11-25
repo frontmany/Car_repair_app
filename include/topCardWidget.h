@@ -2,6 +2,8 @@
 #include<QPushButton>
 #include<QClipBoard>
 #include<QGuiApplication>
+#include<QSignalMapper>
+#include<QMessageBox>
 #include<QDialog>
 #include<QMenu>
 #include<QLayout>
@@ -13,21 +15,94 @@ class CardWidget;
 class AddCardWidget;
 class Styles;
 
-class OwnersDialog : public QDialog {
-private:
-    Styles* styles = nullptr;
+class ClickableLineEdit : public QLineEdit {
+    Q_OBJECT
 
 public:
-    OwnersDialog(const std::vector<std::tuple<std::string, std::string, std::string>>& ownersData, QWidget* parent = nullptr);
+    explicit ClickableLineEdit(QWidget* parent = nullptr) : QLineEdit(parent) {}
+    explicit ClickableLineEdit(const QString& text, QWidget* parent = nullptr) : QLineEdit(text, parent) {}
+
+signals:
+    void clicked(); // Сигнал, который будет излучаться при нажатии
+
+protected:
+    void mousePressEvent(QMouseEvent* event) override {
+        QLineEdit::mousePressEvent(event); // Вызов базового класса
+        emit clicked(); // Излучаем сигнал
+    }
 };
+
+
+class RowWidget : public QWidget {
+    Q_OBJECT
+
+public:
+    RowWidget(const std::string& vin, const std::string& name, const std::string& phone, QWidget* parent = nullptr);
+    RowWidget(const std::string& Id, const std::string& desc, double price, QWidget* parent = nullptr);
+
+    QString getVin() const {
+        return QString::fromStdString(vin);
+    }
+
+signals:
+    void rowClicked(RowWidget* row); // Сигнал, когда строка была нажата
+
+public:
+    Styles* styles = nullptr;
+    ClickableLineEdit* vinEdit;
+    ClickableLineEdit* nameEdit;
+    ClickableLineEdit* phoneEdit;
+    std::string vin;
+
+    ClickableLineEdit* idEdit;
+    ClickableLineEdit* descEdit;
+    ClickableLineEdit* priceEdit;
+    std::string id;
+
+};
+
+
+
+class OwnersDialog : public QDialog {
+    Q_OBJECT
+
+public:
+    OwnersDialog(const std::vector<std::tuple<std::string, std::string,
+        std::string>>& ownersData, QWidget* parent = nullptr, AddCardWidget* addCardWidget = nullptr, CardWidget* cardWidget = nullptr);
+
+private slots:
+    void selectRow(RowWidget* row);
+    void sendVin();
+
+private:
+    CardWidget* card_widget = nullptr;
+    AddCardWidget* add_card_widget = nullptr;
+    RowWidget* selectedRow = nullptr;
+    Styles* styles = nullptr;
+    
+};
+
+
 
 class ServicesDialog : public QDialog {
-private:
-    Styles* styles = nullptr;
+    Q_OBJECT
 
 public:
-    ServicesDialog(const std::vector<std::tuple<std::string, std::string, double>>& servicesData, QWidget* parent = nullptr);
+    ServicesDialog(const std::vector<std::tuple<std::string, std::string, double>>& servicesData, QWidget* parent = nullptr, AddCardWidget* addCardWidget = nullptr, CardWidget* cardWidget = nullptr);
+
+private slots:
+    void selectRow(RowWidget* row);
+    void sendID();
+
+private:
+    CardWidget* card_widget = nullptr;
+    AddCardWidget* add_card_widget = nullptr;
+    RowWidget* selectedRow = nullptr;
+    Styles* styles = nullptr;
 };
+
+
+
 
 class TopCardWidget : public QWidget {
     Q_OBJECT
@@ -66,6 +141,9 @@ private:
 
     QPushButton* add_btn = nullptr;
     QPushButton* del_btn = nullptr;
+
+    AddCardWidget* add_card_widget = nullptr;
+    CardWidget* card_widget = nullptr;
 
 
     void changeEditBtnState();
