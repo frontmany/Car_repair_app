@@ -108,6 +108,7 @@ public:
     void dbAdd();
     void setCarFromHint(QString vin);
     void setServiceFromHint(QString id);
+    void setProviderFromHint(QString id);
 
 public slots:
     void removeLine(int lineNumber);

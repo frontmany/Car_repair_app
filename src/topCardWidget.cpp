@@ -68,6 +68,96 @@ RowWidget::RowWidget(const std::string& Id, const std::string& desc, double pric
 
 }
 
+RowWidget::RowWidget(const std::string& Id, const std::string& name, QWidget* parent)
+    : QWidget(parent), p_id(Id), p_name(name) {
+    QHBoxLayout* rowLayout = new QHBoxLayout(this);
+    styles = new Styles;
+    p_idEdit = new ClickableLineEdit(this);
+    p_idEdit->setText(QString::fromStdString(p_id));
+    p_idEdit->setReadOnly(true);
+    p_idEdit->setStyleSheet(styles->lineEditStyleHint);
+    p_idEdit->setFixedSize(60, 30);
+
+    p_nameEdit = new ClickableLineEdit(this);
+    p_nameEdit->setText(QString::fromStdString(p_name));
+    p_nameEdit->setReadOnly(true);
+    p_nameEdit->setStyleSheet(styles->lineEditStyleHint);
+
+
+    rowLayout->addWidget(p_idEdit);
+    rowLayout->addWidget(p_nameEdit);
+
+    setLayout(rowLayout);
+
+
+    connect(p_idEdit, &ClickableLineEdit::clicked, this, [this]() { emit rowClicked(this); });
+    connect(p_nameEdit, &ClickableLineEdit::clicked, this, [this]() { emit rowClicked(this); });
+
+
+
+}
+
+
+
+ProvidersDialog::ProvidersDialog(const std::vector<std::tuple<std::string,
+    std::string>>&ownersData, QWidget* parent, AddCardWidget* addCardWidget, CardWidget* cardWidget)
+    : QDialog(parent), card_widget(cardWidget), add_card_widget(addCardWidget) {
+    styles = new Styles;
+    QVBoxLayout* mainLayout = new QVBoxLayout(this);
+    QVBoxLayout* gridLayout = new QVBoxLayout();
+
+
+    QPushButton* sendVinButton = new QPushButton("Send ID");
+    connect(sendVinButton, &QPushButton::clicked, this, &ProvidersDialog::sendID);
+
+    for (const auto& [id, name] : ownersData) {
+        RowWidget* rowWidget = new RowWidget(id, name);
+        connect(rowWidget, &RowWidget::rowClicked, this, &ProvidersDialog::selectRow);
+        gridLayout->addWidget(rowWidget);
+    }
+
+    mainLayout->addLayout(gridLayout);
+    mainLayout->addWidget(sendVinButton);
+    setLayout(mainLayout);
+    setWindowTitle("Owners List");
+    resize(600, 300);
+}
+
+void ProvidersDialog::selectRow(RowWidget* row) {
+    if (selectedRow == row) {
+        selectedRow = nullptr;
+        row->setStyleSheet(styles->lineEditStyleHint);
+        row->idEdit->setStyleSheet(styles->lineEditStyleHint);
+        row->nameEdit->setStyleSheet(styles->lineEditStyleHint);
+    }
+    else {
+        if (selectedRow) {
+            selectedRow->setStyleSheet(styles->lineEditStyleHint);
+            selectedRow->p_idEdit->setStyleSheet(styles->lineEditStyleHint);
+            selectedRow->p_nameEdit->setStyleSheet(styles->lineEditStyleHint);
+
+        }
+        selectedRow = row;
+        selectedRow->setStyleSheet(styles->lineEditStyleSelected);
+        row->p_idEdit->setStyleSheet(styles->lineEditStyleSelected);
+        row->p_nameEdit->setStyleSheet(styles->lineEditStyleSelected);
+    }
+}
+
+void ProvidersDialog::sendID() {
+    if (selectedRow) {
+        QString id = QString::fromStdString(selectedRow->p_id);
+        std::string d = id.toStdString();
+        if (card_widget != nullptr) {
+            card_widget->setProviderFromHint(id);
+        }
+        if (add_card_widget != nullptr) {
+            add_card_widget->setProviderFromHint(id);
+        }
+    }
+
+}
+
 OwnersDialog::OwnersDialog(const std::vector<std::tuple<std::string, std::string,
     std::string>>& ownersData, QWidget* parent, AddCardWidget* addCardWidget, CardWidget* cardWidget)
     : QDialog(parent), card_widget(cardWidget), add_card_widget(addCardWidget) {
@@ -75,7 +165,6 @@ OwnersDialog::OwnersDialog(const std::vector<std::tuple<std::string, std::string
     QVBoxLayout* mainLayout = new QVBoxLayout(this);
     QVBoxLayout* gridLayout = new QVBoxLayout();
 
-    // Создание кнопки "Send VIN"
     QPushButton* sendVinButton = new QPushButton("Send VIN");
     connect(sendVinButton, &QPushButton::clicked, this, &OwnersDialog::sendVin);
 
@@ -252,12 +341,14 @@ TopCardWidget::TopCardWidget(QWidget* parent,
     Hlayout->addWidget(main_label);
     addServicesHint();
     addOwnersHint();
+    addProvidersHint();
     Hlayout->setAlignment(Qt::AlignCenter);
 
     this->setLayout(Hlayout);
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
 }
+
 
 TopCardWidget::TopCardWidget(QWidget* parent,
     AddCardWidget* addcardWidget, MainWindow* mainWindow)
@@ -309,6 +400,7 @@ TopCardWidget::TopCardWidget(QWidget* parent,
     Hlayout->addWidget(main_label);
     addServicesHint();
     addOwnersHint();
+    addProvidersHint();
     Hlayout->setAlignment(Qt::AlignCenter);
 
     this->setLayout(Hlayout);
@@ -365,7 +457,7 @@ void TopCardWidget::addOwnersHint() {
 
 
     OwnersDialog* dialog = new OwnersDialog(ownersData, nullptr, add_card_widget, card_widget);
-    connect(owners_btn, &QPushButton::clicked, dialog, &OwnersDialog::show);
+    connect(owners_btn, &QPushButton::clicked, dialog, &OwnersDialog::exec);
 
     transaction.commit();
     connection.close();
@@ -381,7 +473,6 @@ void TopCardWidget::addOwnersHint() {
 
 
 void TopCardWidget::addServicesHint() {
-    services_menu = new QMenu;
     services_btn = new QPushButton("Services List");
     std::string connection_string = "dbname=mydb user=postgres password=123 host=localhost port=5432";
     pqxx::connection connection(connection_string);
@@ -400,7 +491,7 @@ void TopCardWidget::addServicesHint() {
     }
 
     ServicesDialog* dialog = new ServicesDialog(servicesData, nullptr, add_card_widget, card_widget);
-    connect(services_btn, &QPushButton::clicked, dialog, &OwnersDialog::show);
+    connect(services_btn, &QPushButton::clicked, dialog, &ServicesDialog::exec);
 
     transaction.commit(); 
     connection.close();
@@ -408,6 +499,34 @@ void TopCardWidget::addServicesHint() {
     services_btn->setStyleSheet(styles->filterButton);
     Hlayout->addWidget(services_btn);
 
+}
+
+
+void TopCardWidget::addProvidersHint() {
+    providers_btn = new QPushButton("Providers List");
+    std::string connection_string = "dbname=mydb user=postgres password=123 host=localhost port=5432";
+    pqxx::connection connection(connection_string);
+    pqxx::work transaction(connection);
+
+
+    pqxx::result R = transaction.exec("SELECT provider_id, provider_name FROM service_providers");
+
+    std::vector<std::tuple<std::string, std::string>> servicesData;
+    for (const auto& row : R) {
+        std::string id = row[0].as<std::string>();
+        std::string name = row[1].as<std::string>();
+
+        servicesData.emplace_back(id, name);
+    }
+
+    ProvidersDialog* dialog = new ProvidersDialog(servicesData, nullptr, add_card_widget, card_widget);
+    connect(providers_btn, &QPushButton::clicked, dialog, &ProvidersDialog::exec);
+
+    transaction.commit();
+    connection.close();
+
+    providers_btn->setStyleSheet(styles->filterButton);
+    Hlayout->addWidget(providers_btn);
 }
 
 

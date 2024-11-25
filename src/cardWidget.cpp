@@ -687,6 +687,42 @@ void CardWidget::setServiceFromHint(QString id) {
 
 }
 
+void CardWidget::setProviderFromHint(QString id) {
+    AField* f = nullptr;
+    bool emptyLineExist = false;
+
+    for (auto line : lines_vector) {
+        for (auto field : line->fields_vector) {
+            if (field->name == "provider_id") {
+                if (field->edit->text() == "") {
+                    Field* f = new Field("provider_id", id, field->line_number, this);
+                    editCard(f);
+                    emptyLineExist = true;
+                    delete f;
+                    return;
+                }
+            }
+        }
+    }
+
+    if (!emptyLineExist) {
+        addLine();
+        for (auto line : lines_vector) {
+            for (auto field : line->fields_vector) {
+                if (field->name == "provider_id") {
+                    if (field->edit->text() == "") {
+                        Field* f = new Field("provider_id", id, field->line_number, this);
+                        editCard(f);
+                        emptyLineExist = true;
+                        delete f;
+                        return;
+                    }
+                }
+            }
+        }
+    }
+}
+
 
 void CardWidget::addLine() {
     if (top_widget->del_fl == false) {

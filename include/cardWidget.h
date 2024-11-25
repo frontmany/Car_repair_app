@@ -122,6 +122,7 @@ public:
     void removeLine(int lineNumber);
     void setEditLine(bool fl);
     void setServiceFromHint(QString id);
+    void setProviderFromHint(QString id);
 
 private:
 

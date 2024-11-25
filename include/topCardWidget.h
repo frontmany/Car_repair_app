@@ -39,6 +39,7 @@ class RowWidget : public QWidget {
 public:
     RowWidget(const std::string& vin, const std::string& name, const std::string& phone, QWidget* parent = nullptr);
     RowWidget(const std::string& Id, const std::string& desc, double price, QWidget* parent = nullptr);
+    RowWidget(const std::string& Id, const std::string& name, QWidget* parent = nullptr);
 
     QString getVin() const {
         return QString::fromStdString(vin);
@@ -59,8 +60,32 @@ public:
     ClickableLineEdit* priceEdit;
     std::string id;
 
+    ClickableLineEdit* p_idEdit;
+    ClickableLineEdit* p_nameEdit;
+    std::string p_id;
+    std::string p_name;
+
 };
 
+class ProvidersDialog : public QDialog {
+    Q_OBJECT
+
+public:
+    ProvidersDialog(const std::vector<std::tuple<std::string, std::string>>&ownersData,
+        QWidget* parent = nullptr, AddCardWidget* addCardWidget = nullptr,
+        CardWidget* cardWidget = nullptr);
+
+private slots:
+    void selectRow(RowWidget* row);
+    void sendID();
+
+private:
+    CardWidget* card_widget = nullptr;
+    AddCardWidget* add_card_widget = nullptr;
+    RowWidget* selectedRow = nullptr;
+    Styles* styles = nullptr;
+
+};
 
 
 class OwnersDialog : public QDialog {
@@ -126,10 +151,9 @@ private:
     bool fl = false;
 
     QPushButton* services_btn = nullptr;
-    QMenu* services_menu = nullptr;
-
     QPushButton* owners_btn = nullptr;
-    QMenu* owners_menu = nullptr;
+    QPushButton* providers_btn = nullptr;
+
 
     Styles* styles = nullptr;
     QHBoxLayout* Hlayout = nullptr;
@@ -149,6 +173,7 @@ private:
     void changeEditBtnState();
     void addServicesHint();
     void addOwnersHint();
+    void addProvidersHint();
     void paintEvent(QPaintEvent* event) override;
 
 
