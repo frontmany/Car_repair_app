@@ -68,7 +68,7 @@ void LeftMenu::setButtons() {
 	font->setFamily("Avenir");
 	font->setWeight(QFont::Bold);
 
-	carsAndOwners_btn = new QPushButton("Cars / Owners");
+	carsAndOwners_btn = new QPushButton("Машины");
 	carsAndOwners_btn->setStyleSheet(styles->leftMenuBtnStyleInactive);
 	carsAndOwners_btn->setFixedSize(200, 56);
 	carsAndOwners_btn->setFont(*font);
@@ -76,7 +76,7 @@ void LeftMenu::setButtons() {
 	connect(carsAndOwners_btn, &QPushButton::clicked, main_window, &MainWindow::setOWidget);
 
 
-	cards_btn = new QPushButton("Cards");
+	cards_btn = new QPushButton("Карточки");
 	cards_btn->setStyleSheet(styles->leftMenuBtnStyleActive);
 	cards_btn->setFixedSize(200, 56);
 	cards_btn->setFont(*font);
@@ -84,14 +84,14 @@ void LeftMenu::setButtons() {
 	connect(cards_btn, &QPushButton::clicked, main_window, &MainWindow::setCardsTableWidget);
 
 
-	serviceTypes_btn = new QPushButton("Services");
+	serviceTypes_btn = new QPushButton("Услуги");
 	serviceTypes_btn->setStyleSheet(styles->leftMenuBtnStyleInactive);
 	serviceTypes_btn->setFixedSize(200, 56);
 	serviceTypes_btn->setFont(*font);
 	connect(serviceTypes_btn, &QPushButton::clicked, this, &LeftMenu::markActiveButton);
 	connect(serviceTypes_btn, &QPushButton::clicked, main_window, &MainWindow::setServicesWidget);
 
-	providers_btn = new QPushButton("Providers");
+	providers_btn = new QPushButton("Исполнители");
 	providers_btn->setStyleSheet(styles->leftMenuBtnStyleInactive);
 	providers_btn->setFixedSize(200, 56);
 	providers_btn->setFont(*font);

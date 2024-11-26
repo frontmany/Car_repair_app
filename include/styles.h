@@ -122,22 +122,30 @@ public:
 		"padding: 5px;"
 		"}";
 
-	QString filterMenu ="QMenu {"
-        "background-color: white;"
-        "border: 1px solid #ccc;"
-        "}"
-        "QMenu::item {"
-        "padding: 10px;"
-        "color: black;"
-        "}"
-        "QMenu::item:selected {"
-        "background-color: rgb(240, 240, 240);"
+	QString filterMenu = "QMenu {"
+		"background-color: rgb(227,227,227);"
+		"border: 1px solid #ccc;"
+		"border-radius: 8px;" // Закругление углов
+		"font-family: 'Segoe UI';" // Установка шрифта
+		"font-size: 12px;" // Размер шрифта
+		"}"
+		"QMenu::item {"
+		"padding: 10px;"
+		"color: black;"
+		"}"
+		"QMenu::item:selected {"
+		"background-color: rgb(240, 240, 240);"
+		"color: black;" // Цвет текста при выделении
+		"}"
+		"QMenu::item:disabled {"
+		"color: gray;" // Цвет текста для неактивных пунктов
 		"}";
 
 	QString filterButton = "QPushButton {"
 		"background-color: transparent;"
 		"color: black;"
-		"border: 1px solid #ccc;"
+		"QPushButton::menu-indicator { image: none; }"
+		"border: 1px transparent;"
 		"padding: 10px;"
 		"border-radius: 5px;"
 		"}"

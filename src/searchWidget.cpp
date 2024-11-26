@@ -94,16 +94,20 @@ void SearchWidget::onSortActionTriggered(const QString& columnName) {
 }
 
 void SearchWidget::addAddWidget3() {
-    add_btn = new QPushButton("add");
+    add_btn = new QPushButton;
     add_btn->setFixedSize(46, 36);
+    add_btn->setIcon(QIcon(":/addLine.png"));
+    add_btn->setIconSize(QSize(28, 28));
     add_btn->setStyleSheet(styles->filterButton);
     searchHlayout->addWidget(add_btn);
     connect(add_btn, &QPushButton::clicked, o_table_widget, &OTable::addService);
 }
 
 void SearchWidget::addDelWidget3() {
-    del_btn = new QPushButton("del");
+    del_btn = new QPushButton;
     del_btn->setFixedSize(46, 36);
+    del_btn->setIcon(QIcon(":/trash.png"));
+    del_btn->setIconSize(QSize(28, 28));
     del_btn->setStyleSheet(styles->filterButton);
     searchHlayout->addWidget(del_btn);
     connect(del_btn, &QPushButton::clicked, this, &SearchWidget::sendDelflSignal);
@@ -112,8 +116,10 @@ void SearchWidget::addDelWidget3() {
 }
 
 void SearchWidget::addsaveButton3() {
-    save_btn = new QPushButton("save");
+    save_btn = new QPushButton;
     save_btn->setFixedSize(46, 36);
+    save_btn->setIcon(QIcon(":/save.png"));
+    save_btn->setIconSize(QSize(27, 27));
     save_btn->setStyleSheet(styles->filterButton);
     searchHlayout->addWidget(save_btn);
     connect(save_btn, &QPushButton::clicked, o_table_widget, &OTable::dbAdd);
@@ -121,8 +127,10 @@ void SearchWidget::addsaveButton3() {
 
 
 void SearchWidget::addsaveButton2() {
-    save_btn = new QPushButton("save");
+    save_btn = new QPushButton;
     save_btn->setFixedSize(46, 36);
+    save_btn->setIcon(QIcon(":/save.png"));
+    save_btn->setIconSize(QSize(27, 27));
     save_btn->setStyleSheet(styles->filterButton);
     searchHlayout->addWidget(save_btn);
     connect(save_btn, &QPushButton::clicked, s_table_widget, &STable::dbAdd);
@@ -142,16 +150,19 @@ void SearchWidget::addSearchWidget() {
 
 
 void SearchWidget::addSortWidget() {
-    sort_btn = new QPushButton("sort");
-    sort_btn->setFixedSize(96, 36);
+    sort_btn = new QPushButton;
+    sort_btn->setFixedSize(36, 36);
+    sort_btn->setIcon(QIcon(":/sort.png"));
+    sort_btn->setIconSize(QSize(28, 28));
     sort_btn->setStyleSheet(styles->filterButton);
+
 
     menu = new QMenu(this);
     menu->setStyleSheet(styles->filterMenu);
 
-    sortById = menu->addAction("by id");
-    sortByDate = menu->addAction("by date");
-    sortByName = menu->addAction("by name");
+    sortById = menu->addAction("По ID");
+    sortByDate = menu->addAction("По Дате");
+    sortByName = menu->addAction("По Имени");
 
 
 
@@ -168,14 +179,19 @@ void SearchWidget::addSortWidget() {
         onSortActionTriggered(columnName);
         });
 
-    sort_btn->setMenu(menu);
+    connect(sort_btn, &QPushButton::clicked, [&]() {
+        menu->exec(sort_btn->mapToGlobal(QPoint(-20, sort_btn->height())));
+        });
+
     searchHlayout->addWidget(sort_btn);
 }
 
 
 void SearchWidget::addAddWidget() {
-    add_btn = new QPushButton("add");
+    add_btn = new QPushButton;
     add_btn->setFixedSize(46, 36);
+    add_btn->setIcon(QIcon(":/addLine.png"));
+    add_btn->setIconSize(QSize(28, 28));
     add_btn->setStyleSheet(styles->filterButton);
     searchHlayout->addWidget(add_btn);
     connect(add_btn, &QPushButton::clicked, main_window, &MainWindow::setAddCardWidget);
@@ -183,8 +199,10 @@ void SearchWidget::addAddWidget() {
 }
 
 void SearchWidget::addDelWidget() {
-    del_btn = new QPushButton("del");
+    del_btn = new QPushButton;
     del_btn->setFixedSize(46, 36);
+    del_btn->setIcon(QIcon(":/trash.png"));
+    del_btn->setIconSize(QSize(28, 28));
     del_btn->setStyleSheet(styles->filterButton);
     searchHlayout->addWidget(del_btn);
     connect(del_btn, &QPushButton::clicked, this, &SearchWidget::sendDelflSignal);
@@ -193,8 +211,10 @@ void SearchWidget::addDelWidget() {
 }
 
 void SearchWidget::addAddWidget2() {
-    add_btn = new QPushButton("add");
+    add_btn = new QPushButton;
     add_btn->setFixedSize(46, 36);
+    add_btn->setIcon(QIcon(":/addLine.png"));
+    add_btn->setIconSize(QSize(28, 28));
     add_btn->setStyleSheet(styles->filterButton);
     searchHlayout->addWidget(add_btn);
     connect(add_btn, &QPushButton::clicked, s_table_widget, &STable::addService);
@@ -202,7 +222,9 @@ void SearchWidget::addAddWidget2() {
 }
 
 void SearchWidget::addDelWidget2() {
-    del_btn = new QPushButton("del");
+    del_btn = new QPushButton;
+    del_btn->setIcon(QIcon(":/trash.png"));
+    del_btn->setIconSize(QSize(28, 28));
     del_btn->setFixedSize(46, 36);
     del_btn->setStyleSheet(styles->filterButton);
     searchHlayout->addWidget(del_btn);
@@ -213,8 +235,10 @@ void SearchWidget::addDelWidget2() {
 
 
 void SearchWidget::addAddWidget4() {
-    add_btn = new QPushButton("add");
+    add_btn = new QPushButton;
     add_btn->setFixedSize(46, 36);
+    add_btn->setIcon(QIcon(":/addLine.png"));
+    add_btn->setIconSize(QSize(28, 28));
     add_btn->setStyleSheet(styles->filterButton);
     searchHlayout->addWidget(add_btn);
     connect(add_btn, &QPushButton::clicked, p_table_widget, &PTable::addService);
@@ -222,8 +246,10 @@ void SearchWidget::addAddWidget4() {
 }
 
 void SearchWidget::addDelWidget4() {
-    del_btn = new QPushButton("del");
+    del_btn = new QPushButton;
     del_btn->setFixedSize(46, 36);
+    del_btn->setIcon(QIcon(":/trash.png"));
+    del_btn->setIconSize(QSize(28, 28));
     del_btn->setStyleSheet(styles->filterButton);
     searchHlayout->addWidget(del_btn);
     connect(del_btn, &QPushButton::clicked, this, &SearchWidget::sendDelflSignal);
@@ -233,8 +259,10 @@ void SearchWidget::addDelWidget4() {
 }
 
 void SearchWidget::addsaveButton4() {
-    save_btn = new QPushButton("save");
+    save_btn = new QPushButton;
     save_btn->setFixedSize(46, 36);
+    save_btn->setIcon(QIcon(":/save.png"));
+    save_btn->setIconSize(QSize(27, 27));
     save_btn->setStyleSheet(styles->filterButton);
     searchHlayout->addWidget(save_btn);
     connect(save_btn, &QPushButton::clicked, p_table_widget, &PTable::dbAdd);
@@ -250,7 +278,7 @@ void SearchWidget::changeDelBtnState() {
 
     }
     else {
-        del_btn->setStyleSheet(styles->EditButtonUnActive);
+        del_btn->setStyleSheet(styles->filterButton);
         del_fl = true;
     }
 

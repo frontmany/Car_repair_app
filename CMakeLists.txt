@@ -21,5 +21,7 @@ link_directories("C:/Program Files/libpqxx/lib" "C:/Program Files/PostgreSQL/16/
 
 
 
-add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
+qt6_add_resources(QRC_FILES resources/icons.qrc)
+
+add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS} ${QRC_FILES})
 target_link_libraries(${PROJECT_NAME} pqxxd libpq Ws2_32 Qt6::Widgets)

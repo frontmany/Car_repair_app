@@ -210,12 +210,12 @@ void AddCardWidget::addTableHeaders() {
     font->setFamily("Segoe UI");
     font->setWeight(QFont::Light);
 
-    service_code_header = new QLabel("Service Code  ");
-    service_description_header = new QLabel("Description  ");
-    replacedParts_count_header = new QLabel("Replaced Parts  ");
-    price_header = new QLabel("Price  ");
-    provider_Id_header = new QLabel("Provider Id  ");
-    provider_name_header = new QLabel("Provider Name  ");
+    service_code_header = new QLabel("Код Услуги  ");
+    service_description_header = new QLabel("Описание  ");
+    replacedParts_count_header = new QLabel("Количество Деталей  ");
+    price_header = new QLabel("Цена  ");
+    provider_Id_header = new QLabel("ID Исполнителя  ");
+    provider_name_header = new QLabel("Имя Исполнителя  ");
 
 
 
@@ -275,16 +275,16 @@ void AddCardWidget::setCardDetails()
 
 
 
-    date_label = new QLabel("Date                   ");
+    date_label = new QLabel("Дата                   ");
     labels_vector.push_back(date_label);
 
     vin_number_label = new QLabel("VIN                     ");
     labels_vector.push_back(vin_number_label);
 
-    owner_name_label = new QLabel("Owner Name    ");
+    owner_name_label = new QLabel("Имя Владельца    ");
     labels_vector.push_back(owner_name_label);
 
-    owner_phone_label = new QLabel("Owner Phone   ");
+    owner_phone_label = new QLabel("Телефон   ");
     labels_vector.push_back(owner_phone_label);
 
 
@@ -555,16 +555,15 @@ void AddCardWidget::removeLine(int lineNumber) {
     auto it = std::remove_if(lines_vector.begin(), lines_vector.end(), [&](ALine* line) {
         if (line->line_number == lineNumber) {
             Vlayout_Lines->removeWidget(line);
-            delete line; // �����������, ��� �� ����������� ������������ ��������� ������
-            return true; // ������� �������
+            delete line; 
+            return true; 
         }
-        return false; // �� ������� �������
+        return false; 
     });
 
-    // ������� ��������, ������� ���� �������� ��� ��������
+
     lines_vector.erase(it, lines_vector.end());
 
-    // ��������� ������ ����� ��� ���������� ���������
     for (auto line : lines_vector) {
         if (line->line_number > lineNumber) {
             line->line_number--;
@@ -579,20 +578,23 @@ void AddCardWidget::removeLine(int lineNumber) {
 
     if (lines_vector.size() == 0) {
         for (auto h : headers) {
-            if (h->text() == "Description          ") {
-                h->setText("Description  ");
+            if (h->text() == "Код Услуги  ") {
+                h->setText("     Код Услуги");
             }
-            if (h->text() == "Replaced Parts         ") {
-                h->setText("Replaced Parts  ");
+            if (h->text() == "       Описание   ") {
+                h->setText("Описание  ");
             }
-            if (h->text() == "Price            ") {
-                h->setText("Price  ");
+            if (h->text() == "   Количество Деталей       ") {
+                h->setText("Количество Деталей  ");
             }
-            if (h->text() == "Provider Id            ") {
-                h->setText("Provider Id  ");
+            if (h->text() == "Цена   ") {
+                h->setText("Цена  ");
             }
-            if (h->text() == "Provider Name                    ") {
-                h->setText("Provider Name  ");
+            if (h->text() == "ID Исполнителя    ") {
+                h->setText("ID Исполнителя  ");
+            }
+            if (h->text() == "Имя Исполнителя                   ") {
+                h->setText("Имя Исполнителя  ");
             }
         }
     }
@@ -606,20 +608,23 @@ void AddCardWidget::setEditLine(bool fl) {
             line->setDelBtn(delBtn);
             
             for (auto h : headers) {
-                if (h->text() == "Description  ") {
-                    h->setText("Description          ");
+                if (h->text() == "Код Услуги  ") {
+                    h->setText("     Код Услуги ");
                 }
-                if (h->text() == "Replaced Parts  ") {
-                    h->setText("Replaced Parts         ");
+                if (h->text() == "Описание  ") {
+                    h->setText("       Описание   ");
                 }
-                if (h->text() == "Price  ") {
-                    h->setText("Price            ");
+                if (h->text() == "Количество Деталей  ") {
+                    h->setText("   Количество Деталей       ");
                 }
-                if (h->text() == "Provider Id  ") {
-                    h->setText("Provider Id            ");
+                if (h->text() == "Цена  ") {
+                    h->setText("Цена   ");
                 }
-                if (h->text() == "Provider Name  ") {
-                    h->setText("Provider Name                    ");
+                if (h->text() == "ID Исполнителя  ") {
+                    h->setText("ID Исполнителя    ");
+                }
+                if (h->text() == "Имя Исполнителя  ") {
+                    h->setText("Имя Исполнителя                   ");
                 }
             }
 
@@ -635,20 +640,23 @@ void AddCardWidget::setEditLine(bool fl) {
             line->del_btn = nullptr;
 
             for (auto h : headers) {
-                if (h->text() == "Description          ") {
-                    h->setText("Description  ");
+                if (h->text() == "Код Услуги  ") {
+                    h->setText("     Код Услуги");
                 }
-                if (h->text() == "Replaced Parts         ") {
-                    h->setText("Replaced Parts  ");
+                if (h->text() == "       Описание   ") {
+                    h->setText("Описание  ");
                 }
-                if (h->text() == "Price            ") {
-                    h->setText("Price  ");
+                if (h->text() == "   Количество Деталей       ") {
+                    h->setText("Количество Деталей  ");
                 }
-                if (h->text() == "Provider Id            ") {
-                    h->setText("Provider Id  ");
+                if (h->text() == "Цена   ") {
+                    h->setText("Цена  ");
                 }
-                if (h->text() == "Provider Name                    ") {
-                    h->setText("Provider Name  ");
+                if (h->text() == "ID Исполнителя    ") {
+                    h->setText("ID Исполнителя  ");
+                }
+                if (h->text() == "Имя Исполнителя                   ") {
+                    h->setText("Имя Исполнителя  ");
                 }
             }
 

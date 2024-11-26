@@ -309,8 +309,8 @@ void CardsTableWidget::addTableHeaders() {
 	font->setPointSize(18);
 	font->setFamily("Segoe UI");
 
-	card_id_header = new QLabel("       Card Code");
-	date_header = new QLabel("	  Date");
+	card_id_header = new QLabel("       Код Карточки");
+	date_header = new QLabel("	  Дата");
 	owner_name_header = new QLabel("VIN      ");
 	headers.emplace_back(card_id_header);
 	headers.emplace_back(date_header);
@@ -338,14 +338,14 @@ void CardsTableWidget::deleteCardbtn(bool fl){
 			line->setDelBtn(delBtn);
 
 			for (auto h : headers) {
-				if (h->text() == "       Card Code") {
-					h->setText("    Card Code");
+				if (h->text() == "       Код Карточки") {
+					h->setText("    Код Карточки");
 				}
-				if (h->text() == "	  Date") {
-					h->setText("Date       ");
+				if (h->text() == "	  Дата") {
+					h->setText("Дата          ");
 				}
 				if (h->text() == "VIN      ") {
-					h->setText("VIN                       ");
+					h->setText("VIN                          ");
 				}
 			}
 
@@ -361,13 +361,13 @@ void CardsTableWidget::deleteCardbtn(bool fl){
 			line->del_btn = nullptr;
 
 			for (auto h : headers) {
-				if (h->text() == "    Card Code") {
-					h->setText("       Card Code");
+				if (h->text() == "    Код Карточки") {
+					h->setText("       Код Карточки");
 				}
-				if (h->text() == "Date       ") {
-					h->setText("	  Date");
+				if (h->text() == "Дата          ") {
+					h->setText("	  Дата");
 				}
-				if (h->text() == "VIN                       ") {
+				if (h->text() == "VIN                          ") {
 					h->setText("VIN      ");
 				}
 			}

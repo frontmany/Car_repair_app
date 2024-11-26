@@ -296,31 +296,41 @@ TopCardWidget::TopCardWidget(QWidget* parent,
     font->setFamily("Segoe UI");
     font->setWeight(QFont::Bold);
 
-    back_btn = new QPushButton("back");
+    back_btn = new QPushButton;
+    back_btn->setIcon(QIcon(":/back.png"));
+    back_btn->setIconSize(QSize(30, 30));
     back_btn->setFixedSize(46, 36);
     back_btn->setStyleSheet(styles->filterButton);
     connect(back_btn, &QPushButton::clicked, mainWindow, &MainWindow::setCardsTableWidget);
 
-    add_btn = new QPushButton("add line");
+    add_btn = new QPushButton;
+    add_btn->setIcon(QIcon(":/add.png"));
+    add_btn->setIconSize(QSize(28, 28));
     add_btn->setFixedSize(46, 36);
     add_btn->setStyleSheet(styles->filterButton);
     connect(add_btn, &QPushButton::clicked, cardWidget, &CardWidget::addLine);
 
-    del_btn = new QPushButton("del line");
+    del_btn = new QPushButton;
+    del_btn->setIcon(QIcon(":/del.png"));
+    del_btn->setIconSize(QSize(30, 30));
     del_btn->setFixedSize(46, 36);
     del_btn->setStyleSheet(styles->filterButton);
     connect(del_btn, &QPushButton::clicked, this, &TopCardWidget::sendDelflSignal);
     connect(this, &TopCardWidget::sendDelFlag, cardWidget, &CardWidget::setEditLine);
     connect(del_btn, &QPushButton::clicked, this, &TopCardWidget::changeDelBtnState);
 
-    edit_btn = new QPushButton("edit");
+    edit_btn = new QPushButton;
+    edit_btn->setIcon(QIcon(":/edit.png"));
+    edit_btn->setIconSize(QSize(30, 30));
     edit_btn->setFixedSize(46, 36);
     edit_btn->setStyleSheet(styles->filterButton);
     connect(edit_btn, &QPushButton::clicked, this, &TopCardWidget::sendflSignal);
     connect(this, &TopCardWidget::sendFlag, cardWidget, &CardWidget::setEditable);
     connect(edit_btn, &QPushButton::clicked, this, &TopCardWidget::changeEditBtnState);
 
-    save_btn = new QPushButton("save");
+    save_btn = new QPushButton;
+    save_btn->setIcon(QIcon(":/save.png"));
+    save_btn->setIconSize(QSize(27, 27));
     save_btn->setFixedSize(46, 36);
     save_btn->setStyleSheet(styles->filterButton);
     connect(save_btn, &QPushButton::clicked, cardWidget, &CardWidget::dbCommit);
@@ -361,27 +371,35 @@ TopCardWidget::TopCardWidget(QWidget* parent,
     font->setFamily("Segoe UI");
     font->setWeight(QFont::Bold);
 
-    back_btn = new QPushButton("back");
+    back_btn = new QPushButton;
     back_btn->setFixedSize(46, 36);
+    back_btn->setIcon(QIcon(":/back.png"));
+    back_btn->setIconSize(QSize(30, 30));
     back_btn->setStyleSheet(styles->filterButton);
     connect(back_btn, &QPushButton::clicked, mainWindow, &MainWindow::setCardsTableWidget);
     
 
-    add_btn = new QPushButton("add line");
+    add_btn = new QPushButton;
     add_btn->setFixedSize(46, 36);
+    add_btn->setIcon(QIcon(":/add.png"));
+    add_btn->setIconSize(QSize(28, 28));
     add_btn->setStyleSheet(styles->filterButton);
     connect(add_btn, &QPushButton::clicked, addcardWidget, &AddCardWidget::addLine);
 
 
-    del_btn = new QPushButton("del line");
+    del_btn = new QPushButton;
     del_btn->setFixedSize(46, 36);
+    del_btn->setIcon(QIcon(":/del.png"));
+    del_btn->setIconSize(QSize(30, 30));
     del_btn->setStyleSheet(styles->filterButton);
     connect(del_btn, &QPushButton::clicked, this, &TopCardWidget::sendDelflSignal);
     connect(this, &TopCardWidget::sendDelFlag, addcardWidget, &AddCardWidget::setEditLine);
     connect(del_btn, &QPushButton::clicked, this, &TopCardWidget::changeDelBtnState);
 
-    save_btn = new QPushButton("save");
+    save_btn = new QPushButton;
     save_btn->setFixedSize(46, 36);
+    save_btn->setIcon(QIcon(":/save.png"));
+    save_btn->setIconSize(QSize(27, 27));
     save_btn->setStyleSheet(styles->filterButton);
     connect(save_btn, &QPushButton::clicked, addcardWidget, &AddCardWidget::dbAdd);
 
@@ -415,7 +433,7 @@ void TopCardWidget::changeDelBtnState() {
 
     }
     else {
-        del_btn->setStyleSheet(styles->EditButtonUnActive);
+        del_btn->setStyleSheet(styles->filterButton);
         del_fl = true;
     }
 
@@ -423,7 +441,7 @@ void TopCardWidget::changeDelBtnState() {
 
 void TopCardWidget::changeEditBtnState() {
     if (fl) {
-        edit_btn->setStyleSheet(styles->EditButtonUnActive);
+        edit_btn->setStyleSheet(styles->filterButton);
         fl = false;
     }
     else {
@@ -435,7 +453,11 @@ void TopCardWidget::changeEditBtnState() {
 }
 
 void TopCardWidget::addOwnersHint() {
-    owners_btn = new QPushButton("Owners List");
+    owners_btn = new QPushButton("Владельцы");
+    owners_btn->setIcon(QIcon(":/list.png"));
+    owners_btn->setIconSize(QSize(18, 18));
+    QFont font("Segoe UI", 12, QFont::Medium);
+    owners_btn->setFont(font);
     std::string connection_string = "dbname=mydb user=postgres password=123 host=localhost port=5432";
     pqxx::connection connection(connection_string);
     pqxx::work transaction(connection);
@@ -473,7 +495,11 @@ void TopCardWidget::addOwnersHint() {
 
 
 void TopCardWidget::addServicesHint() {
-    services_btn = new QPushButton("Services List");
+    services_btn = new QPushButton("Услуги");
+    services_btn->setIcon(QIcon(":/list.png"));
+    services_btn->setIconSize(QSize(19, 19));
+    QFont font("Segoe UI", 12, QFont::Medium);
+    services_btn->setFont(font);
     std::string connection_string = "dbname=mydb user=postgres password=123 host=localhost port=5432";
     pqxx::connection connection(connection_string);
     pqxx::work transaction(connection);
@@ -503,7 +529,11 @@ void TopCardWidget::addServicesHint() {
 
 
 void TopCardWidget::addProvidersHint() {
-    providers_btn = new QPushButton("Providers List");
+    providers_btn = new QPushButton("Исполнители");
+    providers_btn->setIcon(QIcon(":/list.png"));
+    providers_btn->setIconSize(QSize(18, 18));
+    QFont font("Segoe UI", 12, QFont::Medium);
+    providers_btn->setFont(font);
     std::string connection_string = "dbname=mydb user=postgres password=123 host=localhost port=5432";
     pqxx::connection connection(connection_string);
     pqxx::work transaction(connection);
