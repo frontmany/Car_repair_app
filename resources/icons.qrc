@@ -10,5 +10,13 @@
         <file>addLine.png</file>
         <file>sort.png</file>
         <file>linesDel.png</file>
+        <file>cards.png</file>
+		<file>cardsGray.png</file>
+        <file>car.png</file>
+		<file>carGray.png</file>
+        <file>services.png</file>
+        <file>servicesGray.png</file>
+        <file>provider.png</file>
+        <file>providerGray.png</file>
     </qresource>
 </RCC>

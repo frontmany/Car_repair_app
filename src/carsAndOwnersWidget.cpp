@@ -53,17 +53,16 @@ OAddLine::OAddLine(QWidget* parent, OTable* OTableWidget)
 			fields_vector[i]->edit->setReadOnly(true);
 			fields_vector[i]->edit->setStyleSheet(styles->lineEditInactiveStyle);
 			fields_vector[i]->edit->setFont(*font);
-			fields_vector[i]->edit->setMinimumSize(50, 20);
-			fields_vector[i]->edit->setMaximumSize(100, 56);
-			fields_vector[i]->setMaximumSize(100, 56);
+			fields_vector[i]->edit->setMinimumSize(0, 36);
+
+			fields_vector[i]->setMaximumSize(1100, 56);
 			lineHlayout->addWidget(fields_vector[i]);
 			continue;
 		}
 		if (fields_vector[i]->name == "vin") {
 			fields_vector[i]->edit->setStyleSheet(styles->lineEditStyle);
 			fields_vector[i]->edit->setFont(*font);
-			fields_vector[i]->edit->setMinimumSize(150, 20);
-			fields_vector[i]->setMinimumSize(150, 20);
+	
 			fields_vector[i]->setMaximumSize(1500, 56);
 			fields_vector[i]->edit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 			lineHlayout->addWidget(fields_vector[i]);
@@ -71,8 +70,7 @@ OAddLine::OAddLine(QWidget* parent, OTable* OTableWidget)
 		}
 		fields_vector[i]->edit->setFont(*font);
 		fields_vector[i]->edit->setStyleSheet(styles->lineEditStyle);
-		fields_vector[i]->edit->setMinimumSize(110, 20);
-		fields_vector[i]->setMinimumSize(110, 20);
+
 		fields_vector[i]->setMaximumSize(1100, 56);
 
 		fields_vector[i]->edit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);

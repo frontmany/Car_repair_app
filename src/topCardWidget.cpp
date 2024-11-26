@@ -107,7 +107,8 @@ ProvidersDialog::ProvidersDialog(const std::vector<std::tuple<std::string,
     QVBoxLayout* gridLayout = new QVBoxLayout();
 
 
-    QPushButton* sendVinButton = new QPushButton("Send ID");
+    QPushButton* sendVinButton = new QPushButton("Установить Исполнителя");
+    sendVinButton->setStyleSheet(styles->tableBtnUnactive);
     connect(sendVinButton, &QPushButton::clicked, this, &ProvidersDialog::sendID);
 
     for (const auto& [id, name] : ownersData) {
@@ -120,15 +121,15 @@ ProvidersDialog::ProvidersDialog(const std::vector<std::tuple<std::string,
     mainLayout->addWidget(sendVinButton);
     setLayout(mainLayout);
     setWindowTitle("Owners List");
-    resize(600, 300);
+    resize(300, 200);
 }
 
 void ProvidersDialog::selectRow(RowWidget* row) {
     if (selectedRow == row) {
         selectedRow = nullptr;
         row->setStyleSheet(styles->lineEditStyleHint);
-        row->idEdit->setStyleSheet(styles->lineEditStyleHint);
-        row->nameEdit->setStyleSheet(styles->lineEditStyleHint);
+        row->p_idEdit->setStyleSheet(styles->lineEditStyleHint);
+        row->p_nameEdit->setStyleSheet(styles->lineEditStyleHint);
     }
     else {
         if (selectedRow) {
@@ -165,7 +166,8 @@ OwnersDialog::OwnersDialog(const std::vector<std::tuple<std::string, std::string
     QVBoxLayout* mainLayout = new QVBoxLayout(this);
     QVBoxLayout* gridLayout = new QVBoxLayout();
 
-    QPushButton* sendVinButton = new QPushButton("Send VIN");
+    QPushButton* sendVinButton = new QPushButton("Установить Владельца");
+    sendVinButton->setStyleSheet(styles->tableBtnUnactive);
     connect(sendVinButton, &QPushButton::clicked, this, &OwnersDialog::sendVin);
 
     for (const auto& [vin, name, phone] : ownersData) {
@@ -231,7 +233,8 @@ ServicesDialog::ServicesDialog(const std::vector<std::tuple<std::string, std::st
     QVBoxLayout* gridLayout = new QVBoxLayout();
 
 
-    QPushButton* sendVinButton = new QPushButton("Send ID");
+    QPushButton* sendVinButton = new QPushButton("Установить Услугу");
+    sendVinButton->setStyleSheet(styles->tableBtnUnactive);
     connect(sendVinButton, &QPushButton::clicked, this, &ServicesDialog::sendID);
 
     for (const auto& [id, desc, price] : servicesData) {
