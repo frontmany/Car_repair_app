@@ -76,6 +76,9 @@ PAddLine::PAddLine(QWidget* parent, PTable* PTableWidget)
 
 void PAddLine::setDelBtn(QPushButton* d_b) {
 	del_btn = d_b;
+	del_btn->setIcon(QIcon(":/linesDel.png"));
+	del_btn->setIconSize(QSize(38, 38));
+	del_btn->setStyleSheet(styles->filterButton);
 	connect(del_btn, &QPushButton::clicked, p_table_widget, &PTable::removeAddLine);
 	lineHlayout->addWidget(del_btn);
 }
@@ -117,6 +120,9 @@ PCardLine::PCardLine(QWidget* parent, MainWindow* mainWindow,
 
 void PCardLine::setDelBtn(QPushButton* d_b) {
 	del_btn = d_b;
+	del_btn->setIcon(QIcon(":/linesDel.png"));
+	del_btn->setIconSize(QSize(38, 38));
+	del_btn->setStyleSheet(styles->filterButton);
 	connect(del_btn, &QPushButton::clicked, this, &PCardLine::sendNumber);
 	connect(this, &PCardLine::sendLineNumber, cards_table_widget, &PTable::removeLine);
 
@@ -199,8 +205,8 @@ void PTable::addTableHeaders() {
 	font->setFamily("Segoe UI");
 
 
-	provider_id_header = new QLabel("       Provider Id");
-	provider_name_header = new QLabel(" Name   ");
+	provider_id_header = new QLabel("       ID Исполнителя");
+	provider_name_header = new QLabel(" Имя    ");
 	headers.emplace_back(provider_id_header);
 	headers.emplace_back(provider_name_header);
 
@@ -222,20 +228,20 @@ void PTable::addTableHeaders() {
 void PTable::deleteCardbtn(bool fl) {
 	if (fl && lines.size() != 0) {
 		if (isInTable) {
-			QPushButton* delBtn = new QPushButton("del");
+			QPushButton* delBtn = new QPushButton;
 			p_add_line->setDelBtn(delBtn);
 		}
 
 		for (auto line : lines) {
-			QPushButton* delBtn = new QPushButton("del");
+			QPushButton* delBtn = new QPushButton;
 			line->setDelBtn(delBtn);
 
 			for (auto h : headers) {
-				if (h->text() == "       Provider Id") {
-					h->setText("   Provider Id");
+				if (h->text() == "       ID Исполнителя") {
+					h->setText("   ID Исполнителя");
 				}
-				if (h->text() == " Name   ") {
-					h->setText("Name                     ");
+				if (h->text() == " Имя    ") {
+					h->setText("Имя                     ");
 				}
 
 			}
@@ -257,11 +263,11 @@ void PTable::deleteCardbtn(bool fl) {
 			line->del_btn->deleteLater();
 
 			for (auto h : headers) {
-				if (h->text() == "   Provider Id") {
-					h->setText("       Provider Id");
+				if (h->text() == "   ID Исполнителя") {
+					h->setText("       ID Исполнителя");
 				}
-				if (h->text() == "Name                     ") {
-					h->setText(" Name   ");
+				if (h->text() == "Имя                     ") {
+					h->setText(" Имя    ");
 				}
 			}
 
@@ -314,7 +320,7 @@ void PTable::dbAdd() {
 		}
 
 		PCardLine* line1 = new PCardLine(nullptr, main_window, std::to_string(provider_id), name, this);
-		QPushButton* delBtn = new QPushButton("del");
+		QPushButton* delBtn = new QPushButton;
 		line1->setDelBtn(delBtn);
 		line1->lineHlayout->addWidget(line1->del_btn);
 		lines.emplace_back(line1);
@@ -371,7 +377,7 @@ void PTable::addService() {
 		p_add_line = new PAddLine(this, this);
 		tableVLayout->insertWidget(0, p_add_line);
 		isInTable = true;
-		QPushButton* delBtn = new QPushButton("del");
+		QPushButton* delBtn = new QPushButton;
 		p_add_line->setDelBtn(delBtn);
 
 	}

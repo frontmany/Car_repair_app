@@ -150,6 +150,9 @@ Line::Line(QWidget* parent, int lineNumber, CardWidget* cardWidget)
 
 void Line::setDelBtn(QPushButton* d_b) {
     del_btn = d_b;
+    del_btn->setIcon(QIcon(":/linesDel.png"));
+    del_btn->setIconSize(QSize(38, 38));
+    del_btn->setStyleSheet(styles->filterButton);
     connect(del_btn, &QPushButton::clicked, this, &Line::sendNumber);
     connect(this, &Line::sendLineNumber, card_widget, &CardWidget::removeLine);
 
@@ -191,7 +194,7 @@ void CardWidget::setEditable(bool fl){
 void CardWidget::setEditLine(bool fl) {
     if (fl && lines_vector.size() != 0) {
         for (auto line : lines_vector) {
-            QPushButton* delBtn = new QPushButton("del");
+            QPushButton* delBtn = new QPushButton;
             line->setDelBtn(delBtn);
 
             for (auto h : headers) {

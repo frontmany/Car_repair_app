@@ -75,6 +75,9 @@ SAddLine::SAddLine(QWidget* parent, STable* sTableWidget)
 
 void SAddLine::setDelBtn(QPushButton* d_b) {
 	del_btn = d_b;
+	del_btn->setIcon(QIcon(":/linesDel.png"));
+	del_btn->setIconSize(QSize(38, 38));
+	del_btn->setStyleSheet(styles->filterButton);
 	connect(del_btn, &QPushButton::clicked, s_table_widget, &STable::removeAddLine);
 	lineHlayout->addWidget(del_btn);
 }
@@ -118,6 +121,9 @@ SCardLine::SCardLine(QWidget* parent, MainWindow* mainWindow,
 
 void SCardLine::setDelBtn(QPushButton* d_b) {
 	del_btn = d_b;
+	del_btn->setIcon(QIcon(":/linesDel.png"));
+	del_btn->setIconSize(QSize(38, 38));
+	del_btn->setStyleSheet(styles->filterButton);
 	connect(del_btn, &QPushButton::clicked, this, &SCardLine::sendNumber);
 	connect(this, &SCardLine::sendLineNumber, cards_table_widget, &STable::removeLine);
 
@@ -202,9 +208,9 @@ void STable::addTableHeaders() {
 	font->setFamily("Segoe UI");
 
 
-	service_id_header = new QLabel("       Service Id");
-	service_description_header = new QLabel("	  Description");
-	service_price_header = new QLabel("Price    ");
+	service_id_header = new QLabel("       ID Услуги");
+	service_description_header = new QLabel("	  Описание");
+	service_price_header = new QLabel("Цена    ");
 	headers.emplace_back(service_id_header);
 	headers.emplace_back(service_description_header);
 	headers.emplace_back(service_price_header);
@@ -227,23 +233,23 @@ void STable::addTableHeaders() {
 void STable::deleteCardbtn(bool fl) {
 	if (fl && lines.size() != 0) {
 		if (isInTable) { 
-			QPushButton* delBtn = new QPushButton("del");
+			QPushButton* delBtn = new QPushButton;
 			s_add_line->setDelBtn(delBtn);
 		}
 
 		for (auto line : lines) {
-			QPushButton* delBtn = new QPushButton("del");
+			QPushButton* delBtn = new QPushButton;
 			line->setDelBtn(delBtn);
 
 			for (auto h : headers) {
-				if (h->text() == "       Service Id") {
-					h->setText("   Service Id");
+				if (h->text() == "       ID Услуги") {
+					h->setText("   ID Услуги");
 				}
-				if (h->text() == "	  Description") {
-					h->setText("Description        ");
+				if (h->text() == "	  Описание") {
+					h->setText("Описание        ");
 				}
-				if (h->text() == "Price    ") {
-					h->setText("Price                            ");
+				if (h->text() == "Цена    ") {
+					h->setText("Цена                            ");
 				}
 			}
 
@@ -264,14 +270,14 @@ void STable::deleteCardbtn(bool fl) {
 			line->del_btn->deleteLater();
 
 			for (auto h : headers) {
-				if (h->text() == "   Service Id") {
-					h->setText("       Service Id");
+				if (h->text() == "   ID Услуги") {
+					h->setText("       ID Услуги");
 				}
-				if (h->text() == "Description        ") {
-					h->setText("	  Description");
+				if (h->text() == "Описание        ") {
+					h->setText("	  Описание");
 				}
-				if (h->text() == "Price                            ") {
-					h->setText("Price    ");
+				if (h->text() == "Цена                            ") {
+					h->setText("Цена    ");
 				}
 			}
 
@@ -333,7 +339,7 @@ void STable::dbAdd() {
 		}
 
 		SCardLine* line1 = new SCardLine(nullptr, main_window, service_id, desc, price, this);
-		QPushButton* delBtn = new QPushButton("del");
+		QPushButton* delBtn = new QPushButton;
 		line1->setDelBtn(delBtn);
 		line1->lineHlayout->addWidget(line1->del_btn);
 		lines.emplace_back(line1);
@@ -390,7 +396,7 @@ void STable::addService() {
 		s_add_line = new SAddLine(this, this);
 		tableVLayout->insertWidget(0, s_add_line);
 		isInTable = true;
-		QPushButton* delBtn = new QPushButton("del");
+		QPushButton* delBtn = new QPushButton;
 		s_add_line->setDelBtn(delBtn);
 
 	}

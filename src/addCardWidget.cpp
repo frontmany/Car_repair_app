@@ -145,6 +145,9 @@ ALine::ALine(QWidget* parent, int lineNumber, AddCardWidget* addcardWidget)
 
 void ALine::setDelBtn(QPushButton* d_b) {
     del_btn = d_b;
+    del_btn->setIcon(QIcon(":/linesDel.png"));
+    del_btn->setIconSize(QSize(38, 38));
+    del_btn->setStyleSheet(styles->filterButton);
     connect(del_btn, &QPushButton::clicked, this, &ALine::sendNumber);
     connect(this, &ALine::sendLineNumber, addcard_widget, &AddCardWidget::removeLine);
 
@@ -604,7 +607,7 @@ void AddCardWidget::removeLine(int lineNumber) {
 void AddCardWidget::setEditLine(bool fl) {
     if (fl && lines_vector.size() != 0) {
         for (auto line : lines_vector) {
-            QPushButton* delBtn = new QPushButton("del");
+            QPushButton* delBtn = new QPushButton;
             line->setDelBtn(delBtn);
             
             for (auto h : headers) {

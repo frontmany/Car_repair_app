@@ -454,9 +454,7 @@ void TopCardWidget::changeEditBtnState() {
 
 void TopCardWidget::addOwnersHint() {
     owners_btn = new QPushButton("Владельцы");
-    owners_btn->setIcon(QIcon(":/list.png"));
-    owners_btn->setIconSize(QSize(18, 18));
-    QFont font("Segoe UI", 12, QFont::Medium);
+    QFont font("Segoe UI", 12);
     owners_btn->setFont(font);
     std::string connection_string = "dbname=mydb user=postgres password=123 host=localhost port=5432";
     pqxx::connection connection(connection_string);
@@ -485,7 +483,7 @@ void TopCardWidget::addOwnersHint() {
     connection.close();
 
 
-    owners_btn->setStyleSheet(styles->filterButton);
+    owners_btn->setStyleSheet(styles->tableBtnUnactive);
     Hlayout->addWidget(owners_btn);
 
 
@@ -496,9 +494,7 @@ void TopCardWidget::addOwnersHint() {
 
 void TopCardWidget::addServicesHint() {
     services_btn = new QPushButton("Услуги");
-    services_btn->setIcon(QIcon(":/list.png"));
-    services_btn->setIconSize(QSize(19, 19));
-    QFont font("Segoe UI", 12, QFont::Medium);
+    QFont font("Segoe UI", 12);
     services_btn->setFont(font);
     std::string connection_string = "dbname=mydb user=postgres password=123 host=localhost port=5432";
     pqxx::connection connection(connection_string);
@@ -522,7 +518,7 @@ void TopCardWidget::addServicesHint() {
     transaction.commit(); 
     connection.close();
 
-    services_btn->setStyleSheet(styles->filterButton);
+    services_btn->setStyleSheet(styles->tableBtnUnactive);
     Hlayout->addWidget(services_btn);
 
 }
@@ -530,9 +526,7 @@ void TopCardWidget::addServicesHint() {
 
 void TopCardWidget::addProvidersHint() {
     providers_btn = new QPushButton("Исполнители");
-    providers_btn->setIcon(QIcon(":/list.png"));
-    providers_btn->setIconSize(QSize(18, 18));
-    QFont font("Segoe UI", 12, QFont::Medium);
+    QFont font("Segoe UI", 12);
     providers_btn->setFont(font);
     std::string connection_string = "dbname=mydb user=postgres password=123 host=localhost port=5432";
     pqxx::connection connection(connection_string);
@@ -555,7 +549,7 @@ void TopCardWidget::addProvidersHint() {
     transaction.commit();
     connection.close();
 
-    providers_btn->setStyleSheet(styles->filterButton);
+    providers_btn->setStyleSheet(styles->tableBtnUnactive);
     Hlayout->addWidget(providers_btn);
 }
 

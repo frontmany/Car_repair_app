@@ -58,6 +58,9 @@ void CardLine::unhighlightLine() {
 
 void CardLine::setDelBtn(QPushButton* d_b) {
 	del_btn = d_b;
+	del_btn->setIcon(QIcon(":/linesDel.png"));
+	del_btn->setIconSize(QSize(38, 38));
+	del_btn->setStyleSheet(styles->filterButton);
 	connect(del_btn, &QPushButton::clicked, this, &CardLine::sendNumber);
 	connect(this, &CardLine::sendLineNumber, cards_table_widget, &CardsTableWidget::removeLine);
 
@@ -334,7 +337,7 @@ void CardsTableWidget::addTableHeaders() {
 void CardsTableWidget::deleteCardbtn(bool fl){
 	if (fl && lines_current.size() != 0) {
 		for (auto line : lines_current) {
-			QPushButton* delBtn = new QPushButton("del");
+			QPushButton* delBtn = new QPushButton;
 			line->setDelBtn(delBtn);
 
 			for (auto h : headers) {

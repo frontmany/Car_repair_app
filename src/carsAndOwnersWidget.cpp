@@ -90,6 +90,9 @@ OAddLine::OAddLine(QWidget* parent, OTable* OTableWidget)
 
 void OAddLine::setDelBtn(QPushButton* d_b) {
 	del_btn = d_b;
+	del_btn->setIcon(QIcon(":/linesDel.png"));
+	del_btn->setIconSize(QSize(38, 38));
+	del_btn->setStyleSheet(styles->filterButton);
 	connect(del_btn, &QPushButton::clicked, o_table_widget, &OTable::removeAddLine);
 	lineHlayout->addWidget(del_btn);
 }
@@ -124,7 +127,7 @@ OCardLine::OCardLine(QWidget* parent, MainWindow* mainWindow, int carId,
 		if (i == 0) {
 			vector_buttons[i]->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 			vector_buttons[i]->setMinimumSize(100, 56);
-			vector_buttons[i]->setMaximumSize(100, 56);
+
 			vector_buttons[i]->setFont(*font);
 			vector_buttons[i]->setStyleSheet(styles->StableBtn);
 			vector_buttons[i]->setBackgroundRole(QPalette::Midlight);
@@ -144,7 +147,8 @@ OCardLine::OCardLine(QWidget* parent, MainWindow* mainWindow, int carId,
 			continue;
 		}
 		vector_buttons[i]->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-		vector_buttons[i]->setMinimumSize(210, 56);
+		vector_buttons[i]->setMinimumSize(215, 56);
+
 		vector_buttons[i]->setFont(*font);
 		vector_buttons[i]->setStyleSheet(styles->StableBtn);
 		vector_buttons[i]->setBackgroundRole(QPalette::Midlight);
@@ -158,6 +162,9 @@ OCardLine::OCardLine(QWidget* parent, MainWindow* mainWindow, int carId,
 
 void OCardLine::setDelBtn(QPushButton* d_b) {
 	del_btn = d_b;
+	del_btn->setIcon(QIcon(":/linesDel.png"));
+	del_btn->setIconSize(QSize(38, 38));
+	del_btn->setStyleSheet(styles->filterButton);
 	connect(del_btn, &QPushButton::clicked, this, &OCardLine::sendVIN);
 	connect(this, &OCardLine::sendLineVIN, cards_table_widget, &OTable::removeLine);
 
@@ -242,14 +249,18 @@ void OTable::addTableHeaders() {
 	headersHlayout->setAlignment(Qt::AlignLeft);
 
 	font = new QFont;
-	font->setPointSize(18);
+	font->setPointSize(12);
 	font->setFamily("Segoe UI");
 
 
-	id_header = new QLabel("    Car Id");
-	vin_header = new QLabel("VIN          ");
-	name_header = new QLabel("Owner Name             ");
-	phone_header = new QLabel("Owner phone           ");
+	id_header = new QLabel("      ID Машины");
+	id_header->setMinimumSize(100, 56);
+	vin_header = new QLabel("VIN");
+	vin_header->setMinimumSize(250, 56);
+	name_header = new QLabel("Имя Владельца");
+	name_header->setMinimumSize(215, 56);
+	phone_header = new QLabel("Телефон      ");
+	phone_header->setMinimumSize(215, 56);
 	headers.emplace_back(id_header);
 	headers.emplace_back(vin_header);
 	headers.emplace_back(name_header);
@@ -261,17 +272,29 @@ void OTable::addTableHeaders() {
 		if (i == 0) {
 			headers[i]->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 			headers[i]->setAlignment(Qt::AlignCenter);
-			headers[i]->setMinimumSize(120, 56);
-			headers[i]->setMaximumSize(120, 56);
+			headers[i]->setMinimumSize(240, 56);
+
+
 			headers[i]->setFont(*font);
 			headers[i]->setStyleSheet(styles->tableHeaderBlack);
 			headersHlayout->addWidget(headers[i]);
-			headersHlayout->addSpacing(40);
+
+			continue;
+		}
+		if (i == 0) {
+			headers[i]->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+			headers[i]->setAlignment(Qt::AlignCenter);
+			headers[i]->setMinimumSize(250, 56);
+
+			headers[i]->setFont(*font);
+			headers[i]->setStyleSheet(styles->tableHeaderBlack);
+			headersHlayout->addWidget(headers[i]);
+
 			continue;
 		}
 		headers[i]->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 		headers[i]->setAlignment(Qt::AlignCenter);
-		headers[i]->setMinimumSize(250, 56);
+		headers[i]->setMinimumSize(210, 56);
 
 		headers[i]->setFont(*font);
 		headers[i]->setStyleSheet(styles->tableHeaderBlack);
@@ -285,26 +308,26 @@ void OTable::addTableHeaders() {
 void OTable::deleteCardbtn(bool fl) {
 	if (fl && lines.size() != 0) {
 		if (isInTable) {
-			QPushButton* delBtn = new QPushButton("del");
+			QPushButton* delBtn = new QPushButton;
 			o_add_line->setDelBtn(delBtn);
 		}
 
 		for (auto line : lines) {
-			QPushButton* delBtn = new QPushButton("del");
+			QPushButton* delBtn = new QPushButton;
 			line->setDelBtn(delBtn);
 
 			for (auto h : headers) {
-				if (h->text() == "    Car Id") {
-					h->setText("Car Id");
+				if (h->text() == "      ID Машины") {
+					h->setText("ID Машины");
 				}
-				if (h->text() == "VIN          ") {
-					h->setText("VIN                  ");
+				if (h->text() == "VIN") {
+					h->setText("VIN     ");
 				}
-				if (h->text() == "Owner Name             ") {
-					h->setText("Owner Name                   ");
+				if (h->text() == "Имя Владельца") {
+					h->setText("  Имя Владельца            ");
 				}
-				if (h->text() == "Owner phone           ") {
-					h->setText("Owner phone                          ");
+				if (h->text() == "Телефон      ") {
+					h->setText("Телефон                   ");
 				}
 			}
 
@@ -325,17 +348,17 @@ void OTable::deleteCardbtn(bool fl) {
 			line->del_btn->deleteLater();
 
 			for (auto h : headers) {
-				if (h->text() == "Car Id") {
-					h->setText("    Car Id");
+				if (h->text() == "ID Машины") {
+					h->setText("      ID Машины");
 				}
-				if (h->text() == "VIN                  ") {
-					h->setText("VIN          ");
+				if (h->text() == "VIN     ") {
+					h->setText("VIN");
 				}
-				if (h->text() == "Owner Name                   ") {
-					h->setText("Owner Name             ");
+				if (h->text() == "  Имя Владельца            ") {
+					h->setText("Имя Владельца");
 				}
-				if (h->text() == "Owner phone                          ") {
-					h->setText("Owner phone           ");
+				if (h->text() == "Телефон                   ") {
+					h->setText("Телефон      ");
 				}
 			}
 
@@ -398,7 +421,7 @@ void OTable::dbAdd() {
 		}
 
 		OCardLine* line1 = new OCardLine(nullptr, main_window, car_id, vin, name, phone, this);
-		QPushButton* delBtn = new QPushButton("del");
+		QPushButton* delBtn = new QPushButton;
 		line1->setDelBtn(delBtn);
 		line1->lineHlayout->addWidget(line1->del_btn);
 		lines.emplace_back(line1);
@@ -459,7 +482,7 @@ void OTable::addService() {
 		o_add_line = new OAddLine(this, this);
 		tableVLayout->insertWidget(0, o_add_line);
 		isInTable = true;
-		QPushButton* delBtn = new QPushButton("del");
+		QPushButton* delBtn = new QPushButton;
 		o_add_line->setDelBtn(delBtn);
 
 	}

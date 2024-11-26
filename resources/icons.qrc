@@ -9,5 +9,6 @@
         <file>trash.png</file>
         <file>addLine.png</file>
         <file>sort.png</file>
+        <file>linesDel.png</file>
     </qresource>
 </RCC>
