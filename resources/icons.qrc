@@ -19,5 +19,6 @@
         <file>provider.png</file>
         <file>providerGray.png</file>
         <file>plus.png</file>
+		<file>car.ico</file>
     </qresource>
 </RCC>
