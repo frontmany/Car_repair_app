@@ -119,6 +119,7 @@ public:
     void setEditable(bool fl);
 
     void addLine();
+    void addHeader();
     void removeLine(int lineNumber);
     void setEditLine(bool fl);
     void setServiceFromHint(QString id);
@@ -177,6 +178,12 @@ private:
     QLabel* owner_Id_label = nullptr;
     QLabel* owner_name_label = nullptr;
     QLabel* owner_phone_label = nullptr;
+
+
+
+    QLabel* card_header = nullptr;
+    QHBoxLayout* card_header_hlayout = nullptr;
+
 
     QHBoxLayout* cardCode_Hlayout = nullptr;
     QHBoxLayout* date_Hlayout = nullptr;

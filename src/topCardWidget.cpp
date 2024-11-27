@@ -108,7 +108,7 @@ ProvidersDialog::ProvidersDialog(const std::vector<std::tuple<std::string,
 
 
     QPushButton* sendVinButton = new QPushButton("Установить Исполнителя");
-    sendVinButton->setStyleSheet(styles->tableBtnUnactive);
+    sendVinButton->setStyleSheet(styles->hintAddBtn);
     connect(sendVinButton, &QPushButton::clicked, this, &ProvidersDialog::sendID);
 
     for (const auto& [id, name] : ownersData) {
@@ -118,6 +118,7 @@ ProvidersDialog::ProvidersDialog(const std::vector<std::tuple<std::string,
     }
 
     mainLayout->addLayout(gridLayout);
+    mainLayout->addSpacing(10);
     mainLayout->addWidget(sendVinButton);
     setLayout(mainLayout);
     setWindowTitle("Owners List");
@@ -167,7 +168,7 @@ OwnersDialog::OwnersDialog(const std::vector<std::tuple<std::string, std::string
     QVBoxLayout* gridLayout = new QVBoxLayout();
 
     QPushButton* sendVinButton = new QPushButton("Установить Владельца");
-    sendVinButton->setStyleSheet(styles->tableBtnUnactive);
+    sendVinButton->setStyleSheet(styles->hintAddBtn);
     connect(sendVinButton, &QPushButton::clicked, this, &OwnersDialog::sendVin);
 
     for (const auto& [vin, name, phone] : ownersData) {
@@ -177,6 +178,7 @@ OwnersDialog::OwnersDialog(const std::vector<std::tuple<std::string, std::string
     }
 
     mainLayout->addLayout(gridLayout);
+    mainLayout->addSpacing(10);
     mainLayout->addWidget(sendVinButton);
     setLayout(mainLayout);
     setWindowTitle("Owners List");
@@ -234,7 +236,7 @@ ServicesDialog::ServicesDialog(const std::vector<std::tuple<std::string, std::st
 
 
     QPushButton* sendVinButton = new QPushButton("Установить Услугу");
-    sendVinButton->setStyleSheet(styles->tableBtnUnactive);
+    sendVinButton->setStyleSheet(styles->hintAddBtn);
     connect(sendVinButton, &QPushButton::clicked, this, &ServicesDialog::sendID);
 
     for (const auto& [id, desc, price] : servicesData) {
@@ -244,6 +246,7 @@ ServicesDialog::ServicesDialog(const std::vector<std::tuple<std::string, std::st
     }
 
     mainLayout->addLayout(gridLayout);
+    mainLayout->addSpacing(10);
     mainLayout->addWidget(sendVinButton);
     setLayout(mainLayout);
     setWindowTitle("Owners List");
@@ -457,6 +460,8 @@ void TopCardWidget::changeEditBtnState() {
 
 void TopCardWidget::addOwnersHint() {
     owners_btn = new QPushButton("Владельцы");
+    owners_btn->setIcon(QIcon(":/plus.png"));
+    owners_btn->setIconSize(QSize(15, 15));
     QFont font("Segoe UI", 12);
     owners_btn->setFont(font);
     std::string connection_string = "dbname=mydb user=postgres password=123 host=localhost port=5432";
@@ -497,6 +502,8 @@ void TopCardWidget::addOwnersHint() {
 
 void TopCardWidget::addServicesHint() {
     services_btn = new QPushButton("Услуги");
+    services_btn->setIcon(QIcon(":/plus.png"));
+    services_btn->setIconSize(QSize(15, 15));
     QFont font("Segoe UI", 12);
     services_btn->setFont(font);
     std::string connection_string = "dbname=mydb user=postgres password=123 host=localhost port=5432";
@@ -529,6 +536,8 @@ void TopCardWidget::addServicesHint() {
 
 void TopCardWidget::addProvidersHint() {
     providers_btn = new QPushButton("Исполнители");
+    providers_btn->setIcon(QIcon(":/plus.png"));
+    providers_btn->setIconSize(QSize(15, 15));
     QFont font("Segoe UI", 12);
     providers_btn->setFont(font);
     std::string connection_string = "dbname=mydb user=postgres password=123 host=localhost port=5432";

@@ -11,7 +11,6 @@
 Field::Field(QString name, QString field, CardWidget* cardWidget) {
     edit = new QLineEdit(field);
     this->name = name;
-
     Vlayout->addWidget(edit);
     this->setLayout(Vlayout);
 
@@ -21,6 +20,7 @@ Field::Field(QString name, QString field, CardWidget* cardWidget) {
 
 Field::Field(QString name, QString field, int lineNumber, CardWidget* cardWidget) {
     edit = new QLineEdit(field);
+
     this->name = name;
     line_number = lineNumber;
 
@@ -63,7 +63,7 @@ Line::Line(QWidget* parent, CardWidget* cardWidget, int lineNumber, const QStrin
 
     font = new QFont;
     font->setPointSize(16);
-    font->setFamily("Verdana");
+    font->setFamily("Segoe UI");
     lineHlayout = new QHBoxLayout;
 
 
@@ -108,7 +108,7 @@ Line::Line(QWidget* parent, int lineNumber, CardWidget* cardWidget)
 
     font = new QFont;
     font->setPointSize(16);
-    font->setFamily("Verdana");
+    font->setFamily("Segoe UI");
     lineHlayout = new QHBoxLayout;
 
 
@@ -287,6 +287,7 @@ void CardWidget::addTableHeaders() {
         label->setAlignment(Qt::AlignCenter);
         label->setMinimumSize(56, 56);
         label->setFont(*font);
+        label->setStyleSheet(styles->LabelStyle2);
 
         headersHlayout->addWidget(label);
     }
@@ -339,12 +340,13 @@ CardWidget::CardWidget(QWidget* parent, QString cardId, MainWindow* mainWindow)
     main_Vlayout->setAlignment(Qt::AlignTop);
 
     addTopWidget();
+    addHeader();
     addSpacer();
+    setCardDetails();
+    Vlayout->addSpacing(62);
     addTableHeaders();
     addTableLines();
     addTotalLabel();
-    Vlayout->addSpacing(62);
-    setCardDetails();
     scroll_widget = new QWidget;
     scroll_widget->setLayout(Vlayout);
 
@@ -368,6 +370,25 @@ void CardWidget::addTopWidget() {
     top_Hlayout->addWidget(top_widget);
     top_Hlayout->addSpacing(30);
     main_Vlayout->addLayout(top_Hlayout);
+}
+
+
+void CardWidget::addHeader() {
+    card_header = new QLabel("Карточка # " + card->card_code);
+    card_header_hlayout = new QHBoxLayout;
+    card_header_hlayout->setAlignment(Qt::AlignCenter);
+    card_header_hlayout->addWidget(card_header);
+
+
+    card_header->setStyleSheet(styles->cardHeader);
+    card_header->setMinimumSize(76, 76);
+    card_header->setMaximumSize(76000, 100);
+
+    QFont font("Segoe UI", 16);
+    card_header->setFont(font);
+
+    Vlayout->addLayout(card_header_hlayout);
+    Vlayout->addSpacing(10);
 }
 
 
@@ -447,6 +468,7 @@ void CardWidget::setCardDetails()
 
 
         labels_vector[i]->setFixedSize(150, 46);
+        labels_vector[i]->setStyleSheet(styles->LabelStyle2);
         labels_vector[i]->setFont(*font);
 
         Hlayouts_vector[i]->addWidget(labels_vector[i]);

@@ -56,7 +56,16 @@ public:
 		"background-color: #f0f0f0;"
 		"}";
 
-	
+	QString cardHeader = "QLabel {"
+		"background-color: transparent;"
+		"color: rgb(30, 144, 255);"
+		"border: 2px solid transparent;"
+		"border-radius: 5px;"
+		"padding: 10px 20px;"
+		"font-size: 40px;"
+		"font-weight: 800;"
+		"}";
+
 
 	QString tableHeader = "QLabel {"
 		"background-color: transparent;"
@@ -92,6 +101,20 @@ public:
 		"color: rgb(189, 189, 189);"
 		"}";
 
+	QString hintAddBtn = "QPushButton {"
+		"background-color: transparent;"
+		"color: rgb(30, 144, 255);"
+		"border: 2px solid transparent;"
+		"padding: 10px 20px;"
+		"font-size: 16px;"
+		"font-weight: 600;"
+		"}"
+		"QPushButton:hover {"
+		"background-color: transparent;"
+		"outline: 0;"
+		"color: rgb(105, 180, 255);"
+		"}";
+
 	QString tableBtnActive = "QPushButton {"
 		"background-color: transparent;"
 		"color: rgb(189, 189, 189);"
@@ -107,6 +130,15 @@ public:
 		"}";
 
 
+	QString LabelStyle2 = "QLabel {"
+		"background-color: transparent;"
+		"color: rgb(0, 23, 59);"
+		"padding: 10px;"
+		"font-size: 16px;"
+		"font-weight: 600;"
+		"border-radius: 5px;"
+		"}";
+
 	QString tableSpacerBtn = "QPushButton {"
 		"background-color: transparent;"
 		"border: 2px solid transparent;;"
@@ -117,7 +149,7 @@ public:
 
 	QString searchLineEdit = "QLineEdit {"
 		"border: 2px solid rgb(30, 144, 255);"
-		"border-radius: 16px;"
+		"border-radius: 11px;"
 		"background-color: rgb(227,227,227);"
 		"color: black;"
 		"padding: 5px;"
@@ -155,7 +187,7 @@ public:
 
 
 	QString labelStyle = "QLabel {"
-		"color: #333;" 
+		"color: rgb(0, 23, 59);"
 		"background-color: rgb(255, 255, 255);" 
 		"padding: 5px;" 
 		"border: 1px solid rgb(255, 255, 255);"
@@ -163,9 +195,10 @@ public:
 		"}";
 
 	QString lineEditStyle = "QLineEdit {"
-		"font-family: Arial, sans-serif;"
+		"font-family: 'Segoe UI';"
 		"font-size: 14px;"
-		"color: #333;" 
+		"font-weight: 600;"
+		"color: rgb(0, 23, 59);"
 		"background-color: transparent;" 
 		"border: 1px solid #cccccc;" 
 		"border-radius: 4px;" 
@@ -176,8 +209,9 @@ public:
 		"}";
 
 	QString lineEditStyleHint = "QLineEdit {"
-		"font-family: Arial, sans-serif;"
+		"font-family: 'Segoe UI';"
 		"font-size: 14px;"
+		"font-weight: 600;"
 		"color: #333;" 
 		"background-color: transparent;" 
 
@@ -189,21 +223,20 @@ public:
 		"}";
 
 	QString lineEditStyleSelected = "QLineEdit {"
-		"font-family: Arial, sans-serif;"
+		"font-family: 'Segoe UI';"
 		"font-size: 14px;"
-		"color: #333;" 
+		"font-weight: 600;"
+		"color: rgb(30, 144, 255);"
 		"background-color: transparent;" 
-		"border: 1px solid #66afe9;" 
-		"border-radius: 4px;" 
+		"border:0px transparent;" 
 		"padding: 5px;" 
 		"}"
-		"QLineEdit:focus {"
-		"border: 1px solid #66afe9;" 
-		"}";
+;
 
 	QString lineEditInactiveStyle = "QLineEdit {"
-		"font-family: Arial, sans-serif;"
+		"font-family: 'Segoe UI';"
 		"font-size: 14px;"
+		"font-weight: 600;"
 		"color: #a0a0a0;"
 		"background-color: #e0e0e0;" 
 		"border: 1px solid #cccccc;" 

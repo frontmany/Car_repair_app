@@ -268,6 +268,7 @@ void STable::deleteCardbtn(bool fl) {
 			line->lineHlayout->removeWidget(line->del_btn);
 			line->del_btn->hide();
 			line->del_btn->deleteLater();
+			line->del_btn = nullptr;
 
 			for (auto h : headers) {
 				if (h->text() == "   ID Услуги") {
@@ -340,7 +341,9 @@ void STable::dbAdd() {
 
 		SCardLine* line1 = new SCardLine(nullptr, main_window, service_id, desc, price, this);
 		QPushButton* delBtn = new QPushButton;
-		line1->setDelBtn(delBtn);
+		if (lines[0]->del_btn != nullptr) {
+			line1->setDelBtn(delBtn);
+		}
 		line1->lineHlayout->addWidget(line1->del_btn);
 		lines.emplace_back(line1);
 		tableVLayout->addWidget(line1);

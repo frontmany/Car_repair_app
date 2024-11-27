@@ -174,7 +174,9 @@ AddCardWidget::AddCardWidget(QWidget* parent, MainWindow* mainWindow)
 
     
     addTopWidget();
+    setCardDetails();
     addSpacer();
+    Vlayout->addSpacing(32);
     addTableHeaders();
 
 
@@ -187,7 +189,6 @@ AddCardWidget::AddCardWidget(QWidget* parent, MainWindow* mainWindow)
 
 
     Vlayout->addSpacing(62);
-    setCardDetails();
 
     scroll_widget = new QWidget;
     scroll_widget->setLayout(Vlayout);
@@ -236,6 +237,7 @@ void AddCardWidget::addTableHeaders() {
         label->setAlignment(Qt::AlignCenter);
         label->setMinimumSize(56, 56);
         label->setFont(*font);
+        label->setStyleSheet(styles->LabelStyle2);
 
         headersHlayout->addWidget(label);
     }
@@ -317,15 +319,14 @@ void AddCardWidget::setCardDetails()
 
         labels_vector[i]->setFixedSize(150, 46);
         labels_vector[i]->setFont(*font);
+        labels_vector[i]->setStyleSheet(styles->LabelStyle2);
 
         Hlayouts_vector[i]->addWidget(labels_vector[i]);
         Hlayouts_vector[i]->addWidget(fields_vector[i]);
         Vlayout->addLayout(Hlayouts_vector[i]);
     }
-
-
-
 }
+
 
 void AddCardWidget::editCard(AField* field) {
     QString newValue = field->edit->text();

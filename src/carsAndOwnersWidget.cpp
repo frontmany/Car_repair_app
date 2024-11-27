@@ -344,6 +344,7 @@ void OTable::deleteCardbtn(bool fl) {
 			line->lineHlayout->removeWidget(line->del_btn);
 			line->del_btn->hide();
 			line->del_btn->deleteLater();
+			line->del_btn = nullptr;
 
 			for (auto h : headers) {
 				if (h->text() == "ID Машины") {
@@ -419,8 +420,13 @@ void OTable::dbAdd() {
 		}
 
 		OCardLine* line1 = new OCardLine(nullptr, main_window, car_id, vin, name, phone, this);
+
 		QPushButton* delBtn = new QPushButton;
-		line1->setDelBtn(delBtn);
+		if (lines[0]->del_btn != nullptr) {
+			line1->setDelBtn(delBtn);
+		}
+		
+
 		line1->lineHlayout->addWidget(line1->del_btn);
 		lines.emplace_back(line1);
 		tableVLayout->addWidget(line1);

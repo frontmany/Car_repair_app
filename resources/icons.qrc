@@ -18,5 +18,6 @@
         <file>servicesGray.png</file>
         <file>provider.png</file>
         <file>providerGray.png</file>
+        <file>plus.png</file>
     </qresource>
 </RCC>
